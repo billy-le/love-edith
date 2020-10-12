@@ -49,8 +49,11 @@ export default function ShoppingCartPage() {
                   <img src={`/assets/${item.image}`} />
                 </td>
                 <td className='p-5'>
-                  <p>{item.name}</p>
-                  <p>{item.size}</p>
+                  <p className='text-xs'>{item.description}</p>
+                  <p className='font-bold'>{item.name}</p>
+                  <p className='text-xs'>
+                    Size: <span className='font-bold'>{item.size}</span>
+                  </p>
                 </td>
                 <td className='p-5'>{PHP(currency(item.price)).format()}</td>
                 <td className='p-5'>
@@ -88,7 +91,9 @@ export default function ShoppingCartPage() {
               </span>
             </p>
             <p className='text-xs'>*shipping not included</p>
-            <button className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'>checkout</button>
+            <Link href='/checkout'>
+              <button className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'>checkout</button>
+            </Link>
           </div>
         </section>
       </div>

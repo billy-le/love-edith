@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import Link from 'next/link';
 import { Nav } from './nav';
 import { Icon } from './icon';
@@ -9,11 +8,13 @@ export default function Header() {
   const { state } = appContext();
 
   return (
-    <header className='header flex justify-center items-center my-6 mx-10 relative'>
+    <header className='header flex justify-center items-center my-4 mx-10 relative'>
       <Nav className='absolute left-0' />
       <h1>
         <Link href='/'>
-          <a>Love, Edith</a>
+          <a>
+            <img className='h-12' src='/assets/love-edith-logo.jpg' />
+          </a>
         </Link>
       </h1>
       <Link href='/cart'>

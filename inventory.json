@@ -1,9 +1,0 @@
-{
-  "cotton-candy": {
-    "description": "yo",
-    "variants": ["cotton", "candy"],
-    "sizes": ["s", "m", "l"],
-    "price": "999.00",
-    "currency-code": "PHP"
-  }
-}
