@@ -4,6 +4,9 @@ import { appContext } from '../../context';
 
 import { PHP } from '../../helpers/currency';
 import currency from 'currency.js';
+import regions from 'philippines/regions.json';
+import cities from 'philippines/cities.json';
+import provinces from 'philippines/provinces.json';
 
 function FormControl({ children, ...props }: PropsWithChildren<React.HTMLProps<HTMLDivElement>>) {
   return <div {...props}>{children}</div>;
@@ -21,27 +24,37 @@ function Input(props: Omit<React.HTMLProps<HTMLInputElement>, 'className'>) {
   return <input className='block py-1 px-2 border-black border-solid border-2 rounded-sm w-full' {...props} />;
 }
 
+function TextArea({ className = '', ...props }: React.HTMLProps<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      className={`block py-1 px-2 border-black border-solid border-2 rounded-sm w-full ${className}`}
+      {...props}
+    />
+  );
+}
+
+function Select(props: Omit<React.HTMLProps<HTMLSelectElement>, 'className'>) {
+  return (
+    <select className='py-1 px-2 border-black border-solid border-2 rounded-sm w-full' {...props}>
+      {props.children}
+    </select>
+  );
+}
+
 export default function CheckoutPage() {
   const { state } = appContext();
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    e.persist();
-    const form = e.target as HTMLFormElement;
-    const names = Array.from(form.elements) as HTMLInputElement[];
-    let formData: any = {};
-    for (const name of names) {
-      formData[name.name] = name.value;
-      delete formData[''];
-    }
-
-    console.log(formData);
-  }
   return (
     <div className='main flex flex-col'>
       <Header />
       <section className='p-10 grid grid-cols-2 gap-6'>
-        <form className='grid grid-cols-1 sm:grid-cols-2 gap-2' onSubmit={handleSubmit}>
+        <form
+          className='grid grid-cols-1 sm:grid-cols-2 gap-2'
+          name='checkout'
+          method='POST'
+          data-netlify='true'
+          action='/checkout/success'
+        >
           <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='name'>Name</Label>
             <Input id='name' name='name' type='text' required />
@@ -69,7 +82,16 @@ export default function CheckoutPage() {
 
           <FormControl>
             <Label htmlFor='city'>City</Label>
-            <Input id='city' name='city' type='text' required />
+            <Select>
+              <option>Select a City</option>
+              {cities
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((city, index) => (
+                  <option key={index} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+            </Select>
           </FormControl>
 
           <FormControl>
@@ -78,17 +100,40 @@ export default function CheckoutPage() {
           </FormControl>
 
           <FormControl>
-            <Label htmlFor='region'>Region</Label>
-            <Input id='region' name='region' type='text' />
+            <Label htmlFor='province'>Province</Label>
+            <Select>
+              <option>Select a Province</option>
+              {provinces
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((province) => (
+                  <option key={province.key} value={province.name}>
+                    {province.name}
+                  </option>
+                ))}
+            </Select>
           </FormControl>
 
           <FormControl>
+            <Label htmlFor='region'>Region</Label>
+            <Select>
+              <option>Select a Region</option>S
+              {regions
+                .sort((a, b) => a.long.localeCompare(b.long))
+                .map((region) => (
+                  <option key={region.key} value={region.long}>
+                    {region.long}
+                  </option>
+                ))}
+            </Select>
+          </FormControl>
+
+          <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='landmarks'>Landmarks</Label>
-            <Input id='landmarks' name='landmarks' type='text' />
+            <TextArea id='landmarks' name='landmarks' rows={3} />
           </FormControl>
 
           <FormControl className='col-span-1 sm:col-span-2 flex justify-end'>
-            <button className='w-64 text-white bg-black py-1 uppercase text-sm' type='submit'>
+            <button className='w-64 text-white bg-black py-2 uppercase text-sm' type='submit'>
               Confirm Order
             </button>
           </FormControl>

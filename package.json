@@ -12,6 +12,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "currency.js": "^2.0.3",
     "next": "latest",
+    "philippines": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

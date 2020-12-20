@@ -8,6 +8,7 @@ import Header from '../../../components/header';
 
 import { App } from '../../../context/context.interfaces';
 import inventory, { colorType } from '../../../inventory';
+import { PHP } from '../../../helpers/currency';
 
 export default function CottonCandyCollection() {
   const {
@@ -61,6 +62,12 @@ export default function CottonCandyCollection() {
       setCurrentImage(collection?.colors[value as colorType]?.[0]);
     }
     setInfo('description');
+  }
+
+  function handleImageChange(image: string) {
+    return () => {
+      setCurrentImage(image);
+    };
   }
 
   function handleSizeChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -129,24 +136,21 @@ export default function CottonCandyCollection() {
                 key={index}
                 className={`h-32 w-32 bg-cover ${isNotLast ? 'mb-4' : ''}`}
                 style={{ backgroundImage: `url("/assets/${image}")` }}
-                onMouseEnter={() => setCurrentImage(image)}
-              ></div>
+                onMouseEnter={handleImageChange(image)}
+              />
             );
           })}
         </div>
-        <div
-          className='bg-cover bg-no-repeat w-full'
-          style={{ backgroundImage: `url("/assets/${currentImage}")` }}
-        ></div>
+        <div className='bg-cover bg-no-repeat w-full' style={{ backgroundImage: `url("/assets/${currentImage}")` }} />
       </div>
       <form className='bg-gray-300 w-full p-4' onSubmit={handleSubmit}>
         <h2 className='text-xl mb-1'>{collection.name}</h2>
-        <p className='text-xl mb-4'>P{collection.price}</p>
+        <p className='text-xl mb-4'>{PHP(collection.price).format()}</p>
         <div className='mb-4'>
           <label className='block mb-1'>
             Size | <span>size chart</span>
           </label>
-          <select className='block' onChange={handleSizeChange} value={currentSize || ''}>
+          <select className='block w-1/3' onChange={handleSizeChange} value={currentSize || ''}>
             {sizes.map((size) => (
               <option key={size} value={size.toUpperCase()} className='uppercase'>
                 {size}
@@ -157,7 +161,7 @@ export default function CottonCandyCollection() {
 
         <div className='mb-4'>
           <label className='block mb-1'>Color</label>
-          <select className='block' onChange={handleColorChange} value={currentColor}>
+          <select className='block w-1/3' onChange={handleColorChange} value={currentColor}>
             {colors.map((color) => (
               <option key={color} className='capitalize' value={color}>
                 {color}
@@ -167,7 +171,7 @@ export default function CottonCandyCollection() {
         </div>
 
         <div className='mb-4'>
-          <button className='bg-black text-white py-2 uppercase w-40' onClick={handleAddToCart}>
+          <button className='bg-black text-white py-2 uppercase w-1/3' onClick={handleAddToCart}>
             Add to Cart
           </button>
         </div>

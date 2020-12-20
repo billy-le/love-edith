@@ -2,6 +2,7 @@ import Header from '../../components/header';
 import Link, { LinkProps } from 'next/link';
 
 import inventory from '../../inventory';
+import { PHP } from '../../helpers/currency';
 
 export default function Shop() {
   return (
@@ -42,7 +43,7 @@ export default function Shop() {
                     </Link>
                   </h3>
                   <p className='text-center text-sm text-gray-700'>{collection.name}</p>
-                  <p className='text-center text-xs text-gray-700'>P{collection.price}</p>
+                  <p className='text-center text-xs text-gray-700'>{PHP(collection.price).format()}</p>
                 </div>
               );
             });
