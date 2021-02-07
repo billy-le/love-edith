@@ -8,6 +8,9 @@ import { AppProvider as Provider } from '../context';
 import { reducer } from '../context/context.reducers';
 import { App } from '../context/context.interfaces';
 
+import { useApollo } from '../libs/useApollo';
+import { ApolloProvider, ApolloClient, NormalizedCacheObject } from '@apollo/client';
+
 const initialState: App.State = {
   isCartOpen: false,
   cart: [],
@@ -19,12 +22,16 @@ function AppProvider({ children }: React.PropsWithChildren<React.ReactNode>) {
   return <Provider value={{ state, dispatch }}>{children}</Provider>;
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function MyApp({
+  Component,
+  pageProps,
+}: AppProps<{ pageProps: { initialApolloState: ApolloClient<NormalizedCacheObject> } }>) {
+  const apolloClient = useApollo(pageProps.initialApolloState);
   return (
     <AppProvider>
-      <Component {...pageProps} />
+      <ApolloProvider client={apolloClient}>
+        <Component {...pageProps} />
+      </ApolloProvider>
     </AppProvider>
   );
 }
-
-export default MyApp;
