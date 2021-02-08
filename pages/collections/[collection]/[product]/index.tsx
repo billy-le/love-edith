@@ -1,36 +1,141 @@
 import React from 'react';
-
-import Image from 'next/image';
+import Header from '../../../../components/header';
+import { IKImage } from 'imagekitio-react';
 
 import { PHP } from '../../../../helpers/currency';
 
-export default function Product(props: any) {
-  const product = props.data.sets[0].products[0];
-  console.log(product);
-  return props.data.sets.map((set: any) => (
-    <div key={set.id} className='grid grid-cols-2 gap-6'>
-      {set.products.map((product: any) => (
-        <div key={product.id}>
-          <Image
-            src={product.images[0].url}
-            height={product.images[0].height}
-            width={product.images[0].width}
-            layout='responsive'
-          />
-          <div className='mt-3 flex items-center flex-col justify-center'>
-            <div>{product.name}</div>
-            <div>{PHP(product.price).format()}</div>
+const TABS = ['description', 'model & fit', 'fabric & care'];
+
+export default function Product({
+  product: { images, variants, price, name, size_chart, description, model_and_fit, fabric_and_care },
+}: any) {
+  const mediaQueries = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
+  const [selectedSize, setSelectedSize] = React.useState<string>('');
+  const [selectedColor, setSelectedColor] = React.useState<string>('');
+  const [isSizeChartOpen, setIsSizeChartOpen] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState(null);
+  const [activeTab, setActiveTab] = React.useState<string>('description');
+
+  const [firstImage, ...otherImages] = images;
+  const firstImageFormats = Object.values(firstImage.formats).sort((a: any, b: any) => a.width - b.width);
+  const [, ...formats] = firstImageFormats;
+
+  const otherImageFormats = otherImages
+    .map((image: any) => Object.values(image.formats).sort((a: any, b: any) => a.width - b.width))
+    .map((item: any) => {
+      const [thumbnail, ...rest] = item;
+      return thumbnail;
+    });
+
+  const colors = React.useMemo(() => {
+    const set = new Set<string>();
+    variants.forEach((v: any) => v.qty > 0 && set.add(v.color.name));
+    const colors = Array.from(set);
+    const [firstColor] = colors;
+    setSelectedColor(firstColor);
+    return colors;
+  }, []);
+
+  const sizes = React.useMemo(() => {
+    const set = new Set<string>();
+    variants.forEach((v: any) => v.qty > 0 && set.add(v.size.name));
+    const sizes = Array.from(set);
+    const [firstSize] = sizes;
+    setSelectedSize(firstSize);
+
+    return sizes;
+  }, []);
+
+  function toggleSizeChart() {
+    setIsSizeChartOpen(!isSizeChartOpen);
+  }
+
+  function handleSizeChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const { value } = e.target;
+    if (value === selectedSize) return;
+    setSelectedSize(value);
+  }
+
+  function handleColorChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const { value } = e.target;
+    if (value === selectedColor) return;
+    setSelectedColor(value);
+  }
+
+  function handleTabChange(tab: string) {
+    return (e: React.MouseEvent) => {
+      if (tab === activeTab) return;
+      setActiveTab(tab);
+    };
+  }
+
+  return (
+    <>
+      <Header />
+      <main className='p-10'>
+        <div className='grid grid-cols-2 gap-6'>
+          <div>
+            <picture>
+              {formats.map((format: any, index) => (
+                <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={mediaQueries[index]} />
+              ))}
+              <IKImage src={firstImage.url} loading='lazy' />
+            </picture>
           </div>
+          <form>
+            <h2 className='text-2xl text-gray-800'>{name}</h2>
+            <p className='text-xl'>{PHP(price).format()}</p>
+            <fieldset>
+              <label className='block'>
+                Size |{' '}
+                <span className='relative text-gray-600 text-xs' onClick={toggleSizeChart}>
+                  size chart
+                  <div className='absolute top-0 right-0' dangerouslySetInnerHTML={{ __html: size_chart }} />
+                </span>
+              </label>
+              <select className='uppercase' onChange={handleSizeChange} value={selectedSize}>
+                {sizes.map((size) => (
+                  <option key={size} className='uppercase' value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset>
+              <label className='block'>Color</label>
+              <select onChange={handleColorChange} value={selectedColor}>
+                {colors.map((color) => (
+                  <option key={color} value={color}>
+                    {color}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset>
+              <div className='flex gap-4'>
+                {TABS.map((tab) => (
+                  <label
+                    key={tab}
+                    className={`capitalize ${activeTab === tab ? 'underline' : ''}`}
+                    onClick={handleTabChange(tab)}
+                  >
+                    {tab}
+                  </label>
+                ))}
+              </div>
+              <p>
+                {activeTab === 'description'
+                  ? description
+                  : activeTab === 'model & fit'
+                  ? model_and_fit
+                  : fabric_and_care}
+              </p>
+            </fieldset>
+          </form>
         </div>
-      ))}
-      <form>
-        <label>Size</label>
-        <select>
-          <option defaultValue='hi'>Sm</option>
-        </select>
-      </form>
-    </div>
-  ));
+      </main>
+    </>
+  );
 }
 
 export async function getStaticPaths() {
@@ -49,7 +154,7 @@ export async function getStaticPaths() {
     }
   `;
 
-  const fetcher = await fetch('http://localhost:1337/graphql', {
+  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -84,22 +189,24 @@ export async function getStaticProps(context: any) {
           name
           is_sold_out
           price
+          description
+          fabric_and_care
+          model_and_fit
           variants {
               qty
               color { name }
               size { name }
           }
           images {
-            width
-            height
             url
+            formats
           }
       }
     }
   }
 `;
 
-  const fetcher = await fetch('http://localhost:1337/graphql', {
+  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -111,7 +218,7 @@ export async function getStaticProps(context: any) {
 
   return {
     props: {
-      data: json.data,
-    }, // will be passed to the page component as props
+      product: json.data.sets[0].products[0],
+    },
   };
 }

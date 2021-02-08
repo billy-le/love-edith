@@ -32,18 +32,45 @@ h6 {
   background-image: url('/assets/home-hero.jpg');
 }
 
-.collection__image__container {
-  height: 400px;
+.collection_products {
+  scrollbar-width: none;
+  max-height: 400px;
 }
 
-.collection__image {
-  transition: transform 0.25s ease-in;
+.collection_products::-webkit-scrollbar {
+  display: none;
 }
 
-.collection__image:hover {
+.collection_product_image {
+  transition: transform 0.5s ease;
+}
+
+.collection_product_image:hover {
   transform: scale(1.1);
 }
 
-.product {
-  grid-template-rows: 100%;
+.collection_product_item {
+  flex-basis: 1;
+  min-width: 100%;
+}
+
+@media (min-width: 480px) {
+  .collection_product_item {
+    min-width: calc(calc(100% / 2) - 0.5rem);
+    flex-basis: calc(calc(100% / 2) - 0.5rem);
+  }
+}
+
+@media (min-width: 640px) {
+  .collection_product_item {
+    min-width: calc(calc(100% / 3) - 0.5rem);
+    flex-basis: calc(calc(100% / 3) - 0.5rem);
+  }
+}
+
+@media (min-width: 960px) {
+  .collection_product_item {
+    min-width: calc(calc(100% / 4) - 0.5rem);
+    flex-basis: calc(calc(100% / 4) - 0.5rem);
+  }
 }

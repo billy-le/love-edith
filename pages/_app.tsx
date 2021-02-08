@@ -10,6 +10,7 @@ import { App } from '../context/context.interfaces';
 
 import { useApollo } from '../libs/useApollo';
 import { ApolloProvider, ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { IKContext } from 'imagekitio-react';
 
 const initialState: App.State = {
   isCartOpen: false,
@@ -30,7 +31,9 @@ export default function MyApp({
   return (
     <AppProvider>
       <ApolloProvider client={apolloClient}>
-        <Component {...pageProps} />
+        <IKContext urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL}${process.env.NEXT_PUBLIC_IMAGEKIT_FOLDER}`}>
+          <Component {...pageProps} />
+        </IKContext>
       </ApolloProvider>
     </AppProvider>
   );

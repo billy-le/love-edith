@@ -13,6 +13,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "currency.js": "^2.0.3",
     "graphql": "^15.5.0",
+    "imagekitio-react": "^1.0.9",
     "next": "^10.0.5",
     "philippines": "^1.0.0",
     "react": "^16.14.0",
