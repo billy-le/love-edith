@@ -34,7 +34,7 @@ export async function getStaticPaths() {
     }
   `;
 
-  const fetcher = await fetch('http://localhost:1337/graphql', {
+  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export async function getStaticProps(context: any) {
   }
 `;
 
-  const fetcher = await fetch('http://localhost:1337/graphql', {
+  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
