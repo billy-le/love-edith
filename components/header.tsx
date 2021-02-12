@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { Nav } from './nav';
 import { Icon } from './icon';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import { appContext } from '../context/';
+import { useAppContext } from '@hooks/useAppContext';
 
 export default function Header() {
-  const { state } = appContext();
+  const { state } = useAppContext();
 
   return (
     <header className='header flex justify-center items-center my-4 mx-10 relative'>

@@ -1,29 +1,31 @@
-import Header from '../../components/header';
-import { PHP } from '../../helpers/currency';
+import Header from '@components/header';
+import { PHP } from '@helpers/currency';
 import currency from 'currency.js';
 import Link from 'next/link';
-import { appContext } from '../../context';
-import { Icon } from '../../components/icon';
+import { Icon } from '@components/icon';
 import { faPlus, faMinus, faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { App } from '../../context/context.interfaces';
-import { ACTION } from '../../context/context.actions';
+import { useAppContext } from '@hooks/useAppContext';
+import { App } from '@context/context.interfaces';
+import { IKImage } from 'imagekitio-react';
+
+const MEDIA_QUERIES = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
 
 export default function ShoppingCartPage() {
   const {
     state: { cart },
     dispatch,
-  } = appContext();
+  } = useAppContext();
   const tableHeaders = [null, 'item', 'price', 'quantity', 'total'];
 
   function handleIncrementQuantity(product: App.Product) {
     return () => {
-      dispatch({ type: ACTION.ADD_TO_CART, payload: { product } });
+      dispatch({ type: 'ADD_PRODUCT', payload: product });
     };
   }
 
   function handleDecrementQuantity(product: App.Product) {
     return () => {
-      dispatch({ type: ACTION.REMOVE_FROM_CART, payload: { product } });
+      dispatch({ type: 'REMOVE_PRODUCT', payload: product });
     };
   }
 
@@ -43,41 +45,53 @@ export default function ShoppingCartPage() {
             </tr>
           </thead>
           <tbody>
-            {cart.map((item, index) => (
-              <tr key={index}>
-                <td className='p-5'>
-                  <img src={`/assets/${item.image}`} />
-                </td>
-                <td className='p-5'>
-                  <p className='text-xs'>{item.description}</p>
-                  <p className='font-bold'>{item.name}</p>
-                  <p className='text-xs'>
-                    Size: <span className='font-bold'>{item.size}</span>
-                  </p>
-                </td>
-                <td className='p-5'>{PHP(currency(item.price)).format()}</td>
-                <td className='p-5'>
-                  <button
-                    className={`mr-8 py-1 px-3 shadow ${item.qty === 1 ? 'opacity-50 bg-gray-100' : ''}`}
-                    onClick={handleDecrementQuantity(item)}
-                    disabled={item.qty === 1}
-                  >
-                    <Icon icon={faMinus} />
-                  </button>
-                  <span>{item.qty}</span>
-                  <button className='ml-8 py-1 px-3 shadow' onClick={handleIncrementQuantity(item)}>
-                    <Icon icon={faPlus} />
-                  </button>
-                </td>
-                <td className='p-5'>{PHP(currency(item.price).multiply(item.qty)).format()}</td>
-              </tr>
-            ))}
+            {cart.map((item, index) => {
+              const [thumbnail, ...otherImages] = item.image;
+              otherImages.pop();
+              return (
+                <tr key={index}>
+                  <td className='p-5'>
+                    <picture>
+                      {otherImages.map((format: any, index: number) => (
+                        <source
+                          key={format.url}
+                          srcSet={`${format.url} ${format.width}w`}
+                          media={MEDIA_QUERIES[index]}
+                        />
+                      ))}
+                      <IKImage className='rounded h-40' src={thumbnail.url} loading='lazy' />
+                    </picture>
+                  </td>
+                  <td className='p-5'>
+                    <p className='font-bold'>{item.name}</p>
+                    <p className='text-xs'>
+                      Size: <span className='font-bold'>{item.size}</span>
+                    </p>
+                  </td>
+                  <td className='p-5'>{PHP(currency(item.price)).format()}</td>
+                  <td className='p-5'>
+                    <button
+                      className={`mr-8 py-1 px-3 shadow ${item.qty === 1 ? 'opacity-50 bg-gray-100' : ''}`}
+                      onClick={handleDecrementQuantity(item)}
+                      disabled={item.qty === 1}
+                    >
+                      <Icon icon={faMinus} />
+                    </button>
+                    <span>{item.qty}</span>
+                    <button className='ml-8 py-1 px-3 shadow' onClick={handleIncrementQuantity(item)}>
+                      <Icon icon={faPlus} />
+                    </button>
+                  </td>
+                  <td className='p-5'>{PHP(currency(item.price).multiply(item.qty)).format()}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
         <section className='flex justify-end pt-5 border-t-2 border-black border-solid'>
           <div className='flex flex-col items-end'>
-            <Link href='/shop'>
+            <Link href='/collections'>
               <a>
                 Continue Shopping <Icon icon={faAngleRight} />
               </a>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql, useQuery } from '@apollo/client';
 import Link from 'next/link';
-import Header from '../../components/header';
+import Header from '@components/header';
 import { IKImage } from 'imagekitio-react';
 
 const QUERY = gql`
@@ -59,14 +59,13 @@ export default function Collections() {
 
 function Carousel({ set }: any) {
   const mediaQueries = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
-  const [index, setIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const imageRef = React.useRef<{ [key: number]: HTMLDivElement }>({});
   const productsCount = set.products.length;
 
   React.useEffect(() => {
     if (containerRef.current) {
-      const totalWidth = containerRef.current.offsetWidth;
+      // const totalWidth = containerRef.current.offsetWidth;
     }
   }, []);
 

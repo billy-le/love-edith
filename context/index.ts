@@ -1,4 +1,10 @@
 import { createCtx } from './context.helpers';
+import { reducer } from './context.reducers';
 import { App } from './context.interfaces';
 
-export const [appContext, AppProvider] = createCtx<App.Context>();
+const initialState: App.State = {
+  isCartOpen: false,
+  cart: [],
+};
+
+export const [appContext, AppProvider] = createCtx(reducer, initialState);

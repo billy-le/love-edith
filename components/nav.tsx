@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CSSProperties } from 'react';
 
-const links = ['shop', 'about', 'faq'];
+const links = ['shop'];
 
 interface Props {
   className?: string;

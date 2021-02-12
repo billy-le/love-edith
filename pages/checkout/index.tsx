@@ -1,12 +1,12 @@
 import { PropsWithChildren } from 'react';
-import Header from '../../components/header';
-import { appContext } from '../../context';
-
-import { PHP } from '../../helpers/currency';
-import currency from 'currency.js';
+import Header from '@components/header';
+import { PHP } from '@helpers/currency';
 import regions from 'philippines/regions.json';
 import cities from 'philippines/cities.json';
 import provinces from 'philippines/provinces.json';
+import { useAppContext } from '@hooks/useAppContext';
+import { gql } from '@apollo/client';
+import randomatic from 'randomatic';
 
 function FormControl({ children, ...props }: PropsWithChildren<React.HTMLProps<HTMLDivElement>>) {
   return <div {...props}>{children}</div>;
@@ -42,19 +42,41 @@ function Select(props: Omit<React.HTMLProps<HTMLSelectElement>, 'className'>) {
 }
 
 export default function CheckoutPage() {
-  const { state } = appContext();
+  const { state } = useAppContext();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const order_number = randomatic('0', 12);
+
+    const form = new FormData();
+
+    form.set('client_id', '3be314d6-96e3-4088-b581-752345e55527');
+    form.set('resource-owner', 'love-edith');
+    form.set('redirect_uri', 'localhost:1337/success');
+    form.set('original-uri', 'localhost:1337');
+    form.set('dp-state', 'UT');
+    form.set('dp-data', 'test');
+
+    fetch('https://sandbox.developer.bpi.com.ph/bpi/sandbox/identity/authorize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html',
+      },
+      body: form,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <div className='main flex flex-col'>
       <Header />
       <section className='p-10 grid grid-cols-2 gap-6'>
-        <form
-          className='grid grid-cols-1 sm:grid-cols-2 gap-2'
-          name='checkout'
-          method='POST'
-          data-netlify='true'
-          action='/checkout/success'
-        >
+        <form className='grid grid-cols-1 sm:grid-cols-2 gap-2' onSubmit={handleSubmit}>
           <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='name'>Name</Label>
             <Input id='name' name='name' type='text' required />
@@ -72,7 +94,7 @@ export default function CheckoutPage() {
 
           <h3 className='col-span-1 sm:col-span-2'>Address</h3>
           <FormControl>
-            <Label htmlFor='apt'>House/Unit/Apt #</Label>
+            <Label htmlFor='apt'>House/Building/Unit #</Label>
             <Input id='apt' name='apt' type='text' />
           </FormControl>
           <FormControl>
@@ -144,7 +166,7 @@ export default function CheckoutPage() {
               <div className='flex items-center h-full'>
                 <div
                   className='h-20 w-20 relative bg-cover bg-top rounded-sm mr-4'
-                  style={{ backgroundImage: `url("/assets/${item.image}")` }}
+                  style={{ backgroundImage: `url("${item.image[0].url}")` }}
                 >
                   <div
                     className='absolute rounded-full h-4 w-4 flex items-center justify-center text-xs bg-gray-700 text-white'
@@ -154,11 +176,10 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <div>
-                  <div className='text-gray-600 text-xs'>{item.description}</div>
                   <div>
                     <span>{item.name}</span>
-                    {` / `}
-                    <span>{item.size}</span>
+                    {` | `}
+                    <span className='capitalize'>{item.size}</span>
                   </div>
                 </div>
               </div>

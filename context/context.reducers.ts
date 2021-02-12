@@ -1,16 +1,9 @@
 import { App } from './context.interfaces';
-import { ACTION } from './context.actions';
 
 export function reducer(state: App.State, action: App.Action): App.State {
-  const { ADD_TO_CART, TOGGLE_CART, REMOVE_FROM_CART } = ACTION;
-
   switch (action.type) {
-    case ADD_TO_CART: {
-      const { product } = action.payload;
-      if (!product) {
-        return state;
-      }
-
+    case 'ADD_PRODUCT': {
+      const product = action.payload;
       const cart = [...state.cart];
 
       const indexOfItem = cart.findIndex((item) => item.name === product.name && item.size === product.size);
@@ -25,13 +18,9 @@ export function reducer(state: App.State, action: App.Action): App.State {
         cart,
       };
     }
-    case REMOVE_FROM_CART: {
-      const { product } = action.payload;
+    case 'REMOVE_PRODUCT': {
+      const product = action.payload;
       const cart = [...state.cart];
-
-      if (!product) {
-        return state;
-      }
 
       const indexOfItem = cart.findIndex((item) => item.name === product.name && item.size === product.size);
       if (indexOfItem !== -1) {
@@ -42,14 +31,10 @@ export function reducer(state: App.State, action: App.Action): App.State {
         cart,
       };
     }
-    case TOGGLE_CART: {
-      const { isCartOpen } = action.payload;
-      if (isCartOpen == undefined) {
-        return state;
-      }
+    case 'TOGGLE_CART': {
       return {
         ...state,
-        isCartOpen,
+        isCartOpen: !state.isCartOpen,
       };
     }
     default:

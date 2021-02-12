@@ -1,3 +1,9 @@
+import Header from '@components/header';
+
 export default function Success() {
-  return <div>You did it!!</div>;
+  return (
+    <>
+      <Header />
+    </>
+  );
 }
