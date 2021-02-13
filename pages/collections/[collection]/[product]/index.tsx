@@ -3,6 +3,7 @@ import Header from '@components/header';
 import { IKImage } from 'imagekitio-react';
 import { PHP } from '@helpers/currency';
 import { useAppContext } from '@hooks/useAppContext';
+import marked from 'marked';
 
 const TABS = ['description', 'model & fit', 'fabric & care'];
 const MEDIA_QUERIES = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
@@ -42,24 +43,53 @@ export default function Product({
 
   const [, ...formats] = images.get(selectedImageIndex);
 
-  const colors = React.useMemo(() => {
-    const set = new Set<string>();
-    variants.forEach((v: any) => v.qty > 0 && set.add(v.color.name));
-    const colors = Array.from(set);
-    const [firstColor] = colors;
-    setSelectedColor(firstColor);
-    return colors;
-  }, []);
-
   const sizes = React.useMemo(() => {
-    const set = new Set<string>();
-    variants.forEach((v: any) => v.qty > 0 && set.add(v.size.name));
-    const sizes = Array.from(set);
-    const [firstSize] = sizes;
-    setSelectedSize(firstSize);
+    const map = new Map<string, number[]>();
+
+    variants.forEach((v: any) => {
+      const size = map.get(v.size.name);
+      if (size) {
+        map.set(v.size.name, size.concat(v.qty));
+      } else {
+        map.set(v.size.name, [v.qty]);
+      }
+    });
+    const entries = Object.fromEntries(map);
+    const sizes: { name: string; isSoldOut: boolean }[] = [];
+    for (const size in entries) {
+      sizes.push({ name: size, isSoldOut: entries[size].every((qty) => qty === 0) });
+    }
+
+    const firstSizeNotSoldOut = sizes.find((size) => !size.isSoldOut);
+    setSelectedSize(firstSizeNotSoldOut?.name ?? '');
 
     return sizes;
   }, []);
+
+  const colors = React.useMemo(() => {
+    const map = new Map<string, number[]>();
+
+    variants.forEach((v: any) => {
+      if (v.size.name === selectedSize) {
+        const color = map.get(v.color.name);
+        if (color) {
+          map.set(v.color.name, color.concat(v.qty));
+        } else {
+          map.set(v.color.name, [v.qty]);
+        }
+      }
+    });
+    const entries = Object.fromEntries(map);
+    const colors: { name: string; isSoldOut: boolean }[] = [];
+    for (const color in entries) {
+      colors.push({ name: color, isSoldOut: entries[color].every((qty) => qty === 0) });
+    }
+
+    const firstColorNotSoldOut = colors.find((color) => !color.isSoldOut);
+    setSelectedColor(firstColorNotSoldOut?.name ?? '');
+
+    return colors;
+  }, [selectedSize]);
 
   function toggleSizeChart() {
     setIsSizeChartOpen(!isSizeChartOpen);
@@ -93,12 +123,14 @@ export default function Product({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    const variant = variants.find((v: any) => v.size.name === selectedSize && v.color.name === selectedColor);
+
     dispatch({
       type: 'ADD_PRODUCT',
       payload: {
-        description,
         id,
-        image: images.get(selectedImageIndex),
+        variantId: variant.id,
+        image: images.get(0),
         name,
         price,
         qty: 1,
@@ -112,8 +144,8 @@ export default function Product({
       <Header />
       <main className='p-10'>
         <div className='grid grid-cols-2 gap-6'>
-          <div className='grid grid-cols-4 gap-2'>
-            <div className='grid gap-2 col-span-1 items-stretch'>
+          <div className='grid grid-cols-4 gap-2 col-span-2 lg:col-span-1'>
+            <div className='grid gap-2 col-span-4 sm:col-span-1'>
               {Array.from(images.values()).map((image, index) => {
                 const [, ...formats] = image;
                 const [smallImage] = formats;
@@ -128,14 +160,17 @@ export default function Product({
                 );
               })}
             </div>
-            <picture className='col-span-3'>
+            <picture className='col-span-4 sm:col-span-3'>
               {formats.map((format: any, index: number) => (
                 <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
               ))}
               <IKImage className='rounded' src={formats[2].url} loading='lazy' />
             </picture>
           </div>
-          <form className='shadow-sm bg-gray-300 rounded p-10' onSubmit={handleSubmit}>
+          <form
+            className='hidden sm:block shadow-sm bg-gray-300 rounded p-10 col-span-2 lg:col-span-1'
+            onSubmit={handleSubmit}
+          >
             <h2 className='text-2xl text-gray-800 mb-3'>{name}</h2>
 
             <p className='text-xl mb-3'>{PHP(price).format()}</p>
@@ -159,13 +194,13 @@ export default function Product({
               <select
                 id='size'
                 name='size'
-                className='rounded uppercase border-2 border-solid border-black w-1/4 py-1 px-2'
+                className='rounded border-2 border-solid border-black w-1/2 py-1 px-2'
                 onChange={handleSizeChange}
                 value={selectedSize}
               >
                 {sizes.map((size) => (
-                  <option key={size} className='uppercase' value={size}>
-                    {size}
+                  <option key={size.name} value={size.name} disabled={size.isSoldOut}>
+                    {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
                   </option>
                 ))}
               </select>
@@ -178,20 +213,20 @@ export default function Product({
               <select
                 id='color'
                 name='color'
-                className='rounded border-2 border-solid border-black w-1/4 py-1 px-2'
+                className='rounded border-2 border-solid border-black w-1/2 py-1 px-2'
                 onChange={handleColorChange}
                 value={selectedColor}
               >
                 {colors.map((color) => (
-                  <option key={color} value={color}>
-                    {color}
+                  <option key={color.name} value={color.name} disabled={color.isSoldOut}>
+                    {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
                   </option>
                 ))}
               </select>
             </fieldset>
 
             <fieldset className='mb-3'>
-              <button className='rounded py-2 px-3 w-1/4 bg-gray-900 text-white' type='submit'>
+              <button className='rounded py-2 px-3 w-1/2 bg-gray-900 text-white' type='submit'>
                 Add to Cart
               </button>
             </fieldset>
@@ -208,13 +243,18 @@ export default function Product({
                   </label>
                 ))}
               </div>
-              <p>
-                {activeTab === 'description'
-                  ? description
-                  : activeTab === 'model & fit'
-                  ? model_and_fit
-                  : fabric_and_care}
-              </p>
+
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: marked(
+                    activeTab === 'description'
+                      ? description
+                      : activeTab === 'model & fit'
+                      ? model_and_fit
+                      : fabric_and_care
+                  ),
+                }}
+              />
             </fieldset>
           </form>
         </div>
@@ -278,6 +318,7 @@ export async function getStaticProps(context: any) {
           fabric_and_care
           model_and_fit
           variants {
+              id
               qty
               color { name }
               size { name }

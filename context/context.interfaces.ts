@@ -8,10 +8,10 @@ export declare namespace App {
     id: number;
     qty: number;
     name: string;
-    description: string;
     price: number;
     image: any[];
     size: 'xs' | 's' | 'm' | 'l' | 'xl';
+    variantId: number;
   };
 
   export type Action =

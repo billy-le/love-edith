@@ -4,9 +4,9 @@ export function reducer(state: App.State, action: App.Action): App.State {
   switch (action.type) {
     case 'ADD_PRODUCT': {
       const product = action.payload;
-      const cart = [...state.cart];
+      const cart = state.cart;
 
-      const indexOfItem = cart.findIndex((item) => item.name === product.name && item.size === product.size);
+      const indexOfItem = cart.findIndex((item: any) => item.name === product.name && item.size === product.size);
       if (indexOfItem !== -1) {
         cart[indexOfItem].qty += 1;
       } else {
@@ -20,9 +20,9 @@ export function reducer(state: App.State, action: App.Action): App.State {
     }
     case 'REMOVE_PRODUCT': {
       const product = action.payload;
-      const cart = [...state.cart];
+      const cart = state.cart;
 
-      const indexOfItem = cart.findIndex((item) => item.name === product.name && item.size === product.size);
+      const indexOfItem = cart.findIndex((item: any) => item.name === product.name && item.size === product.size);
       if (indexOfItem !== -1) {
         cart[indexOfItem].qty -= 1;
       }

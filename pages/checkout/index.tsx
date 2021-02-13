@@ -1,3 +1,4 @@
+import React from 'react';
 import { PropsWithChildren } from 'react';
 import Header from '@components/header';
 import { PHP } from '@helpers/currency';
@@ -6,7 +7,6 @@ import cities from 'philippines/cities.json';
 import provinces from 'philippines/provinces.json';
 import { useAppContext } from '@hooks/useAppContext';
 import { gql } from '@apollo/client';
-import randomatic from 'randomatic';
 
 function FormControl({ children, ...props }: PropsWithChildren<React.HTMLProps<HTMLDivElement>>) {
   return <div {...props}>{children}</div>;
@@ -42,34 +42,51 @@ function Select(props: Omit<React.HTMLProps<HTMLSelectElement>, 'className'>) {
 }
 
 export default function CheckoutPage() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
+  const [formState, setFormState] = React.useState<any>({});
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  React.useEffect(() => {
+    // TODO - remove any items that is over stock count
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const order_number = randomatic('0', 12);
+    console.log(state);
+    // TODO - Submit order
+  };
 
-    const form = new FormData();
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>): void;
+  function handleChange(e: React.ChangeEvent<HTMLSelectElement>): void;
+  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>): void;
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
 
-    form.set('client_id', '3be314d6-96e3-4088-b581-752345e55527');
-    form.set('resource-owner', 'love-edith');
-    form.set('redirect_uri', 'localhost:1337/success');
-    form.set('original-uri', 'localhost:1337');
-    form.set('dp-state', 'UT');
-    form.set('dp-data', 'test');
+    let state: any = {
+      ...formState,
+      [name]: value,
+    };
 
-    fetch('https://sandbox.developer.bpi.com.ph/bpi/sandbox/identity/authorize', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'text/html',
-      },
-      body: form,
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => console.log(err));
+    if ('selectedIndex' in e.target) {
+      const index = e.target.selectedIndex;
+      const { dataset } = e.target.options[index];
+      const key = Object.values(dataset)[0];
+      if (name === 'city') {
+        const province = provinces.find((p) => p.key === key);
+        const region = regions.find((r) => r.key === province?.region);
+        state['province'] = province?.name ?? '';
+        state['region'] = region?.long ?? '';
+      } else if (name === 'province') {
+        const region = regions.find((r) => r.key === key);
+        state['city'] = '';
+        state['region'] = region?.long ?? '';
+      } else if (name === 'region') {
+        state['city'] = '';
+        state['province'] = '';
+      }
+    }
+
+    setFormState(state);
   }
 
   return (
@@ -79,56 +96,91 @@ export default function CheckoutPage() {
         <form className='grid grid-cols-1 sm:grid-cols-2 gap-2' onSubmit={handleSubmit}>
           <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='name'>Name</Label>
-            <Input id='name' name='name' type='text' required />
+            <Input id='name' name='name' type='text' required onChange={handleChange} value={formState['name'] ?? ''} />
           </FormControl>
 
           <FormControl className='col-span-1 sm:col-span-2'>
-            <Label htmlFor='contact'>Contact</Label>
-            <Input id='contact' name='contact' type='number' inputMode='tel' required />
+            <Label htmlFor='contact'>Contact Number</Label>
+            <Input
+              id='contact'
+              name='contact'
+              type='number'
+              inputMode='tel'
+              required
+              onChange={handleChange}
+              value={formState['contact'] ?? ''}
+            />
           </FormControl>
 
           <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='email'>Email</Label>
-            <Input id='email' name='email' type='email' inputMode='email' required />
+            <Input
+              id='email'
+              name='email'
+              type='email'
+              inputMode='email'
+              required
+              onChange={handleChange}
+              value={formState['email'] ?? ''}
+            />
           </FormControl>
 
           <h3 className='col-span-1 sm:col-span-2'>Address</h3>
           <FormControl>
-            <Label htmlFor='apt'>House/Building/Unit #</Label>
-            <Input id='apt' name='apt' type='text' />
+            <Label htmlFor='building'>Unit Number / House / Building</Label>
+            <Input
+              id='building'
+              name='building'
+              type='text'
+              onChange={handleChange}
+              value={formState['building'] ?? ''}
+            />
           </FormControl>
           <FormControl>
             <Label htmlFor='street'>Street</Label>
-            <Input id='street' name='street' type='text' required />
+            <Input
+              id='street'
+              name='street'
+              type='text'
+              required
+              onChange={handleChange}
+              value={formState['street'] ?? ''}
+            />
+          </FormControl>
+
+          <FormControl>
+            <Label htmlFor='barangay'>Barangay</Label>
+            <Input
+              id='barangay'
+              name='barangay'
+              type='text'
+              onChange={handleChange}
+              value={formState['barangay'] ?? ''}
+            />
           </FormControl>
 
           <FormControl>
             <Label htmlFor='city'>City</Label>
-            <Select>
+            <Select name='city' id='city' onChange={handleChange} value={formState['city'] ?? ''}>
               <option>Select a City</option>
               {cities
-                .sort((a, b) => a.name.localeCompare(b.name))
+                .sort((a, b) => `${a.name} - ${a.province}`.localeCompare(`${b.name} - ${b.province}`))
                 .map((city, index) => (
-                  <option key={index} value={city.name}>
-                    {city.name}
+                  <option key={index} value={`${city.name} - ${city.province}`} data-key={city.province}>
+                    {city.name} - {city.province}
                   </option>
                 ))}
             </Select>
           </FormControl>
 
           <FormControl>
-            <Label htmlFor='barangay'>Barangay</Label>
-            <Input id='barangay' name='barangay' type='text' />
-          </FormControl>
-
-          <FormControl>
             <Label htmlFor='province'>Province</Label>
-            <Select>
+            <Select id='province' name='province' onChange={handleChange} value={formState['province'] ?? ''}>
               <option>Select a Province</option>
               {provinces
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((province) => (
-                  <option key={province.key} value={province.name}>
+                  <option key={province.key} value={province.name} data-key={province.region}>
                     {province.name}
                   </option>
                 ))}
@@ -137,7 +189,7 @@ export default function CheckoutPage() {
 
           <FormControl>
             <Label htmlFor='region'>Region</Label>
-            <Select>
+            <Select id='region' name='region' onChange={handleChange} value={formState['region'] ?? ''}>
               <option>Select a Region</option>S
               {regions
                 .sort((a, b) => a.long.localeCompare(b.long))
@@ -151,13 +203,21 @@ export default function CheckoutPage() {
 
           <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='landmarks'>Landmarks</Label>
-            <TextArea id='landmarks' name='landmarks' rows={3} />
+            <TextArea
+              id='landmarks'
+              name='landmarks'
+              rows={3}
+              onChange={handleChange}
+              value={formState['landmarks'] ?? ''}
+            />
           </FormControl>
 
           <FormControl className='col-span-1 sm:col-span-2 flex justify-end'>
-            <button className='w-64 text-white bg-black py-2 uppercase text-sm' type='submit'>
-              Confirm Order
-            </button>
+            <input
+              className='w-64 text-white bg-black py-2 uppercase text-sm'
+              type='submit'
+              value='Submit Order'
+            ></input>
           </FormControl>
         </form>
         <div className='h-full bg-gray-200 rounded-sm p-5'>
