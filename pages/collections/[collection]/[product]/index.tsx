@@ -1,5 +1,4 @@
 import React from 'react';
-import Header from '@components/header';
 import { IKImage } from 'imagekitio-react';
 import { PHP } from '@helpers/currency';
 import { useAppContext } from '@hooks/useAppContext';
@@ -7,6 +6,7 @@ import marked from 'marked';
 
 const TABS = ['description', 'model & fit', 'fabric & care'];
 const MEDIA_QUERIES = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
+const NA = 'Not Available';
 
 export default function Product({
   product: {
@@ -21,7 +21,10 @@ export default function Product({
     fabric_and_care,
   },
 }: any) {
-  const { dispatch } = useAppContext();
+  const {
+    state: { cart },
+    dispatch,
+  } = useAppContext();
   const [selectedSize, setSelectedSize] = React.useState<string>('');
   const [selectedColor, setSelectedColor] = React.useState<string>('');
   const [isSizeChartOpen, setIsSizeChartOpen] = React.useState(false);
@@ -124,11 +127,15 @@ export default function Product({
     e.preventDefault();
 
     const variant = variants.find((v: any) => v.size.name === selectedSize && v.color.name === selectedColor);
+    if (cart.length) {
+      const hasItemInCart = cart.find((item) => item.variantId === variant.id);
 
+      if (hasItemInCart) return;
+    }
     dispatch({
-      type: 'ADD_PRODUCT',
+      type: 'INCREMENT_ITEM',
       payload: {
-        id,
+        productId: id,
         variantId: variant.id,
         image: images.get(0),
         name,
@@ -140,43 +147,45 @@ export default function Product({
   }
 
   return (
-    <>
-      <Header />
-      <main className='p-10'>
-        <div className='grid grid-cols-2 gap-6'>
-          <div className='grid grid-cols-4 gap-2 col-span-2 lg:col-span-1'>
-            <div className='grid gap-2 col-span-4 sm:col-span-1'>
-              {Array.from(images.values()).map((image, index) => {
-                const [, ...formats] = image;
-                const [smallImage] = formats;
+    <div className='grid grid-cols-3 gap-6'>
+      <div className='grid grid-cols-4 gap-2 col-span-3 lg:col-span-2' style={{ height: 'fit-content' }}>
+        <div className='grid gap-2 col-span-4 sm:col-span-1'>
+          {Array.from(images.values()).map((image, index) => {
+            const [, ...formats] = image;
+            const [smallImage] = formats;
 
-                return (
-                  <picture key={index} className='cursor-pointer' onClick={handleImageClick(index)}>
-                    {formats.map((format: any, index: number) => (
-                      <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
-                    ))}
-                    <IKImage className='rounded' src={smallImage.url} loading='lazy' />
-                  </picture>
-                );
-              })}
-            </div>
-            <picture className='col-span-4 sm:col-span-3'>
-              {formats.map((format: any, index: number) => (
-                <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
-              ))}
-              <IKImage className='rounded' src={formats[2].url} loading='lazy' />
-            </picture>
-          </div>
-          <form
-            className='hidden sm:block shadow-sm bg-gray-300 rounded p-10 col-span-2 lg:col-span-1'
-            onSubmit={handleSubmit}
-          >
-            <h2 className='text-2xl text-gray-800 mb-3'>{name}</h2>
+            return (
+              <picture key={index} className='cursor-pointer' onClick={handleImageClick(index)}>
+                {formats.map((format: any, index: number) => (
+                  <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
+                ))}
+                <IKImage className='rounded' src={smallImage.url} loading='lazy' />
+              </picture>
+            );
+          })}
+        </div>
+        <picture className='col-span-4 sm:col-span-3'>
+          {formats.map((format: any, index: number) => (
+            <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
+          ))}
+          <IKImage className='rounded' src={formats[2].url} loading='lazy' />
+        </picture>
+      </div>
+      <div>
+        <form
+          className=' sm:block shadow-sm bg-gray-300 rounded p-10 col-span-3 lg:col-span-1'
+          onSubmit={handleSubmit}
+          style={{
+            height: 'fit-content',
+          }}
+        >
+          <div className='flex flex-row lg:block justify-between items-center mb-4 lg:mb-0'>
+            <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
 
-            <p className='text-xl mb-3'>{PHP(price).format()}</p>
+            <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
 
-            <fieldset className='mb-3'>
-              <label htmlFor='size' className='mb-1 flex items-center'>
+            <fieldset className='mb-0 lg:mb-3 flex lg:block gap-2'>
+              <label htmlFor='size' className='mb-0 lg:mb-1 flex items-center'>
                 Size
                 {size_chart && (
                   <>
@@ -186,7 +195,10 @@ export default function Product({
                       onClick={toggleSizeChart}
                     >
                       size chart
-                      <div className='absolute top-0 right-0' dangerouslySetInnerHTML={{ __html: size_chart }} />
+                      <div
+                        className='absolute top-0 right-0'
+                        dangerouslySetInnerHTML={{ __html: marked(size_chart) }}
+                      />
                     </span>
                   </>
                 )}
@@ -194,72 +206,75 @@ export default function Product({
               <select
                 id='size'
                 name='size'
-                className='rounded border-2 border-solid border-black w-1/2 py-1 px-2'
+                className='rounded border-2 border-solid border-black w-full lg:w-1/2 py-1 px-2 uppercase'
                 onChange={handleSizeChange}
                 value={selectedSize}
               >
                 {sizes.map((size) => (
-                  <option key={size.name} value={size.name} disabled={size.isSoldOut}>
+                  <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
                     {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
                   </option>
                 ))}
               </select>
             </fieldset>
 
-            <fieldset className='mb-3'>
-              <label htmlFor='color' className='block mb-1'>
+            <fieldset className='flex lg:block gap-2 mb-0 lg:mb-3'>
+              <label htmlFor='color' className='flex items-center mb-0 lg:mb-1'>
                 Color
               </label>
               <select
                 id='color'
                 name='color'
-                className='rounded border-2 border-solid border-black w-1/2 py-1 px-2'
+                className='rounded border-2 border-solid border-black w-full lg:w-1/2 py-1 px-2 capitalize'
                 onChange={handleColorChange}
                 value={selectedColor}
               >
                 {colors.map((color) => (
-                  <option key={color.name} value={color.name} disabled={color.isSoldOut}>
+                  <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
                     {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
                   </option>
                 ))}
               </select>
             </fieldset>
 
-            <fieldset className='mb-3'>
-              <button className='rounded py-2 px-3 w-1/2 bg-gray-900 text-white' type='submit'>
+            <fieldset className='mb-0 lg:mb-3'>
+              <button className='rounded py-2 px-3 w-full lg:w-1/2 bg-gray-900 text-white' type='submit'>
                 Add to Cart
               </button>
             </fieldset>
+          </div>
 
-            <fieldset>
-              <div className='flex gap-4 mb-1'>
-                {TABS.map((tab) => (
-                  <label
-                    key={tab}
-                    className={`capitalize ${activeTab === tab ? 'underline' : ''}`}
-                    onClick={handleTabChange(tab)}
-                  >
-                    {tab}
-                  </label>
-                ))}
-              </div>
+          <fieldset>
+            <div className='flex gap-4 mb-1'>
+              {TABS.map((tab) => (
+                <label
+                  key={tab}
+                  className={`capitalize ${activeTab === tab ? 'underline' : ''}`}
+                  onClick={handleTabChange(tab)}
+                >
+                  {tab}
+                </label>
+              ))}
+            </div>
 
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: marked(
-                    activeTab === 'description'
-                      ? description
-                      : activeTab === 'model & fit'
-                      ? model_and_fit
-                      : fabric_and_care
-                  ),
-                }}
-              />
-            </fieldset>
-          </form>
-        </div>
-      </main>
-    </>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: marked(
+                  activeTab === 'description'
+                    ? description || NA
+                    : activeTab === 'model & fit'
+                    ? model_and_fit || NA
+                    : fabric_and_care || NA
+                ),
+              }}
+            />
+          </fieldset>
+        </form>
+        <p className='mt-3 text-xs text-gray-700'>
+          * Due to limited stock, we can only allow adding one item per size per cart.
+        </p>
+      </div>
+    </div>
   );
 }
 

@@ -13,6 +13,7 @@ import { IKContext } from 'imagekitio-react';
 import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.min.css';
+import { MainLayout } from '@layouts/main';
 
 export default function MyApp({
   Component,
@@ -23,7 +24,9 @@ export default function MyApp({
     <AppProvider>
       <ApolloProvider client={apolloClient}>
         <IKContext urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL}${process.env.NEXT_PUBLIC_IMAGEKIT_FOLDER}`}>
-          <Component {...pageProps} />
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
           <ToastContainer />
         </IKContext>
       </ApolloProvider>

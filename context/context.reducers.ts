@@ -1,8 +1,16 @@
 import { App } from './context.interfaces';
 
+export const SHOPPING_CART = 'shopping_cart';
+
+function storeCart(cart: App.State['cart']) {
+  if ('localStorage' in window) {
+    window.localStorage.setItem(SHOPPING_CART, JSON.stringify(cart));
+  }
+}
+
 export function reducer(state: App.State, action: App.Action): App.State {
   switch (action.type) {
-    case 'ADD_PRODUCT': {
+    case 'INCREMENT_ITEM': {
       const product = action.payload;
       const cart = state.cart;
 
@@ -13,12 +21,14 @@ export function reducer(state: App.State, action: App.Action): App.State {
         cart.push(product);
       }
 
+      storeCart(cart);
+
       return {
         ...state,
         cart,
       };
     }
-    case 'REMOVE_PRODUCT': {
+    case 'DECREMENT_ITEM': {
       const product = action.payload;
       const cart = state.cart;
 
@@ -26,15 +36,30 @@ export function reducer(state: App.State, action: App.Action): App.State {
       if (indexOfItem !== -1) {
         cart[indexOfItem].qty -= 1;
       }
+
+      storeCart(cart);
+
       return {
         ...state,
         cart,
       };
     }
-    case 'TOGGLE_CART': {
+    case 'DELETE_ITEM': {
+      const product = action.payload;
+      const cart = state.cart.filter((item) => item.variantId !== product.variantId);
+
+      storeCart(cart);
+
       return {
         ...state,
-        isCartOpen: !state.isCartOpen,
+        cart,
+      };
+    }
+    case 'SET_CART': {
+      const cart = action.payload;
+      return {
+        ...state,
+        cart,
       };
     }
     default:

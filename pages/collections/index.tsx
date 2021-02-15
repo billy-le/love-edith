@@ -1,8 +1,8 @@
 import React from 'react';
 import { gql, useQuery } from '@apollo/client';
 import Link from 'next/link';
-import Header from '@components/header';
 import { IKImage } from 'imagekitio-react';
+import { PHP } from '@helpers/currency';
 
 const QUERY = gql`
   query {
@@ -40,19 +40,12 @@ export default function Collections() {
 
   return (
     <>
-      <Header />
-      <main className='p-10'>
-        {sets.map((set: any, index: number) => (
-          <section key={set.id} className={index !== sets.length - 1 ? 'mb-10' : ''}>
-            <div>
-              <Link href={`/collections/[collection]`} as={{ pathname: `/collections/${set.slug}` }}>
-                <h2 className='inline-block mb-6 text-2xl capitalize cursor-pointer'>{set.name} Collection</h2>
-              </Link>
-              <Carousel set={set} />
-            </div>
-          </section>
-        ))}
-      </main>
+      {sets.map((set: any, index: number) => (
+        <section key={set.id} className={index !== sets.length - 1 ? 'mb-10' : ''}>
+          <h2 className='inline-block mb-6 text-2xl capitalize'>{set.name} Collection</h2>
+          <Carousel set={set} />
+        </section>
+      ))}
     </>
   );
 }
@@ -60,22 +53,10 @@ export default function Collections() {
 function Carousel({ set }: any) {
   const mediaQueries = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const imageRef = React.useRef<{ [key: number]: HTMLDivElement }>({});
-  const productsCount = set.products.length;
-
-  React.useEffect(() => {
-    if (containerRef.current) {
-      // const totalWidth = containerRef.current.offsetWidth;
-    }
-  }, []);
-
-  function handleNext(e: React.MouseEvent) {
-    e.preventDefault();
-  }
 
   return (
     <>
-      <div className='collection_products flex flex-no-wrap items-stretch gap-4 overflow-x-auto'>
+      <div className='collection_products flex gap-4'>
         {set.products.map((product: any, index: number) => {
           const firstImage = product.images[0];
           const imageFormats = Object.values(product.images[0].formats).sort((a: any, b: any) => a.width - b.width);
@@ -85,20 +66,13 @@ function Carousel({ set }: any) {
           return (
             <div
               key={product.id}
-              className='collection_product_item overflow-hidden cursor-pointer'
+              className='collection_product_item overflow-hidden'
               ref={containerRef}
               style={{
                 transform: `translateX(${index}px)`,
               }}
             >
-              <div
-                className='collection_product_image'
-                ref={(el) => {
-                  if (el) {
-                    imageRef.current[index] = el;
-                  }
-                }}
-              >
+              <div className='collection_product_image cursor-pointer'>
                 <Link
                   href={`/collections/[collection]/[${product.name}]`}
                   as={{ pathname: `/collections/${set.slug}/${product.slug}` }}
@@ -116,21 +90,12 @@ function Carousel({ set }: any) {
                   </picture>
                 </Link>
               </div>
+              <p className='mt-3 text-xl font-bold text-center'>{product.name}</p>
+              <p className='text-center'>{PHP(product.price).format()}</p>
             </div>
           );
         })}
       </div>
-      {productsCount > 1 && (
-        <div className='mt-4 flex items-center justify-end gap-4'>
-          <button>prev</button>
-          {set.products.map((_: any, index: number) => (
-            <div key={index} className='flex items-center justify-between'>
-              <div className='rounded-full h-4 w-4 bg-gray-700'></div>
-            </div>
-          ))}
-          <button onClick={handleNext}>next</button>
-        </div>
-      )}
     </>
   );
 }

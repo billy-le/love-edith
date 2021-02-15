@@ -5,7 +5,7 @@ export declare namespace App {
   }
 
   export type Product = {
-    id: number;
+    productId: number;
     qty: number;
     name: string;
     price: number;
@@ -16,14 +16,11 @@ export declare namespace App {
 
   export type Action =
     | {
-        type: 'TOGGLE_CART';
-      }
-    | {
-        type: 'ADD_PRODUCT';
+        type: 'INCREMENT_ITEM' | 'DECREMENT_ITEM' | 'DELETE_ITEM';
         payload: Product;
       }
     | {
-        type: 'REMOVE_PRODUCT';
-        payload: Product;
+        type: 'SET_CART';
+        payload: Product[];
       };
 }

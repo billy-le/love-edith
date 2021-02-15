@@ -9,8 +9,6 @@ html {
 }
 
 body {
-  max-width: var(--screen-lg);
-  margin: 0 auto;
   font-family: 'Lato', sans-serif;
 }
 
@@ -23,18 +21,16 @@ h6 {
   font-family: 'Didact Gothic', sans-serif;
 }
 
-.main {
-  min-height: 100vh;
+.header {
+  > div {
+    max-width: var(--screen-lg);
+  }
 }
 
 /*** HERO ***/
 .hero {
-  background-image: url('/assets/home-hero.jpg');
-}
-
-.collection_products {
-  scrollbar-width: none;
-  max-height: 400px;
+  background-position: center;
+  background-size: cover;
 }
 
 .collection_products::-webkit-scrollbar {
@@ -42,10 +38,15 @@ h6 {
 }
 
 .collection_product_image {
+  max-height: 400px;
+  overflow: hidden;
+}
+
+.collection_product_image img {
   transition: transform 0.5s ease;
 }
 
-.collection_product_image:hover {
+.collection_product_image img:hover {
   transform: scale(1.1);
 }
 
