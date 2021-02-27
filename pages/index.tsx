@@ -16,13 +16,6 @@ export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
   );
 }
 
-export function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: false,
-  };
-}
-
 export async function getStaticProps() {
   const query = `
     query {
