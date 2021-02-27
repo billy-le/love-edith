@@ -2,7 +2,7 @@ import { PHP } from '@helpers/currency';
 import currency from 'currency.js';
 import Link from 'next/link';
 import { Icon } from '@components/icon';
-import { faPlus, faMinus, faAngleRight, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '@hooks/useAppContext';
 import { App } from '@context/context.interfaces';
 import { IKImage } from 'imagekitio-react';
