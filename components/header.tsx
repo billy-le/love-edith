@@ -33,7 +33,7 @@ export default function Header() {
   }
 
   return (
-    <header ref={headerRef} className='header sticky top-0 bg-white'>
+    <header ref={headerRef} className='header sticky top-0 bg-white z-10'>
       <div className='flex justify-between items-center py-4 px-10'>
         <Nav />
         <h1>

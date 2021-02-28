@@ -21,10 +21,8 @@ h6 {
   font-family: 'Didact Gothic', sans-serif;
 }
 
-.header {
-  > div {
-    max-width: var(--screen-lg);
-  }
+.header > div {
+  max-width: var(--screen-lg);
 }
 
 /*** HERO ***/

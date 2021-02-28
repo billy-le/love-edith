@@ -4,23 +4,28 @@ import Link from 'next/link';
 import { IKImage } from 'imagekitio-react';
 import { PHP } from '@helpers/currency';
 
+// components
+import Spinner from '@components/spinner';
+import NotFound from '@components/not-found';
+
 const QUERY = gql`
   query {
     sets {
-      id
       name
-      description
       slug
       products {
         id
-        name
-        slug
-        images {
-          formats
-          url
-        }
-        price
       }
+    }
+    products {
+      id
+      name
+      slug
+      images {
+        formats
+        url
+      }
+      price
     }
   }
 `;
@@ -28,36 +33,36 @@ const QUERY = gql`
 export default function Collections() {
   const { loading, error, data } = useQuery(QUERY);
 
-  if (error) {
-    return <div>Something went wrong</div>;
-  }
-
-  if (loading) {
-    return <div className='flex items-center justify-center py-40'>LOADING</div>;
-  }
-
-  const { sets } = data;
-
-  return (
-    <>
-      {sets.map((set: any, index: number) => (
-        <section key={set.id} className={index !== sets.length - 1 ? 'mb-10' : ''}>
-          <h2 className='inline-block mb-6 text-2xl capitalize'>{set.name} Collection</h2>
-          <Carousel set={set} />
-        </section>
-      ))}
-    </>
-  );
-}
-
-function Carousel({ set }: any) {
   const mediaQueries = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
   const containerRef = React.useRef<HTMLDivElement>(null);
 
+  if (error) {
+    return <NotFound />;
+  }
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  const { products, sets } = data;
+
   return (
-    <>
-      <div className='collection_products flex gap-4'>
-        {set.products.map((product: any, index: number) => {
+    <div className='grid grid-cols-12'>
+      <div className='flex flex-col col-span-2'>
+        {sets.map((set: any) => (
+          <Link
+            href={`/collections/[collection]`}
+            as={{
+              pathname: `/collections/${set.slug}`,
+            }}
+            key={set.slug}
+          >
+            <span className='hover:underline cursor-pointer lowercase'>{set.name}</span>
+          </Link>
+        ))}
+      </div>
+      <div className='collection_products col-span-10 flex flex-wrap gap-4'>
+        {products.map((product: any, index: number) => {
           const firstImage = product.images[0];
           const imageFormats = Object.values(product.images[0].formats).sort((a: any, b: any) => a.width - b.width);
 
@@ -75,7 +80,11 @@ function Carousel({ set }: any) {
               <div className='collection_product_image cursor-pointer'>
                 <Link
                   href={`/collections/[collection]/[${product.name}]`}
-                  as={{ pathname: `/collections/${set.slug}/${product.slug}` }}
+                  as={{
+                    pathname: `/collections/${
+                      sets.find((set: any) => set.products.find((p: any) => p.id === product.id)).slug
+                    }/${product.slug}`,
+                  }}
                 >
                   <picture>
                     {formats.map((format: any, index) => (
@@ -96,6 +105,6 @@ function Carousel({ set }: any) {
           );
         })}
       </div>
-    </>
+    </div>
   );
 }

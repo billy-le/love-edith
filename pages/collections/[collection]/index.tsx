@@ -1,15 +1,65 @@
 import React from 'react';
-import { IKImage } from 'imagekitio-react';
+
+// helpers
 import { PHP } from '@helpers/currency';
+import { gql, useQuery } from '@apollo/client';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+
+// components
+import { IKImage } from 'imagekitio-react';
+import Spinner from '@components/spinner';
+import NotFound from '@components/not-found';
 
 export default function Collection(props: any) {
-  return props.data.sets.map((set: any) => (
+  const { query } = useRouter();
+
+  const QUERY = gql`
+    query Collection($slug: String) {
+      sets(where: { slug: $slug }) {
+        name
+        id
+        products {
+          id
+          name
+          price
+          images {
+            height
+            width
+            formats
+            url
+          }
+          slug
+        }
+      }
+    }
+  `;
+
+  const { data, loading, error } = useQuery(QUERY, {
+    variables: { slug: query.collection },
+  });
+
+  if (error) {
+    return <NotFound />;
+  }
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  return data.sets.map((set: any) => (
     <div key={set.id} className='grid grid-cols-4 gap-6'>
       {set.products.map((product: any) => {
         return (
           <div key={product.id}>
             <picture>
-              <IKImage src={product.images[0].url} height={product.images[0].height} width={product.images[0].width} />
+              <Link href={`[collection]/[product]`} as={{ pathname: `${query.collection}/${product.slug}` }}>
+                <IKImage
+                  src={product.images[0].url}
+                  height={product.images[0].height}
+                  width={product.images[0].width}
+                />
+              </Link>
             </picture>
             <div className='mt-3 flex items-center flex-col justify-center'>
               <div>{product.name}</div>
@@ -20,74 +70,4 @@ export default function Collection(props: any) {
       })}
     </div>
   ));
-}
-
-export async function getStaticPaths() {
-  // Call an external API endpoint to get posts
-  const query = `
-    query {
-      sets {
-        id
-        slug
-      }
-    }
-  `;
-
-  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  });
-  const json = await fetcher.json();
-  return {
-    paths: json.data.sets.map((set: any) => ({ params: { collection: `${set.slug}`, id: set.id } })),
-    fallback: false,
-  };
-}
-
-export async function getStaticProps(context: any) {
-  const {
-    params: { collection },
-  } = context;
-
-  const query = `
-  query {
-    sets(where:{
-      slug: "${collection}"
-    }) {
-      id
-      name
-      products {
-          id
-          name
-          is_sold_out
-          price
-          images {
-            width
-            height
-            url
-            formats
-          }
-      }
-    }
-  }
-`;
-
-  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  });
-
-  const json = await fetcher.json();
-
-  return {
-    props: {
-      data: json.data,
-    },
-  };
 }

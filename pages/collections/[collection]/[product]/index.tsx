@@ -171,15 +171,15 @@ export default function Product({
           <IKImage className='rounded' src={formats[2].url} loading='lazy' />
         </picture>
       </div>
-      <div>
+      <div className='col-span-3 lg:col-span-1'>
         <form
-          className=' sm:block shadow-sm bg-gray-300 rounded p-10 col-span-3 lg:col-span-1'
+          className=' sm:block shadow-sm bg-gray-300 rounded p-6'
           onSubmit={handleSubmit}
           style={{
             height: 'fit-content',
           }}
         >
-          <div className='flex flex-row lg:block justify-between items-center mb-4 lg:mb-0'>
+          <div className='flex flex-row flex-wrap gap-2 lg:block justify-between items-center mb-4 lg:mb-0'>
             <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
 
             <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
