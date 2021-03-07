@@ -186,10 +186,10 @@ export default function Product() {
   }
 
   return (
-    <div className='container mx-auto grid grid-cols-5 gap-4'>
+    <div className='container mx-auto grid grid-cols-1 sm:grid-cols-5 gap-4'>
       <div className='grid grid-cols-4 col-span-2 gap-2'>
         <div
-          className='col-span-1 flex flex-col gap-2 overflow-y-auto'
+          className='col-span-1 flex flex-col flex-nowrap gap-2 overflow-y-auto'
           style={{
             maxHeight: '60vh',
           }}
@@ -219,7 +219,7 @@ export default function Product() {
       </div>
 
       <div
-        className='grid grid-cols-3 gap-2 col-span-3 lg:col-span-3 bg-gray-100 p-4 rounded shadow-md'
+        className='grid grid-cols-1 sm:grid-cols-3 gap-2 col-span-3 lg:col-span-3 bg-gray-100 p-4 rounded shadow-md'
         style={{
           height: 'fit-content',
         }}

@@ -141,7 +141,7 @@ export default function CheckoutPage() {
   const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format();
 
   return (
-    <section className='container mx-auto grid grid-cols-2 gap-6'>
+    <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
       <form className={`grid grid-cols-1 sm:grid-cols-2 gap-2`}>
         <FormControl className='col-span-1 sm:col-span-2'>
           <Label htmlFor='name'>Name</Label>
