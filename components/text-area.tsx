@@ -7,7 +7,7 @@ export const TextArea = forwardRef((props: Props, ref: any) => {
   return (
     <textarea
       ref={ref}
-      className={`block py-1 px-2 border-black border-solid border-2 rounded-sm w-full ${className}`}
+      className={`text-xs block py-1 px-2 border-black border-solid border rounded-sm w-full ${className}`}
       {...otherProps}
     />
   );

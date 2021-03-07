@@ -1,55 +1,73 @@
 import React from 'react';
+import { gql, useQuery } from '@apollo/client';
 import { IKImage } from 'imagekitio-react';
 import { PHP } from '@helpers/currency';
 import { useAppContext } from '@hooks/useAppContext';
 import marked from 'marked';
+import Spinner from '@components/spinner';
+
+import { useRouter } from 'next/router';
 
 const TABS = ['description', 'model & fit', 'fabric & care'];
-const MEDIA_QUERIES = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
 const NA = 'Not Available';
 
-export default function Product({
-  product: {
-    id,
-    images: productImages,
-    variants,
-    price,
-    name,
-    size_chart,
-    description,
-    model_and_fit,
-    fabric_and_care,
-  },
-}: any) {
+const PRODUCT_QUERY = gql`
+  query Product($id: ID!) {
+    product(id: $id) {
+      id
+      name
+      slug
+      price
+      variants {
+        id
+        size {
+          name
+        }
+        color {
+          name
+        }
+        qty
+      }
+      description
+      size_chart
+      model_and_fit
+      fabric_and_care
+      product_images {
+        images {
+          url
+          formats
+        }
+      }
+    }
+  }
+`;
+
+export default function Product() {
+  const { query } = useRouter();
   const {
     state: { cart },
     dispatch,
   } = useAppContext();
+
   const [selectedSize, setSelectedSize] = React.useState<string>('');
   const [selectedColor, setSelectedColor] = React.useState<string>('');
   const [isSizeChartOpen, setIsSizeChartOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<string>('description');
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
-  const images: Map<number, any> = React.useMemo(() => {
-    const imagesMap = new Map();
-
-    productImages.forEach((image: any, index: number) =>
-      imagesMap.set(
-        index,
-        Object.values(image.formats).sort((a: any, b: any) => a.width - b.width)
-      )
-    );
-
-    return imagesMap;
-  }, []);
-
-  const [, ...formats] = images.get(selectedImageIndex);
+  const { error, loading, data } = useQuery(PRODUCT_QUERY, {
+    variables: {
+      id: query.id,
+    },
+  });
 
   const sizes = React.useMemo(() => {
     const map = new Map<string, number[]>();
+    if (!data?.product?.variants) {
+      return [];
+    }
 
-    variants.forEach((v: any) => {
+    data.product.variants.forEach((v: any) => {
       const size = map.get(v.size.name);
       if (size) {
         map.set(v.size.name, size.concat(v.qty));
@@ -67,12 +85,15 @@ export default function Product({
     setSelectedSize(firstSizeNotSoldOut?.name ?? '');
 
     return sizes;
-  }, []);
+  }, [data]);
 
   const colors = React.useMemo(() => {
     const map = new Map<string, number[]>();
+    if (!data?.product?.variants) {
+      return [];
+    }
 
-    variants.forEach((v: any) => {
+    data.product.variants.forEach((v: any) => {
       if (v.size.name === selectedSize) {
         const color = map.get(v.color.name);
         if (color) {
@@ -93,6 +114,24 @@ export default function Product({
 
     return colors;
   }, [selectedSize]);
+
+  if (error) {
+    return null;
+  }
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const {
+    product: { id, name, price, size_chart, model_and_fit, fabric_and_care, description, product_images, variants },
+  } = data;
+
+  const images = product_images.flatMap((productImage: any) => productImage.images);
 
   function toggleSizeChart() {
     setIsSizeChartOpen(!isSizeChartOpen);
@@ -137,7 +176,7 @@ export default function Product({
       payload: {
         productId: id,
         variantId: variant.id,
-        image: images.get(0),
+        image: Object.values(images[selectedImageIndex].formats),
         name,
         price,
         qty: 1,
@@ -147,38 +186,45 @@ export default function Product({
   }
 
   return (
-    <div className='grid grid-cols-3 gap-6'>
-      <div className='grid grid-cols-4 gap-2 col-span-3 lg:col-span-2' style={{ height: 'fit-content' }}>
-        <div className='grid gap-2 col-span-4 sm:col-span-1'>
-          {Array.from(images.values()).map((image, index) => {
-            const [, ...formats] = image;
-            const [smallImage] = formats;
-
+    <div className='container mx-auto grid grid-cols-5 gap-4'>
+      <div className='grid grid-cols-4 col-span-2 gap-2'>
+        <div
+          className='col-span-1 flex flex-col gap-2 overflow-y-auto'
+          style={{
+            maxHeight: '60vh',
+          }}
+        >
+          {images.map((image: any, index: number) => {
+            const formats: any[] = Object.values(image.formats);
             return (
-              <picture key={index} className='cursor-pointer' onClick={handleImageClick(index)}>
-                {formats.map((format: any, index: number) => (
-                  <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
-                ))}
-                <IKImage className='rounded' src={smallImage.url} loading='lazy' />
-              </picture>
+              <React.Fragment key={index}>
+                <picture onClick={handleImageClick(index)}>
+                  {formats.map((format: any, index: number) => (
+                    <source key={index} srcSet={`${format.url} ${format.width}w`} />
+                  ))}
+                  <IKImage className='rounded' src={image.url} />
+                </picture>
+              </React.Fragment>
             );
           })}
         </div>
-        <picture className='col-span-4 sm:col-span-3'>
-          {formats.map((format: any, index: number) => (
-            <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
-          ))}
-          <IKImage className='rounded' src={formats[2].url} loading='lazy' />
-        </picture>
+        <div className='col-span-3'>
+          <picture>
+            {Object.values(images[selectedImageIndex].formats).map((format: any, index: number) => (
+              <source key={index} srcSet={`${format.url} ${format.width}w`} />
+            ))}
+            <IKImage className='rounded' src={images[selectedImageIndex].url} />
+          </picture>
+        </div>
       </div>
-      <div className='col-span-3 lg:col-span-1'>
-        <form
-          className=' sm:block shadow-sm bg-gray-300 rounded p-6'
-          onSubmit={handleSubmit}
-          style={{
-            height: 'fit-content',
-          }}
-        >
+
+      <div
+        className='grid grid-cols-3 gap-2 col-span-3 lg:col-span-3 bg-gray-100 p-4 rounded shadow-md'
+        style={{
+          height: 'fit-content',
+        }}
+      >
+        <form className='col-span-1' onSubmit={handleSubmit}>
           <div className='flex flex-row flex-wrap gap-2 lg:block justify-between items-center mb-4 lg:mb-0'>
             <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
 
@@ -206,11 +252,11 @@ export default function Product({
               <select
                 id='size'
                 name='size'
-                className='rounded border-2 border-solid border-black w-full lg:w-1/2 py-1 px-2 uppercase'
+                className='rounded border-2 border-solid border-black w-full  py-1 px-2 uppercase'
                 onChange={handleSizeChange}
                 value={selectedSize}
               >
-                {sizes.map((size) => (
+                {sizes.map((size: any) => (
                   <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
                     {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
                   </option>
@@ -225,11 +271,11 @@ export default function Product({
               <select
                 id='color'
                 name='color'
-                className='rounded border-2 border-solid border-black w-full lg:w-1/2 py-1 px-2 capitalize'
+                className='rounded border-2 border-solid border-black w-full py-1 px-2 capitalize'
                 onChange={handleColorChange}
                 value={selectedColor}
               >
-                {colors.map((color) => (
+                {colors.map((color: any) => (
                   <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
                     {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
                   </option>
@@ -237,129 +283,43 @@ export default function Product({
               </select>
             </fieldset>
 
-            <fieldset className='mb-0 lg:mb-3'>
-              <button className='rounded py-2 px-3 w-full lg:w-1/2 bg-gray-900 text-white' type='submit'>
+            <fieldset className='mb-0'>
+              <button className='rounded py-2 px-3 w-full bg-gray-900 text-white' type='submit'>
                 Add to Cart
               </button>
+              <p className='mt-3 text-xs text-gray-700'>
+                * Due to limited stock, we can only allow adding one item per size per cart.
+              </p>
             </fieldset>
           </div>
-
-          <fieldset>
-            <div className='flex gap-4 mb-1'>
-              {TABS.map((tab) => (
-                <label
-                  key={tab}
-                  className={`capitalize ${activeTab === tab ? 'underline' : ''}`}
-                  onClick={handleTabChange(tab)}
-                >
-                  {tab}
-                </label>
-              ))}
-            </div>
-
-            <div
-              dangerouslySetInnerHTML={{
-                __html: marked(
-                  activeTab === 'description'
-                    ? description || NA
-                    : activeTab === 'model & fit'
-                    ? model_and_fit || NA
-                    : fabric_and_care || NA
-                ),
-              }}
-            />
-          </fieldset>
         </form>
-        <p className='mt-3 text-xs text-gray-700'>
-          * Due to limited stock, we can only allow adding one item per size per cart.
-        </p>
+        <div className='col-span-2'>
+          <div className='flex gap-4 mb-6'>
+            {TABS.map((tab) => (
+              <label
+                key={tab}
+                className={`capitalize cursor-pointer hover:underline ${
+                  activeTab === tab ? 'underline font-black' : ''
+                }`}
+                onClick={handleTabChange(tab)}
+              >
+                {tab}
+              </label>
+            ))}
+          </div>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: marked(
+                activeTab === 'description'
+                  ? description || NA
+                  : activeTab === 'model & fit'
+                  ? model_and_fit || NA
+                  : fabric_and_care || NA
+              ),
+            }}
+          />
+        </div>
       </div>
     </div>
   );
-}
-
-export async function getStaticPaths() {
-  const query = `
-    query {
-      sets {
-        id
-        name
-        slug
-        products {
-          id
-          name
-          slug
-        }
-      }
-    }
-  `;
-
-  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  });
-
-  const json = await fetcher.json();
-
-  return {
-    paths: json.data.sets.flatMap((set: any) =>
-      set.products.map((product: any) => ({ params: { collection: set.slug, product: product.slug } }))
-    ),
-    fallback: false,
-  };
-}
-
-export async function getStaticProps(context: any) {
-  const {
-    params: { collection, product },
-  } = context;
-
-  const query = `
-  query {
-    sets(where:{
-      slug: "${collection}"
-    }) {
-      id
-      name
-      products(where: {slug: "${product}"}) {
-          id
-          name
-          is_sold_out
-          price
-          description
-          fabric_and_care
-          model_and_fit
-          variants {
-              id
-              qty
-              color { name }
-              size { name }
-          }
-          images {
-            url
-            formats
-          }
-      }
-    }
-  }
-`;
-
-  const fetcher = await fetch(process.env.NEXT_PUBLIC_API as string, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  });
-
-  const json = await fetcher.json();
-
-  return {
-    props: {
-      product: json.data.sets[0].products[0],
-    },
-  };
 }

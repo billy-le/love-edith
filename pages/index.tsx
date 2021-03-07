@@ -1,26 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 
-import { gql, useQuery } from '@apollo/client';
-
 export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
-  const QUERY = gql`
-    query IsFeaturedProducts($isFeatured: Boolean) {
-      products(where: { is_featured: $isFeatured }) {
-        name
-        price
-        id
-        slug
-      }
-    }
-  `;
-
-  const { data, loading, error } = useQuery(QUERY, { variables: { isFeatured: true } });
-
   return (
     <div className='flex-grow flex hero' style={{ backgroundImage: `url("${hero_media.url}")` }}>
       <section className='flex-grow flex flex-col items-center justify-end pb-8 z-10'>
-        <Link href='/collections'>
+        <Link href='/products'>
           <button className='rounded-full text-lg sm:text-3xl bg-white py-2 px-6 mb-10 block uppercase'>
             {cta_text}
           </button>

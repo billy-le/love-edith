@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // libs
 import { PHP } from '@helpers/currency';
@@ -17,6 +17,7 @@ import { Input } from '@components/input';
 import { Label } from '@components/label';
 import { FormControl } from '@components/form-control';
 import { TextArea } from '@components/text-area';
+import { IKImage } from 'imagekitio-react';
 
 const CREATE_ORDER = gql`
   mutation CreateOrder(
@@ -30,6 +31,7 @@ const CREATE_ORDER = gql`
     $province: String
     $region: String
     $landmarks: String
+    $shipping: Float!
     $items: JSON!
   ) {
     createOrder(
@@ -46,6 +48,7 @@ const CREATE_ORDER = gql`
           region: $region
           landmarks: $landmarks
           items: $items
+          shipping: $shipping
         }
       }
     ) {
@@ -65,8 +68,12 @@ export default function CheckoutPage() {
   const [createOrder, { loading }] = useMutation(CREATE_ORDER);
   const { register, handleSubmit, setValue, getValues, errors, clearErrors, setError } = useForm();
   const { push } = useRouter();
+  const [shipping, setShipping] = useState<null | string>(null);
 
   async function onSubmit() {
+    if (!shipping) {
+      return;
+    }
     const { email, name, contact, building, street, barangay, city, province, region, landmarks } = getValues();
 
     const res = await createOrder({
@@ -82,6 +89,7 @@ export default function CheckoutPage() {
         region,
         landmarks,
         items: JSON.stringify(state.cart),
+        shipping: parseInt(shipping, 10),
       },
     });
 
@@ -125,9 +133,16 @@ export default function CheckoutPage() {
     }
   }
 
+  function handleShippingChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = e.target;
+    setShipping(value);
+  }
+
+  const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format();
+
   return (
-    <section className='p-10 grid grid-cols-2 gap-6'>
-      <form className={`grid grid-cols-1 sm:grid-cols-2 gap-2`} onSubmit={handleSubmit(onSubmit)}>
+    <section className='container mx-auto grid grid-cols-2 gap-6'>
+      <form className={`grid grid-cols-1 sm:grid-cols-2 gap-2`}>
         <FormControl className='col-span-1 sm:col-span-2'>
           <Label htmlFor='name'>Name</Label>
           <Input ref={register({ required: true })} id='name' name='name' type='text' error={errors.name} />
@@ -157,7 +172,7 @@ export default function CheckoutPage() {
           />
         </FormControl>
 
-        <h3 className='col-span-1 sm:col-span-2'>Address</h3>
+        <h3 className='mt-4 col-span-1 sm:col-span-2'>Shipping Address</h3>
         <FormControl>
           <Label htmlFor='building'>Unit Number / House / Building</Label>
           <Input ref={register({ required: true })} id='building' name='building' type='text' error={errors.building} />
@@ -255,30 +270,30 @@ export default function CheckoutPage() {
           <TextArea ref={register} id='landmarks' name='landmarks' rows={3} />
         </FormControl>
 
-        <FormControl className='col-span-1 sm:col-span-2 flex justify-end'>
-          <input
-            className='w-64 text-white bg-black py-2 uppercase text-sm'
-            type='submit'
-            value='Submit Order'
-            disabled={loading}
-          />
-        </FormControl>
+        <FormControl className='col-span-1 sm:col-span-2'></FormControl>
+
+        <FormControl className='col-span-1 sm:col-span-2 flex justify-end'></FormControl>
       </form>
-      <div className='h-full bg-gray-200 rounded-sm p-5'>
+
+      <div className='flex flex-col bg-gray-100 shadow-md rounded p-4'>
         {state.cart.map((item, index) => (
           <div className='flex items-center justify-between mb-4' key={index}>
-            <div className='flex items-center h-full'>
-              <div
-                className='h-20 w-20 relative bg-cover bg-top rounded-sm mr-4'
-                style={{ backgroundImage: `url("${item.image[0].url}")` }}
-              >
+            <div className='flex gap-2 items-center h-full'>
+              <div className='relative'>
+                <picture>
+                  {item.image.map((format: any, index: number) => (
+                    <source srcSet={`${format.url} ${format.width}w`} />
+                  ))}
+                  <IKImage className='h-20 rounded' src={item.image[0].url} />
+                </picture>
                 <div
-                  className='absolute rounded-full h-4 w-4 flex items-center justify-center text-xs bg-gray-700 text-white'
-                  style={{ top: -8, right: -8 }}
+                  className='h-4 w-4 rounded-full bg-gray-900 text-white absolute flex items-center justify-center text-xs shadow cursor-default'
+                  style={{ right: -8, top: -8 }}
                 >
-                  {item.qty}
+                  <span className='pr-px'>{item.qty}</span>
                 </div>
               </div>
+
               <div>
                 <div>
                   <span>{item.name}</span>
@@ -290,9 +305,54 @@ export default function CheckoutPage() {
             <div>{PHP(item.price).multiply(item.qty).format()}</div>
           </div>
         ))}
+
         <div className='flex justify-between py-4 border-t border-solid border-b border-black'>
           <p>Subtotal</p>
           <p>{state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format()}</p>
+        </div>
+
+        <div className='py-4 border-solid border-b border-black'>
+          <p className='mb-2'>Shipping Method</p>
+
+          <div className='flex items-center gap-1'>
+            <input type='radio' name='shipping' id='pick-up' value='0' onChange={handleShippingChange} />
+            <Label htmlFor='pick-up' style={{ width: 'max-content' }}>
+              Pick-up / Book Your Own Courier
+            </Label>
+          </div>
+          <div className='flex items-center gap-1'>
+            <input type='radio' name='shipping' id='manila' value='79' onChange={handleShippingChange} />
+            <Label htmlFor='manila' style={{ width: 'max-content' }}>
+              Metro Manila - {PHP(79).format()}
+            </Label>
+          </div>
+          <div className='flex items-center gap-1'>
+            <input type='radio' name='shipping' id='other' value='150' onChange={handleShippingChange} />
+            <Label htmlFor='other' style={{ width: 'max-content' }}>
+              Outside Manila - {PHP(150).format()}
+            </Label>
+          </div>
+
+          <div className='flex justify-end'>Shipping Cost: {shipping ? PHP(shipping).format() : 'N/A'}</div>
+        </div>
+
+        <div className='mt-4 flex justify-between'>
+          <p className='font-black text-lg'>Total</p>
+          <p className='font-black text-lg'>
+            {PHP(subtotal)
+              .add(shipping || 0)
+              .format()}
+          </p>
+        </div>
+
+        <div className='mt-4 flex justify-end'>
+          <input
+            className='w-64 text-white bg-black py-2 uppercase text-sm rounded'
+            type='button'
+            value='Submit Order'
+            disabled={loading}
+            onClick={handleSubmit(onSubmit)}
+          />
         </div>
       </div>
     </section>

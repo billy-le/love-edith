@@ -5,7 +5,7 @@ export function Label({
   ...props
 }: Omit<React.PropsWithChildren<React.HTMLProps<HTMLLabelElement>>, 'className'>) {
   return (
-    <label className='block mb-1' {...props}>
+    <label className='block mb-1 text-sm' {...props}>
       {children}
     </label>
   );

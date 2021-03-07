@@ -10,9 +10,9 @@ export const Input = forwardRef((props: Props, ref: any) => {
   return (
     <input
       ref={ref}
-      className={`block py-1 px-2 ${
+      className={`block text-xs py-1 px-2 ${
         error ? 'border-red-400' : 'border-black'
-      } border-solid border-2 rounded-sm w-full ${className}`}
+      } border-solid border rounded-sm w-full ${className}`}
       {...otherProps}
     />
   );

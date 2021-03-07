@@ -113,7 +113,7 @@ export default function ShoppingCartPage() {
       {cart.length > 0 && (
         <section className='flex justify-end pt-5'>
           <div className='flex flex-col items-end'>
-            <Link href='/collections'>
+            <Link href='/products'>
               <a>
                 Continue Shopping <Icon icon={faAngleRight} />
               </a>
@@ -126,7 +126,7 @@ export default function ShoppingCartPage() {
                 ).format()}
               </span>
             </p>
-            <p className='text-xs'>*shipping not included</p>
+            <p className='text-xs'>*shipping calculated on next page</p>
             <Link href='/checkout'>
               <button className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'>checkout</button>
             </Link>

@@ -9,9 +9,9 @@ export const Select = forwardRef((props: Props, ref: any) => {
   return (
     <select
       ref={ref}
-      className={`py-1 px-2 ${
+      className={`text-xs py-1 px-2 ${
         error ? 'border-red-400' : 'border-black'
-      } border-solid border-2 rounded-sm w-full ${className}`}
+      } border-solid border rounded-sm w-full ${className}`}
       {...otherProps}
     >
       {props.children}
