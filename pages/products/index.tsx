@@ -61,9 +61,9 @@ export default function Products() {
               transform: `translateX(${index}px)`,
             }}
           >
-            <div className='collection_product_image cursor-pointer rounded'>
+            <div className='cursor-pointer overflow-hidden rounded'>
               <Link
-                href={`/products/[id]`}
+                href={{ pathname: `/products/[id]`, query: { id: product.id } }}
                 as={{
                   pathname: `/products/${product.id}`,
                 }}
@@ -77,7 +77,12 @@ export default function Products() {
                       media={mediaQueries[index]}
                     />
                   ))}
-                  <IKImage src={firstImage.url} lqip={{ active: true, quality: 20, blur: 6 }} loading='lazy' />
+                  <IKImage
+                    className='transition-transform duration-500 transform scale-100 hover:scale-110'
+                    src={firstImage.url}
+                    lqip={{ active: true, quality: 20, blur: 6 }}
+                    loading='lazy'
+                  />
                 </picture>
               </Link>
             </div>

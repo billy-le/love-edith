@@ -2,7 +2,7 @@ import { PHP } from '@helpers/currency';
 import currency from 'currency.js';
 import Link from 'next/link';
 import { Icon } from '@components/icon';
-import { faAngleRight, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight, faTrash, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '@hooks/useAppContext';
 import { App } from '@context/context.interfaces';
 import { IKImage } from 'imagekitio-react';
@@ -34,10 +34,18 @@ export default function ShoppingCartPage() {
     };
   }
 
+  function handleCheckout() {
+    const items = cart.filter((product) => product.qty);
+    dispatch({
+      type: 'SET_CART',
+      payload: items,
+    });
+  }
+
   return (
     <>
       <h1 className='text-center text-xl pb-5 mb-5'>Shopping Cart</h1>
-      <table className='border-black border-b-2 border-t-2 border-solid w-full text-center align-top'>
+      <table className='table-fixed border-black border-b-2 border-t-2 border-solid w-full text-center align-top'>
         <thead>
           <tr className='border-black border-b-2 border-solid'>
             {TABLE_HEADERS.map((th, index) => (
@@ -75,9 +83,19 @@ export default function ShoppingCartPage() {
                       Size: <span className='font-bold text-sm uppercase'>{item.size}</span>
                     </div>
                   </div>
-                  <div className='md:hidden'>
-                    <div>QTY:</div>
-                    <div className='text-xl'>{item.qty}</div>
+                  <div className='md:hidden tw-flex'>
+                    <div className='mb-2'>QTY:</div>
+                    <button
+                      className={'py-1 px-2 shadow disabled:opacity-50'}
+                      disabled={!item.qty}
+                      onClick={handleDecrementQuantity(item)}
+                    >
+                      <Icon icon={faMinus} size='sm' />
+                    </button>
+                    <span className='mx-2 text-xl'>{item.qty}</span>
+                    <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
+                      <Icon icon={faPlus} size='sm' />
+                    </button>
                   </div>
                   <div className='md:hidden mt-4'>
                     <div>Total:</div>
@@ -90,7 +108,21 @@ export default function ShoppingCartPage() {
                   </div>
                 </td>
                 <td className='p-3 hidden md:table-cell'>{PHP(currency(item.price)).format()}</td>
-                <td className='p-3 hidden md:table-cell'>{item.qty}</td>
+                <td className='p-3 hidden md:table-cell'>
+                  <div className='flex items-center justify-center'>
+                    <button
+                      className={'py-1 px-2 shadow disabled:opacity-50'}
+                      disabled={!item.qty}
+                      onClick={handleDecrementQuantity(item)}
+                    >
+                      <Icon icon={faMinus} size='sm' />
+                    </button>
+                    <span className='mx-2 w-10'>{item.qty}</span>
+                    <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
+                      <Icon icon={faPlus} size='sm' />
+                    </button>
+                  </div>
+                </td>
                 <td className='p-3 hidden md:table-cell'>{PHP(currency(item.price).multiply(item.qty)).format()}</td>
                 <td className='p-3 hidden md:table-cell'>
                   <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
@@ -128,7 +160,12 @@ export default function ShoppingCartPage() {
             </p>
             <p className='text-xs'>*shipping calculated on next page</p>
             <Link href='/checkout'>
-              <button className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'>checkout</button>
+              <button
+                className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'
+                onClick={handleCheckout}
+              >
+                checkout
+              </button>
             </Link>
           </div>
         </section>

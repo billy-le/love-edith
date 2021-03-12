@@ -22,15 +22,3 @@ h6 {
   background-position: center;
   background-size: cover;
 }
-
-.collection_product_image {
-  overflow: hidden;
-}
-
-.collection_product_image img {
-  transition: transform 0.5s ease;
-}
-
-.collection_product_image img:hover {
-  transform: scale(1.1);
-}

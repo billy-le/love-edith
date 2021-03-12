@@ -166,11 +166,7 @@ export default function Product() {
     e.preventDefault();
 
     const variant = variants.find((v: any) => v.size.name === selectedSize && v.color.name === selectedColor);
-    if (cart.length) {
-      const hasItemInCart = cart.find((item) => item.variantId === variant.id);
 
-      if (hasItemInCart) return;
-    }
     dispatch({
       type: 'INCREMENT_ITEM',
       payload: {
@@ -186,7 +182,7 @@ export default function Product() {
   }
 
   return (
-    <div className='container mx-auto grid grid-cols-1 sm:grid-cols-5 gap-4'>
+    <div className='grid sm:grid-cols-4 gap-4'>
       <div className='grid grid-cols-4 col-span-2 gap-2'>
         <div
           className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'
@@ -221,7 +217,7 @@ export default function Product() {
       </div>
 
       <div
-        className='grid grid-cols-1 sm:grid-cols-3 gap-2 col-span-3 lg:col-span-3 bg-gray-100 p-4 rounded shadow-md'
+        className='grid grid-cols-1 xl:grid-cols-3 gap-2 col-span-2 bg-gray-100 p-4 rounded shadow-md'
         style={{
           height: 'fit-content',
         }}
@@ -245,7 +241,7 @@ export default function Product() {
                       size chart
                       {isSizeChartOpen && (
                         <div
-                          className='absolute top-0 right-0 shadow z-10 rounded'
+                          className='absolute top-0 right-0 shadow z-10 rounded bg-white w-full'
                           dangerouslySetInnerHTML={{ __html: marked(size_chart) }}
                         />
                       )}
@@ -292,13 +288,13 @@ export default function Product() {
                 Add to Cart
               </button>
               <p className='mt-3 text-xs text-gray-700'>
-                * Due to limited stock, we can only allow adding one item per size per cart.
+                * Due to limited stock, we may not completely fulfil your order.
               </p>
             </fieldset>
           </div>
         </form>
         <div className='col-span-2'>
-          <div className='grid grid-cols-3 lg:grid-cols-5 gap-2 mb-4'>
+          <div className='grid grid-cols-3 lg:grid-cols-3 gap-2 mb-4'>
             {TABS.map((tab) => (
               <label
                 key={tab}

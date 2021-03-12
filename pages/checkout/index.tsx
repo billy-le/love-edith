@@ -10,9 +10,9 @@ import { gql, useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
 import { useAppContext } from '@hooks/useAppContext';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 // components
-import { Select } from '@components/select';
 import { Input } from '@components/input';
 import { Label } from '@components/label';
 import { FormControl } from '@components/form-control';
@@ -59,10 +59,6 @@ const CREATE_ORDER = gql`
   }
 `;
 
-const SELECT_CITY_TEXT = 'Select a City';
-const SELECT_PROVINCE_TEXT = 'Select a Province';
-const SELECT_REGION_TEXT = 'Select a Region';
-
 export default function CheckoutPage() {
   const { state } = useAppContext();
   const [createOrder, { loading }] = useMutation(CREATE_ORDER);
@@ -100,45 +96,30 @@ export default function CheckoutPage() {
     }
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const { name } = e.target;
-
-    if ('selectedIndex' in e.target) {
-      const index = e.target.selectedIndex;
-      const { dataset } = e.target.options[index];
-      const key = Object.values(dataset)[0];
-      if (name === 'city') {
-        const province = provinces.find((p) => p.key === key);
-        const region = regions.find((r) => r.key === province?.region);
-
-        setValue('province', province?.name ?? '');
-        setValue('region', region?.long ?? '');
-
-        clearErrors(['province', 'region']);
-      } else if (name === 'province') {
-        const region = regions.find((r) => r.key === key);
-
-        setValue('city', SELECT_CITY_TEXT);
-        setError('city', {});
-
-        setValue('region', region?.long ?? '');
-        clearErrors(['region']);
-      } else if (name === 'region') {
-        setValue('city', SELECT_CITY_TEXT);
-        setValue('province', SELECT_PROVINCE_TEXT);
-
-        setError('city', {});
-        setError('province', {});
-      }
-    }
-  }
-
   function handleShippingChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
     setShipping(value);
   }
 
   const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format();
+
+  if (state.cart.length === 0) {
+    return (
+      <div className='flex-grow pt-40 justify-center'>
+        <div className='max-w-2xl mx-auto'>
+          <h2 className='text-3xl sm:text-5xl font-black mb-8'>
+            Oops! There doesn't seem like there is anything to checkout!
+          </h2>
+          <p className='text-xl sm:text-4xl'>
+            Why not take a look at our{' '}
+            <Link href='/products'>
+              <a className='text-red-400'>products and start shopping!</a>
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
@@ -276,7 +257,7 @@ export default function CheckoutPage() {
                   {item.image.map((format: any, index: number) => (
                     <source key={index} srcSet={`${format.url} ${format.width}w`} />
                   ))}
-                  <IKImage className='h-20 rounded' src={item.image[0].url} />
+                  <IKImage className='h-16 rounded' src={item.image[0].url} />
                 </picture>
                 <div
                   className='h-4 w-4 rounded-full bg-gray-900 text-white absolute flex items-center justify-center text-xs shadow cursor-default'
@@ -299,12 +280,12 @@ export default function CheckoutPage() {
         ))}
 
         <div className='flex justify-between py-4 border-t border-solid border-b border-black'>
-          <p>Subtotal</p>
+          <p className='font-black'>Subtotal</p>
           <p>{state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format()}</p>
         </div>
 
         <div className='py-4 border-solid border-b border-black'>
-          <p className='mb-2'>Shipping Method</p>
+          <p className='mb-2 font-black'>Shipping Method</p>
 
           <div className='flex items-center'>
             <input
@@ -316,10 +297,14 @@ export default function CheckoutPage() {
               onChange={handleShippingChange}
             />
             <Label htmlFor='pick-up' style={{ width: 'max-content' }}>
-              Pick-up / Book Your Own Courier
+              Pick-up at HQ / Book Your Own Courier
             </Label>
           </div>
-          <div className='flex items-center'>
+          <div className='mb-2 text-xs pl-4'>
+            <p>Eastwood Lafayette 3</p>
+            <p>1pm - 5pm</p>
+          </div>
+          <div className='mb-2 flex items-center'>
             <input
               className='mr-1'
               type='radio'
@@ -346,7 +331,33 @@ export default function CheckoutPage() {
             </Label>
           </div>
 
-          <div className='flex justify-end mt-3'>Shipping Cost: {shipping ? PHP(shipping).format() : 'N/A'}</div>
+          <div className='flex justify-end mt-3'>
+            Shipping Cost: {shipping ? (shipping == '0' ? 'FREE' : PHP(shipping).format()) : 'N/A'}
+          </div>
+        </div>
+
+        <div className='py-4 border-solid border-b border-black'>
+          <p className='mb-2 font-black'>Payment Method</p>
+          <div className='flex items-center'>
+            <input className='mr-1' type='radio' name='payment' id='gcash' value='gcash' />
+            <Label htmlFor='gcash' style={{ width: 'max-content' }}>
+              GCash
+            </Label>
+          </div>
+          <div className='mb-2 text-xs pl-4'>
+            <p>+63 916 288 9221</p>
+            <p>Arna Monica B.</p>
+          </div>
+          <div className='flex items-center'>
+            <input className='mr-1' type='radio' name='payment' id='bpi' value='bpi' />
+            <Label htmlFor='bpi' style={{ width: 'max-content' }}>
+              BPI
+            </Label>
+          </div>{' '}
+          <div className='mb-2 text-xs pl-4'>
+            <p>1519079875</p>
+            <p>Arna Monica B.</p>
+          </div>
         </div>
 
         <div className='mt-4 flex justify-between'>

@@ -21,7 +21,7 @@ export function MainLayout({ children }: React.PropsWithChildren<any>) {
   return (
     <div className='flex flex-col min-h-screen'>
       <Header />
-      <main className='flex flex-col flex-grow p-4'>{children}</main>
+      <main className='container mx-auto flex flex-col flex-grow p-4'>{children}</main>
     </div>
   );
 }

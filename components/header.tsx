@@ -34,7 +34,7 @@ export default function Header() {
 
   return (
     <header ref={headerRef} className='header sticky top-0 bg-white z-10'>
-      <div className='flex justify-between items-center mx-auto py-4 px-10'>
+      <div className='container flex justify-between items-center mx-auto p-4'>
         <Nav />
         <h1>
           <Link href='/'>
@@ -48,7 +48,7 @@ export default function Header() {
             <Icon icon={faShoppingCart} size='lg' />
             {state.cart.length > 0 && (
               <div
-                className='absolute bg-gray-400 shadow rounded-full h-5 w-5 text-xs flex items-center justify-center'
+                className='absolute bg-red-400 shadow rounded-full h-5 w-5 text-xs flex items-center justify-center animate-bounce'
                 style={{ top: -10, right: -10 }}
               >
                 {state.cart.reduce((sum, item) => sum + item.qty, 0)}
