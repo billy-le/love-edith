@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Lato&display=swap');
 
-:root {
-  --screen-lg: 1440px;
-}
-
 html {
   height: 100%;
 }
@@ -21,18 +17,10 @@ h6 {
   font-family: 'Didact Gothic', sans-serif;
 }
 
-.header > div {
-  max-width: var(--screen-lg);
-}
-
 /*** HERO ***/
 .hero {
   background-position: center;
   background-size: cover;
-}
-
-.collection_products::-webkit-scrollbar {
-  display: none;
 }
 
 .collection_product_image {
@@ -45,30 +33,4 @@ h6 {
 
 .collection_product_image img:hover {
   transform: scale(1.1);
-}
-
-.collection_product_item {
-  flex-basis: 1;
-  min-width: 100%;
-}
-
-@media (min-width: 480px) {
-  .collection_product_item {
-    min-width: calc(calc(100% / 2) - 0.5rem);
-    flex-basis: calc(calc(100% / 2) - 0.5rem);
-  }
-}
-
-@media (min-width: 640px) {
-  .collection_product_item {
-    min-width: calc(calc(100% / 3) - 0.5rem);
-    flex-basis: calc(calc(100% / 3) - 0.5rem);
-  }
-}
-
-@media (min-width: 960px) {
-  .collection_product_item {
-    min-width: calc(calc(100% / 4) - 0.5rem);
-    flex-basis: calc(calc(100% / 4) - 0.5rem);
-  }
 }

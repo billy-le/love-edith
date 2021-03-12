@@ -189,26 +189,28 @@ export default function Product() {
     <div className='container mx-auto grid grid-cols-1 sm:grid-cols-5 gap-4'>
       <div className='grid grid-cols-4 col-span-2 gap-2'>
         <div
-          className='col-span-1 flex flex-col flex-nowrap gap-2 overflow-y-auto'
+          className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'
           style={{
             maxHeight: '60vh',
           }}
         >
-          {images.map((image: any, index: number) => {
-            const formats: any[] = Object.values(image.formats);
-            return (
-              <React.Fragment key={index}>
-                <picture onClick={handleImageClick(index)}>
-                  {formats.map((format: any, index: number) => (
-                    <source key={index} srcSet={`${format.url} ${format.width}w`} />
-                  ))}
-                  <IKImage className='rounded' src={image.url} />
-                </picture>
-              </React.Fragment>
-            );
-          })}
+          <div className='absolute grid gap-2'>
+            {images.map((image: any, index: number) => {
+              const formats: any[] = Object.values(image.formats);
+              return (
+                <React.Fragment key={index}>
+                  <picture onClick={handleImageClick(index)}>
+                    {formats.map((format: any, index: number) => (
+                      <source key={index} srcSet={`${format.url} ${format.width}w`} />
+                    ))}
+                    <IKImage className='rounded' src={image.url} />
+                  </picture>
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
-        <div className='col-span-3'>
+        <div className='col-span-3' style={{ minHeight: '55vh' }}>
           <picture>
             {Object.values(images[selectedImageIndex].formats).map((format: any, index: number) => (
               <source key={index} srcSet={`${format.url} ${format.width}w`} />
@@ -225,13 +227,13 @@ export default function Product() {
         }}
       >
         <form className='col-span-1' onSubmit={handleSubmit}>
-          <div className='flex flex-row flex-wrap gap-2 lg:block justify-between items-center mb-4 lg:mb-0'>
+          <div className='grid gap-2 lg:block justify-between items-center mb-4 lg:mb-0'>
             <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
 
             <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
 
-            <fieldset className='mb-0 lg:mb-3 flex lg:block gap-2'>
-              <label htmlFor='size' className='mb-0 lg:mb-1 flex items-center'>
+            <fieldset className='mb-0 lg:mb-3 flex lg:block'>
+              <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
                 Size
                 {size_chart && (
                   <>
@@ -241,10 +243,12 @@ export default function Product() {
                       onClick={toggleSizeChart}
                     >
                       size chart
-                      <div
-                        className='absolute top-0 right-0'
-                        dangerouslySetInnerHTML={{ __html: marked(size_chart) }}
-                      />
+                      {isSizeChartOpen && (
+                        <div
+                          className='absolute top-0 right-0 shadow z-10 rounded'
+                          dangerouslySetInnerHTML={{ __html: marked(size_chart) }}
+                        />
+                      )}
                     </span>
                   </>
                 )}
@@ -264,8 +268,8 @@ export default function Product() {
               </select>
             </fieldset>
 
-            <fieldset className='flex lg:block gap-2 mb-0 lg:mb-3'>
-              <label htmlFor='color' className='flex items-center mb-0 lg:mb-1'>
+            <fieldset className='flex lg:block mb-0 lg:mb-3'>
+              <label htmlFor='color' className='mr-2 lg:mr-0 flex items-center mb-0 lg:mb-1'>
                 Color
               </label>
               <select
@@ -294,7 +298,7 @@ export default function Product() {
           </div>
         </form>
         <div className='col-span-2'>
-          <div className='flex gap-4 mb-6'>
+          <div className='grid grid-cols-3 lg:grid-cols-5 gap-2 mb-4'>
             {TABS.map((tab) => (
               <label
                 key={tab}

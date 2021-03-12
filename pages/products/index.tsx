@@ -37,7 +37,7 @@ export default function Products() {
   }
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-4 gap-4'>
+    <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
       {data.products.map((product: any, index: number) => {
         const productImages = product.product_images?.[0]?.images;
         let imageFormats: any[] = [];
@@ -56,7 +56,7 @@ export default function Products() {
         return (
           <div
             key={product.id}
-            className='collection_product_item overflow-hidden'
+            className='overflow-hidden'
             style={{
               transform: `translateX(${index}px)`,
             }}

@@ -189,20 +189,18 @@ export default function CheckoutPage() {
 
         <FormControl>
           <Label htmlFor='city'>City</Label>
-          <Select
+          <Input
+            list='cities'
+            id='city'
+            name='city'
+            type='text'
             ref={register({
               required: true,
-              validate: (value) => {
-                if (value === SELECT_CITY_TEXT) return false;
-                else return true;
-              },
             })}
-            name='city'
-            id='city'
-            onChange={handleChange}
             error={errors.city}
-          >
-            <option>Select a City</option>
+          />
+
+          <datalist id='cities'>
             {cities
               .sort((a, b) => `${a.name} - ${a.province}`.localeCompare(`${b.name} - ${b.province}`))
               .map((city, index) => (
@@ -210,25 +208,22 @@ export default function CheckoutPage() {
                   {city.name} - {city.province}
                 </option>
               ))}
-          </Select>
+          </datalist>
         </FormControl>
 
         <FormControl>
           <Label htmlFor='province'>Province</Label>
-          <Select
-            ref={register({
-              required: true,
-              validate: (value) => {
-                if (value === SELECT_PROVINCE_TEXT) return false;
-                else return true;
-              },
-            })}
+          <Input
+            list='provinces'
             id='province'
             name='province'
-            onChange={handleChange}
+            ref={register({
+              required: true,
+            })}
             error={errors.province}
-          >
-            <option>Select a Province</option>
+          />
+
+          <datalist id='provinces'>
             {provinces
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((province) => (
@@ -236,25 +231,22 @@ export default function CheckoutPage() {
                   {province.name}
                 </option>
               ))}
-          </Select>
+          </datalist>
         </FormControl>
 
         <FormControl>
           <Label htmlFor='region'>Region</Label>
-          <Select
-            ref={register({
-              required: true,
-              validate: (value) => {
-                if (value === SELECT_REGION_TEXT) return false;
-                else return true;
-              },
-            })}
+          <Input
+            list='regions'
             id='region'
             name='region'
-            onChange={handleChange}
+            ref={register({
+              required: true,
+            })}
             error={errors.region}
-          >
-            <option>Select a Region</option>
+          />
+
+          <datalist id='regions'>
             {regions
               .sort((a, b) => a.long.localeCompare(b.long))
               .map((region) => (
@@ -262,7 +254,7 @@ export default function CheckoutPage() {
                   {region.long}
                 </option>
               ))}
-          </Select>
+          </datalist>
         </FormControl>
 
         <FormControl className='col-span-1 sm:col-span-2'>
@@ -278,11 +270,11 @@ export default function CheckoutPage() {
       <div className='flex flex-col bg-gray-100 shadow-md rounded p-4'>
         {state.cart.map((item, index) => (
           <div className='flex items-center justify-between mb-4' key={index}>
-            <div className='flex gap-2 items-center h-full'>
-              <div className='relative'>
+            <div className='flex items-center h-full'>
+              <div className='relative mr-4'>
                 <picture>
                   {item.image.map((format: any, index: number) => (
-                    <source srcSet={`${format.url} ${format.width}w`} />
+                    <source key={index} srcSet={`${format.url} ${format.width}w`} />
                   ))}
                   <IKImage className='h-20 rounded' src={item.image[0].url} />
                 </picture>
@@ -314,26 +306,47 @@ export default function CheckoutPage() {
         <div className='py-4 border-solid border-b border-black'>
           <p className='mb-2'>Shipping Method</p>
 
-          <div className='flex items-center gap-1'>
-            <input type='radio' name='shipping' id='pick-up' value='0' onChange={handleShippingChange} />
+          <div className='flex items-center'>
+            <input
+              className='mr-1'
+              type='radio'
+              name='shipping'
+              id='pick-up'
+              value='0'
+              onChange={handleShippingChange}
+            />
             <Label htmlFor='pick-up' style={{ width: 'max-content' }}>
               Pick-up / Book Your Own Courier
             </Label>
           </div>
-          <div className='flex items-center gap-1'>
-            <input type='radio' name='shipping' id='manila' value='79' onChange={handleShippingChange} />
+          <div className='flex items-center'>
+            <input
+              className='mr-1'
+              type='radio'
+              name='shipping'
+              id='manila'
+              value='79'
+              onChange={handleShippingChange}
+            />
             <Label htmlFor='manila' style={{ width: 'max-content' }}>
               Metro Manila - {PHP(79).format()}
             </Label>
           </div>
-          <div className='flex items-center gap-1'>
-            <input type='radio' name='shipping' id='other' value='150' onChange={handleShippingChange} />
+          <div className='flex items-center'>
+            <input
+              className='mr-1'
+              type='radio'
+              name='shipping'
+              id='other'
+              value='150'
+              onChange={handleShippingChange}
+            />
             <Label htmlFor='other' style={{ width: 'max-content' }}>
               Outside Manila - {PHP(150).format()}
             </Label>
           </div>
 
-          <div className='flex justify-end'>Shipping Cost: {shipping ? PHP(shipping).format() : 'N/A'}</div>
+          <div className='flex justify-end mt-3'>Shipping Cost: {shipping ? PHP(shipping).format() : 'N/A'}</div>
         </div>
 
         <div className='mt-4 flex justify-between'>
@@ -347,7 +360,7 @@ export default function CheckoutPage() {
 
         <div className='mt-4 flex justify-end'>
           <input
-            className='w-64 text-white bg-black py-2 uppercase text-sm rounded'
+            className='w-full sm:w-64 text-white bg-black py-2 uppercase text-sm rounded'
             type='button'
             value='Submit Order'
             disabled={loading}
