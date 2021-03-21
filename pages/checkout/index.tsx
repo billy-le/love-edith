@@ -18,6 +18,7 @@ import { Label } from '@components/label';
 import { FormControl } from '@components/form-control';
 import { TextArea } from '@components/text-area';
 import { IKImage } from 'imagekitio-react';
+import { SHOPPING_CART } from '../../context/context.reducers';
 
 const CREATE_ORDER = gql`
   mutation CreateOrder(
@@ -60,7 +61,7 @@ const CREATE_ORDER = gql`
 `;
 
 export default function CheckoutPage() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
   const [createOrder, { loading }] = useMutation(CREATE_ORDER);
   const { register, handleSubmit, setValue, getValues, errors, clearErrors, setError } = useForm();
   const { push } = useRouter();
@@ -90,6 +91,10 @@ export default function CheckoutPage() {
     });
 
     if (res.data.createOrder.order.order_number) {
+      if ('localStorage' in window) {
+        localStorage.removeItem(SHOPPING_CART);
+      }
+      dispatch({ type: 'SET_CART', payload: [] });
       push(`/order/${res.data.createOrder.order.order_number}`);
     } else if (res.errors) {
       toast('Uh-oh! Something went wrong! Please try again or contact us.', { type: 'error' });
