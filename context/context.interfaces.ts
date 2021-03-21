@@ -11,6 +11,7 @@ export declare namespace App {
     price: number;
     image: any[];
     size: 'xs' | 's' | 'm' | 'l' | 'xl';
+    color: string;
     variantId: number;
   };
 

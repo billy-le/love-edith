@@ -82,6 +82,9 @@ export default function ShoppingCartPage() {
                     <div>
                       Size: <span className='font-bold text-sm uppercase'>{item.size}</span>
                     </div>
+                    <div>
+                      Color: <span className='font-bold text-sm uppercase'>{item.color}</span>
+                    </div>
                   </div>
                   <div className='md:hidden tw-flex'>
                     <div className='mb-2'>QTY:</div>
