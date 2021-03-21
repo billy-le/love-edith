@@ -8,7 +8,7 @@ import Spinner from '@components/spinner';
 
 import { useRouter } from 'next/router';
 
-const TABS = ['description', 'model & fit', 'fabric & care'];
+const TABS = ['description', 'size guide', 'fabric & care'];
 const NA = 'Not Available';
 
 const PRODUCT_QUERY = gql`
@@ -30,7 +30,6 @@ const PRODUCT_QUERY = gql`
       }
       description
       size_chart
-      model_and_fit
       fabric_and_care
       product_images {
         images {
@@ -44,10 +43,7 @@ const PRODUCT_QUERY = gql`
 
 export default function Product() {
   const { query } = useRouter();
-  const {
-    state: { cart },
-    dispatch,
-  } = useAppContext();
+  const { dispatch } = useAppContext();
 
   const [selectedSize, setSelectedSize] = React.useState<string>('');
   const [selectedColor, setSelectedColor] = React.useState<string>('');
@@ -128,7 +124,7 @@ export default function Product() {
   }
 
   const {
-    product: { id, name, price, size_chart, model_and_fit, fabric_and_care, description, product_images, variants },
+    product: { id, name, price, size_chart, fabric_and_care, description, product_images, variants },
   } = data;
 
   const images = product_images.flatMap((productImage: any) => productImage.images);
@@ -218,9 +214,7 @@ export default function Product() {
 
       <div
         className='grid grid-cols-1 xl:grid-cols-3 gap-2 col-span-2 bg-gray-100 p-4 rounded shadow-md'
-        style={{
-          height: 'fit-content',
-        }}
+        style={{ height: 'fit-content' }}
       >
         <form className='col-span-1' onSubmit={handleSubmit}>
           <div className='grid gap-2 lg:block justify-between items-center mb-4 lg:mb-0'>
@@ -231,23 +225,6 @@ export default function Product() {
             <fieldset className='mb-0 lg:mb-3 flex lg:block'>
               <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
                 Size
-                {size_chart && (
-                  <>
-                    |
-                    <span
-                      className='ml-1 cursor-pointer block relative text-gray-600 text-xs'
-                      onClick={toggleSizeChart}
-                    >
-                      size chart
-                      {isSizeChartOpen && (
-                        <div
-                          className='absolute top-0 right-0 shadow z-10 rounded bg-white w-full'
-                          dangerouslySetInnerHTML={{ __html: marked(size_chart) }}
-                        />
-                      )}
-                    </span>
-                  </>
-                )}
               </label>
               <select
                 id='size'
@@ -287,9 +264,6 @@ export default function Product() {
               <button className='rounded py-2 px-3 w-full bg-gray-900 text-white' type='submit'>
                 Add to Cart
               </button>
-              <p className='mt-3 text-xs text-gray-700'>
-                * Due to limited stock, we may not completely fulfil your order.
-              </p>
             </fieldset>
           </div>
         </form>
@@ -312,8 +286,8 @@ export default function Product() {
               __html: marked(
                 activeTab === 'description'
                   ? description || NA
-                  : activeTab === 'model & fit'
-                  ? model_and_fit || NA
+                  : activeTab === 'size guide'
+                  ? size_chart || NA
                   : fabric_and_care || NA
               ),
             }}

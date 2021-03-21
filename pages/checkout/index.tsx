@@ -123,7 +123,7 @@ export default function CheckoutPage() {
 
   return (
     <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
-      <form className={`grid grid-cols-1 sm:grid-cols-2 gap-2`}>
+      <form className='grid grid-cols-1 sm:grid-cols-2 gap-2' style={{ height: 'fit-content' }}>
         <FormControl className='col-span-1 sm:col-span-2'>
           <Label htmlFor='name'>Name</Label>
           <Input ref={register({ required: true })} id='name' name='name' type='text' error={errors.name} />

@@ -11,6 +11,7 @@ import { ApolloProvider, ApolloClient, NormalizedCacheObject } from '@apollo/cli
 import { IKContext } from 'imagekitio-react';
 
 import { ToastContainer } from 'react-toastify';
+import Header from '../components/header';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import { MainLayout } from '@layouts/main';
@@ -24,9 +25,12 @@ export default function MyApp({
     <AppProvider>
       <ApolloProvider client={apolloClient}>
         <IKContext urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL}${process.env.NEXT_PUBLIC_IMAGEKIT_FOLDER}`}>
-          <MainLayout>
-            <Component {...pageProps} />
-          </MainLayout>
+          <div className='min-h-full flex flex-col'>
+            <Header />
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          </div>
           <ToastContainer />
         </IKContext>
       </ApolloProvider>
