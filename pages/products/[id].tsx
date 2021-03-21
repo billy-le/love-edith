@@ -6,8 +6,6 @@ import { useAppContext } from '@hooks/useAppContext';
 import marked from 'marked';
 import Spinner from '@components/spinner';
 
-import { useRouter } from 'next/router';
-
 const TABS = ['description', 'size guide', 'fabric & care'];
 const NA = 'Not Available';
 
@@ -41,8 +39,7 @@ const PRODUCT_QUERY = gql`
   }
 `;
 
-export default function Product() {
-  const { query } = useRouter();
+export default function Product(props: any) {
   const { dispatch } = useAppContext();
 
   const [selectedSize, setSelectedSize] = React.useState<string>('');
@@ -53,7 +50,7 @@ export default function Product() {
 
   const { error, loading, data } = useQuery(PRODUCT_QUERY, {
     variables: {
-      id: query.id,
+      id: props.id,
     },
   });
 
@@ -296,4 +293,41 @@ export default function Product() {
       </div>
     </div>
   );
+}
+
+export async function getStaticPaths() {
+  const query = `
+    query {
+      products {
+        id
+      }
+    }
+  `;
+
+  const res = await fetch(process.env.NEXT_PUBLIC_API as string, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  const data = await res.json();
+
+  const paths: { params: { id: number } }[] = data.data.products.map((product: any) => ({
+    params: { id: product.id },
+  }));
+
+  return {
+    paths,
+    fallback: false,
+  };
+}
+
+export async function getStaticProps(ctx: any) {
+  return {
+    props: {
+      id: ctx.params.id,
+    },
+  };
 }
