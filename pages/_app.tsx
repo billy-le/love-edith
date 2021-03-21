@@ -25,7 +25,7 @@ export default function MyApp({
     <AppProvider>
       <ApolloProvider client={apolloClient}>
         <IKContext urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL}${process.env.NEXT_PUBLIC_IMAGEKIT_FOLDER}`}>
-          <div className='min-h-full flex flex-col'>
+          <div className='min-h-screen flex flex-col'>
             <Header />
             <MainLayout>
               <Component {...pageProps} />
