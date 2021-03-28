@@ -16,9 +16,3 @@ h5,
 h6 {
   font-family: 'Didact Gothic', sans-serif;
 }
-
-/*** HERO ***/
-.hero {
-  background-position: center;
-  background-size: cover;
-}

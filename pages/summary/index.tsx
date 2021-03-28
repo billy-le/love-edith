@@ -62,6 +62,13 @@ export default function OrderSummary() {
   const [createOrder, { loading }] = useMutation(CREATE_ORDER);
 
   async function handleOrderSubmit() {
+    if (!cart.length) {
+      toast('Your cart is empty! Try adding some items before submitting an order.', {
+        type: 'info',
+        hideProgressBar: true,
+      });
+      return;
+    }
     const res = await createOrder({
       variables: {
         ...query,
@@ -72,10 +79,7 @@ export default function OrderSummary() {
 
     if (res.data?.createOrder?.order?.order_number) {
       push({
-        pathname: '/order/[id]',
-        query: {
-          id: res.data.createOrder.order.order_number,
-        },
+        pathname: '/thank-you',
       });
       localStorage.removeItem('shopping_cart');
       dispatch({ type: 'SET_CART', payload: [] });
@@ -85,6 +89,7 @@ export default function OrderSummary() {
         {
           type: 'error',
           pauseOnHover: true,
+          hideProgressBar: true,
         }
       );
     }
@@ -140,11 +145,11 @@ export default function OrderSummary() {
             }}
           >
             <FontAwesomeIcon icon={faPencilAlt} className='text-white' size='xs' />
-            <span className='text-xs'>Edit Details</span>
+            <span className='text-xs'>Edit</span>
           </button>
         </div>
 
-        <div className='flex space-y-4 sm:space-y-0 sm:flex-row sm:justify-between mb-8'>
+        <div className='flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between mb-8'>
           <div>
             <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Issued To:</h3>
             <p className='text-sm'>{name}</p>

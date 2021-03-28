@@ -6,6 +6,7 @@ import { useAppContext } from '@hooks/useAppContext';
 import marked from 'marked';
 import Spinner from '@components/spinner';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 const TABS = ['description', 'size guide', 'fabric & care'];
 const NA = 'Not Available';
@@ -177,6 +178,15 @@ export default function Product() {
         color: selectedColor as any,
       },
     });
+    toast(
+      `${name} - ${selectedSize.toUpperCase()} - ${selectedColor
+        .slice(0, 1)
+        .toUpperCase()
+        .concat(selectedColor.slice(1))} - has been added to your cart!`,
+      {
+        hideProgressBar: true,
+      }
+    );
   }
 
   return (
@@ -192,14 +202,12 @@ export default function Product() {
             {images.map((image: any, index: number) => {
               const formats: any[] = Object.values(image.formats);
               return (
-                <React.Fragment key={index}>
-                  <picture onClick={handleImageClick(index)}>
-                    {formats.map((format: any, index: number) => (
-                      <source key={index} srcSet={`${format.url} ${format.width}w`} />
-                    ))}
-                    <IKImage className='rounded' src={image.url} />
-                  </picture>
-                </React.Fragment>
+                <picture key={index} onClick={handleImageClick(index)}>
+                  {formats.map((format: any, index: number) => (
+                    <source key={index} srcSet={`${format.url} ${format.width}w`} />
+                  ))}
+                  <IKImage className='rounded' src={image.url} />
+                </picture>
               );
             })}
           </div>

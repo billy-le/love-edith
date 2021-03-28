@@ -74,7 +74,7 @@ export default function ShoppingCartPage() {
                     ))}
                     <IKImage className='rounded h-40' src={thumbnail.url} loading='lazy' />
                   </picture>
-                  <p className='md:hidden'>Price: {PHP(currency(item.price)).format()}</p>
+                  <p className='md:hidden'>Price: {PHP(item.price).format()}</p>
                 </td>
                 <td className='p-3'>
                   <div className='hidden md:table-cell'>
@@ -102,7 +102,7 @@ export default function ShoppingCartPage() {
                   </div>
                   <div className='md:hidden mt-4'>
                     <div>Total:</div>
-                    <div>{PHP(currency(item.price).multiply(item.qty)).format()}</div>
+                    <div>{PHP(item.price).multiply(item.qty).format()}</div>
                   </div>
                   <div className='md:hidden mt-4 flex justify-end'>
                     <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
@@ -110,7 +110,7 @@ export default function ShoppingCartPage() {
                     </button>
                   </div>
                 </td>
-                <td className='p-3 hidden md:table-cell'>{PHP(currency(item.price)).format()}</td>
+                <td className='p-3 hidden md:table-cell'>{PHP(item.price).format()}</td>
                 <td className='p-3 hidden md:table-cell'>
                   <div className='flex items-center justify-center'>
                     <button
@@ -126,7 +126,7 @@ export default function ShoppingCartPage() {
                     </button>
                   </div>
                 </td>
-                <td className='p-3 hidden md:table-cell'>{PHP(currency(item.price).multiply(item.qty)).format()}</td>
+                <td className='p-3 hidden md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
                 <td className='p-3 hidden md:table-cell'>
                   <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
                     <Icon icon={faTrash} />

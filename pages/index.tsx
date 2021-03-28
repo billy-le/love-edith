@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
   return (
-    <div className='flex-grow flex hero' style={{ backgroundImage: `url("${hero_media.url}")` }}>
+    <div className='flex-grow flex bg-cover bg-center' style={{ backgroundImage: `url("${hero_media.url}")` }}>
       <section className='flex-grow flex flex-col items-center justify-end pb-8 z-10'>
         <Link href='/products'>
           <button className='rounded-full text-lg sm:text-3xl bg-white py-2 px-6 mb-10 block uppercase'>
