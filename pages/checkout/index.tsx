@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-
 // libs
 import { PHP } from '@helpers/currency';
 import regions from 'philippines/regions.json';
 import cities from 'philippines/cities.json';
 import provinces from 'philippines/provinces.json';
-import { toast } from 'react-toastify';
-import { gql, useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
 import { useAppContext } from '@hooks/useAppContext';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 // components
 import { Input } from '@components/input';
@@ -18,65 +16,60 @@ import { Label } from '@components/label';
 import { FormControl } from '@components/form-control';
 import { TextArea } from '@components/text-area';
 import { IKImage } from 'imagekitio-react';
-import { SHOPPING_CART } from '../../context/context.reducers';
+import { useEffect } from 'react';
 
-const CREATE_ORDER = gql`
-  mutation CreateOrder(
-    $name: String!
-    $email: String!
-    $contact: String
-    $building: String
-    $street: String
-    $barangay: String
-    $city: String
-    $province: String
-    $region: String
-    $landmarks: String
-    $shipping: Float!
-    $items: JSON!
-  ) {
-    createOrder(
-      input: {
-        data: {
-          name: $name
-          email: $email
-          contact_number: $contact
-          house_building_unit: $building
-          street: $street
-          barangay: $barangay
-          city: $city
-          province: $province
-          region: $region
-          landmarks: $landmarks
-          items: $items
-          shipping: $shipping
-        }
-      }
-    ) {
-      order {
-        order_number
-      }
-    }
-  }
-`;
+const phoneRegExp = /9\d{9}/;
+
+const invoiceSchema = yup.object().shape({
+  name: yup.string().required('A name is required'),
+  contact: yup.string().required('A contact number is required').matches(phoneRegExp, 'Mobile number is invalid'),
+  email: yup.string().email().required('An email is required'),
+  building: yup.string().required('A building identifier is required'),
+  street: yup.string().required('A street is required'),
+  barangay: yup.string().required('A barangay is required'),
+  city: yup.string().required('A city is required'),
+  region: yup.string().required('A region is required'),
+  province: yup.string().required('A province is required'),
+  shipping: yup.string().nullable().required('A shipping method is required'),
+  payment: yup.string().nullable().required('A payment is required'),
+});
 
 export default function CheckoutPage() {
-  const { state, dispatch } = useAppContext();
-  const [createOrder, { loading }] = useMutation(CREATE_ORDER);
-  const { register, handleSubmit, setValue, getValues, errors, clearErrors, setError } = useForm();
-  const { push } = useRouter();
-  const [shipping, setShipping] = useState<null | string>(null);
+  const { state } = useAppContext();
+  const { push, query } = useRouter();
+  const { register, handleSubmit, getValues, errors, watch, reset } = useForm({
+    resolver: yupResolver(invoiceSchema),
+  });
+
+  useEffect(() => {
+    if (Object.keys(query).length) {
+      reset(query);
+    }
+  }, [query]);
+
+  const shipping = watch('shipping') as string | null;
 
   async function onSubmit() {
-    if (!shipping) {
-      return;
-    }
-    const { email, name, contact, building, street, barangay, city, province, region, landmarks } = getValues();
+    const {
+      barangay,
+      building,
+      city,
+      contact,
+      email,
+      landmarks,
+      name,
+      payment,
+      province,
+      region,
+      shipping,
+      street,
+    } = getValues();
 
-    const res = await createOrder({
-      variables: {
-        name,
+    push({
+      pathname: '/summary',
+      query: {
         email,
+        name,
         contact,
         building,
         street,
@@ -85,28 +78,11 @@ export default function CheckoutPage() {
         province,
         region,
         landmarks,
-        items: JSON.stringify(state.cart),
-        shipping: parseInt(shipping, 10),
+        shipping,
+        payment,
       },
     });
-
-    if (res.data.createOrder.order.order_number) {
-      if ('localStorage' in window) {
-        localStorage.removeItem(SHOPPING_CART);
-      }
-      dispatch({ type: 'SET_CART', payload: [] });
-      push(`/order/${res.data.createOrder.order.order_number}`);
-    } else if (res.errors) {
-      toast('Uh-oh! Something went wrong! Please try again or contact us.', { type: 'error' });
-    }
   }
-
-  function handleShippingChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { value } = e.target;
-    setShipping(value);
-  }
-
-  const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format();
 
   if (state.cart.length === 0) {
     return (
@@ -126,65 +102,55 @@ export default function CheckoutPage() {
     );
   }
 
+  const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format();
+
   return (
     <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
-      <form className='grid grid-cols-1 sm:grid-cols-2 gap-2' style={{ height: 'fit-content' }}>
+      <form className='grid grid-cols-1 sm:grid-cols-2 gap-4' style={{ height: 'fit-content' }}>
         <FormControl className='col-span-1 sm:col-span-2'>
           <Label htmlFor='name'>Name</Label>
-          <Input ref={register({ required: true })} id='name' name='name' type='text' error={errors.name} />
+          <Input ref={register} id='name' name='name' type='text' error={errors.name} />
         </FormControl>
 
         <FormControl className='col-span-1 sm:col-span-2'>
-          <Label htmlFor='contact'>Contact Number</Label>
-          <Input
-            ref={register({ required: true })}
-            id='contact'
-            name='contact'
-            type='number'
-            inputMode='tel'
-            error={errors.contact}
-          />
+          <Label htmlFor='contact'>Mobile Number</Label>
+          <div className='relative'>
+            <Input
+              ref={register}
+              className='pl-10'
+              id='contact'
+              name='contact'
+              type='tel'
+              inputMode='tel'
+              error={errors.contact}
+            />
+            <span className='absolute inset-y-0 flex items-center left-2'>+63</span>
+          </div>
         </FormControl>
 
         <FormControl className='col-span-1 sm:col-span-2'>
           <Label htmlFor='email'>Email</Label>
-          <Input
-            ref={register({ required: true })}
-            id='email'
-            name='email'
-            type='email'
-            inputMode='email'
-            error={errors.email}
-          />
+          <Input ref={register} id='email' name='email' type='email' inputMode='email' error={errors.email} />
         </FormControl>
 
         <h3 className='mt-4 col-span-1 sm:col-span-2'>Shipping Address</h3>
         <FormControl>
           <Label htmlFor='building'>Unit Number / House / Building</Label>
-          <Input ref={register({ required: true })} id='building' name='building' type='text' error={errors.building} />
+          <Input ref={register} id='building' name='building' type='text' error={errors.building} />
         </FormControl>
         <FormControl>
           <Label htmlFor='street'>Street</Label>
-          <Input ref={register({ required: true })} id='street' name='street' type='text' error={errors.street} />
+          <Input ref={register} id='street' name='street' type='text' error={errors.street} />
         </FormControl>
 
         <FormControl>
           <Label htmlFor='barangay'>Barangay</Label>
-          <Input ref={register({ required: true })} id='barangay' name='barangay' type='text' error={errors.barangay} />
+          <Input ref={register} id='barangay' name='barangay' type='text' error={errors.barangay} />
         </FormControl>
 
         <FormControl>
           <Label htmlFor='city'>City</Label>
-          <Input
-            list='cities'
-            id='city'
-            name='city'
-            type='text'
-            ref={register({
-              required: true,
-            })}
-            error={errors.city}
-          />
+          <Input list='cities' id='city' name='city' type='text' ref={register} error={errors.city} />
 
           <datalist id='cities'>
             {cities
@@ -199,15 +165,7 @@ export default function CheckoutPage() {
 
         <FormControl>
           <Label htmlFor='province'>Province</Label>
-          <Input
-            list='provinces'
-            id='province'
-            name='province'
-            ref={register({
-              required: true,
-            })}
-            error={errors.province}
-          />
+          <Input list='provinces' id='province' name='province' ref={register} error={errors.province} />
 
           <datalist id='provinces'>
             {provinces
@@ -222,15 +180,7 @@ export default function CheckoutPage() {
 
         <FormControl>
           <Label htmlFor='region'>Region</Label>
-          <Input
-            list='regions'
-            id='region'
-            name='region'
-            ref={register({
-              required: true,
-            })}
-            error={errors.region}
-          />
+          <Input list='regions' id='region' name='region' ref={register} error={errors.region} />
 
           <datalist id='regions'>
             {regions
@@ -291,16 +241,10 @@ export default function CheckoutPage() {
 
         <div className='py-4 border-solid border-b border-black'>
           <p className='mb-2 font-black'>Shipping Method</p>
+          {errors.shipping && <p className='text-red-400'>{errors.shipping.message}</p>}
 
           <div className='flex items-center'>
-            <input
-              className='mr-1'
-              type='radio'
-              name='shipping'
-              id='pick-up'
-              value='0'
-              onChange={handleShippingChange}
-            />
+            <input ref={register} className='mr-1' type='radio' name='shipping' id='pick-up' value='0' />
             <Label htmlFor='pick-up' style={{ width: 'max-content' }}>
               Pick-up at HQ / Book Your Own Courier
             </Label>
@@ -310,27 +254,13 @@ export default function CheckoutPage() {
             <p>1pm - 5pm</p>
           </div>
           <div className='mb-2 flex items-center'>
-            <input
-              className='mr-1'
-              type='radio'
-              name='shipping'
-              id='manila'
-              value='79'
-              onChange={handleShippingChange}
-            />
+            <input ref={register} className='mr-1' type='radio' name='shipping' id='manila' value='79' />
             <Label htmlFor='manila' style={{ width: 'max-content' }}>
               Metro Manila - {PHP(79).format()}
             </Label>
           </div>
           <div className='flex items-center'>
-            <input
-              className='mr-1'
-              type='radio'
-              name='shipping'
-              id='other'
-              value='150'
-              onChange={handleShippingChange}
-            />
+            <input ref={register} className='mr-1' type='radio' name='shipping' id='other' value='150' />
             <Label htmlFor='other' style={{ width: 'max-content' }}>
               Outside Manila - {PHP(150).format()}
             </Label>
@@ -343,25 +273,20 @@ export default function CheckoutPage() {
 
         <div className='py-4 border-solid border-b border-black'>
           <p className='mb-2 font-black'>Payment Method</p>
+          {errors.payment && <p className='text-red-400'>{errors.payment.message}</p>}
+
           <div className='flex items-center'>
-            <input className='mr-1' type='radio' name='payment' id='gcash' value='gcash' />
+            <input ref={register} className='mr-1' type='radio' name='payment' id='gcash' value='gcash' />
             <Label htmlFor='gcash' style={{ width: 'max-content' }}>
               GCash
             </Label>
           </div>
-          <div className='mb-2 text-xs pl-4'>
-            <p>+63 916 288 9221</p>
-            <p>Arna Monica B.</p>
-          </div>
+
           <div className='flex items-center'>
-            <input className='mr-1' type='radio' name='payment' id='bpi' value='bpi' />
+            <input ref={register} className='mr-1' type='radio' name='payment' id='bpi' value='bpi' />
             <Label htmlFor='bpi' style={{ width: 'max-content' }}>
               BPI
             </Label>
-          </div>{' '}
-          <div className='mb-2 text-xs pl-4'>
-            <p>1519079875</p>
-            <p>Arna Monica B.</p>
           </div>
         </div>
 
@@ -378,8 +303,7 @@ export default function CheckoutPage() {
           <input
             className='w-full sm:w-64 text-white bg-black py-2 uppercase text-sm rounded'
             type='button'
-            value='Submit Order'
-            disabled={loading}
+            value='Continue'
             onClick={handleSubmit(onSubmit)}
           />
         </div>

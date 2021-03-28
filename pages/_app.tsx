@@ -1,3 +1,7 @@
+import 'core-js/es/map';
+import 'core-js/es/promise';
+import 'core-js/es/set';
+
 import 'tailwindcss/tailwind.css';
 import '../styles/index.css';
 
