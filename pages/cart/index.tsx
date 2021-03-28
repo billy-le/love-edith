@@ -6,11 +6,14 @@ import { faAngleRight, faTrash, faPlus, faMinus } from '@fortawesome/free-solid-
 import { useAppContext } from '@hooks/useAppContext';
 import { App } from '@context/context.interfaces';
 import { IKImage } from 'imagekitio-react';
+import { useMedia } from 'react-use';
 
 const MEDIA_QUERIES = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
 const TABLE_HEADERS = [null, 'item', 'price', 'quantity', 'total', null];
 
 export default function ShoppingCartPage() {
+  const isScreenSm = useMedia('(max-width: 480px)');
+
   const {
     state: { cart },
     dispatch,
@@ -137,7 +140,7 @@ export default function ShoppingCartPage() {
           })}
           {!cart.length && (
             <tr>
-              <td colSpan={TABLE_HEADERS.length} className='py-10'>
+              <td colSpan={isScreenSm ? 2 : TABLE_HEADERS.length} className='py-10'>
                 <p>Your cart is empty!</p>
               </td>
             </tr>

@@ -35,7 +35,7 @@ export default function MyApp({
               <Component {...pageProps} />
             </MainLayout>
           </div>
-          <ToastContainer />
+          <ToastContainer limit={5} newestOnTop hideProgressBar autoClose={2000} />
         </IKContext>
       </ApolloProvider>
     </AppProvider>

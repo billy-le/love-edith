@@ -65,7 +65,6 @@ export default function OrderSummary() {
     if (!cart.length) {
       toast('Your cart is empty! Try adding some items before submitting an order.', {
         type: 'info',
-        hideProgressBar: true,
       });
       return;
     }
@@ -88,8 +87,6 @@ export default function OrderSummary() {
         `We're sorry. Your order didn't go thru. Please try again or contact hello@love-edith.com for further assistance.`,
         {
           type: 'error',
-          pauseOnHover: true,
-          hideProgressBar: true,
         }
       );
     }

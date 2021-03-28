@@ -182,10 +182,7 @@ export default function Product() {
       `${name} - ${selectedSize.toUpperCase()} - ${selectedColor
         .slice(0, 1)
         .toUpperCase()
-        .concat(selectedColor.slice(1))} - has been added to your cart!`,
-      {
-        hideProgressBar: true,
-      }
+        .concat(selectedColor.slice(1))} - has been added to your cart!`
     );
   }
 
