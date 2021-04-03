@@ -56,12 +56,12 @@ export default function Products() {
         return (
           <div
             key={product.id}
-            className='overflow-hidden'
+            className='overflow-hidden '
             style={{
               transform: `translateX(${index}px)`,
             }}
           >
-            <div className='cursor-pointer overflow-hidden rounded'>
+            <div className='cursor-pointer overflow-hidden rounded aspect-h-4 aspect-w-3'>
               <Link
                 href={{ pathname: `/products/[id]`, query: { id: product.id } }}
                 as={{
