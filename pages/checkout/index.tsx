@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 // libs
 import { PHP } from '@helpers/currency';
 import regions from 'philippines/regions.json';
@@ -36,17 +38,40 @@ const invoiceSchema = yup.object().shape({
 });
 
 export default function CheckoutPage() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
   const { push, query } = useRouter();
-  const { register, handleSubmit, getValues, errors, watch, reset } = useForm({
+  const { register, handleSubmit, getValues, errors, watch, reset, setValue } = useForm({
     resolver: yupResolver(invoiceSchema),
   });
+  const [isFreeShipping, setIsFreeShipping] = useState(false);
+  const [percentDiscount, setPercentDiscount] = useState(0);
+
+  const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0));
 
   useEffect(() => {
     if (Object.keys(query).length) {
       reset(query);
     }
   }, [query]);
+
+  useEffect(() => {
+    if (state.promo) {
+      const { free_shipping, free_shipping_threshold } = state.promo;
+      if (free_shipping && subtotal.value >= free_shipping_threshold) {
+        dispatch({
+          type: 'SET_SHIPPING',
+          payload: '0',
+        });
+        setIsFreeShipping(true);
+      } else {
+        dispatch({
+          type: 'SET_SHIPPING',
+          payload: null,
+        });
+      }
+      setPercentDiscount(state.promo.percent_discount);
+    }
+  }, [state.promo]);
 
   const shipping = watch('shipping') as string | null;
 
@@ -63,7 +88,6 @@ export default function CheckoutPage() {
       payment,
       province,
       region,
-      shipping,
       street,
     } = getValues();
 
@@ -81,9 +105,16 @@ export default function CheckoutPage() {
         province,
         region,
         landmarks,
-        shipping,
         payment,
       },
+    });
+  }
+
+  function handleShipping(e: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = e.target;
+    dispatch({
+      type: 'SET_SHIPPING',
+      payload: value as typeof state['shipping'],
     });
   }
 
@@ -104,8 +135,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format();
 
   return (
     <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
@@ -254,7 +283,15 @@ export default function CheckoutPage() {
           {errors.shipping && <p className='text-red-400 text-xs'>{errors.shipping.message}</p>}
 
           <div className='flex items-center'>
-            <input ref={register} className='mr-1' type='radio' name='shipping' id='pick-up' value='0' />
+            <input
+              ref={register}
+              className='mr-1'
+              type='radio'
+              name='shipping'
+              id='pick-up'
+              value='0'
+              onChange={handleShipping}
+            />
             <Label htmlFor='pick-up' style={{ width: 'max-content' }}>
               Pick-up at HQ / Book Your Own Courier
             </Label>
@@ -264,14 +301,40 @@ export default function CheckoutPage() {
             <p>1pm - 5pm</p>
           </div>
           <div className='mb-2 flex items-center'>
-            <input ref={register} className='mr-1' type='radio' name='shipping' id='manila' value='79' />
-            <Label htmlFor='manila' style={{ width: 'max-content' }}>
+            <input
+              ref={register}
+              className='mr-1 disabled:opacity-50'
+              type='radio'
+              name='shipping'
+              id='manila'
+              value='79'
+              disabled={isFreeShipping}
+              onChange={handleShipping}
+            />
+            <Label
+              htmlFor='manila'
+              className={isFreeShipping ? 'opacity-50' : undefined}
+              style={{ width: 'max-content' }}
+            >
               Metro Manila - {PHP(79).format()}
             </Label>
           </div>
           <div className='flex items-center'>
-            <input ref={register} className='mr-1' type='radio' name='shipping' id='other' value='150' />
-            <Label htmlFor='other' style={{ width: 'max-content' }}>
+            <input
+              ref={register}
+              className='mr-1 disabled:opacity-50'
+              type='radio'
+              name='shipping'
+              id='other'
+              value='150'
+              disabled={isFreeShipping}
+              onChange={handleShipping}
+            />
+            <Label
+              htmlFor='other'
+              className={isFreeShipping ? 'opacity-50' : undefined}
+              style={{ width: 'max-content' }}
+            >
               Outside Manila - {PHP(150).format()}
             </Label>
           </div>
@@ -300,11 +363,19 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+        {percentDiscount > 0 && (
+          <div className='mt-4 flex justify-between'>
+            <p className='font-black text-lg'>Discount - {percentDiscount}% off</p>
+            <p className='font-black text-lg'>-{PHP(subtotal).multiply(`0.${percentDiscount}`).format()}</p>
+          </div>
+        )}
+
         <div className='mt-4 flex justify-between'>
           <p className='font-black text-lg'>Total</p>
           <p className='font-black text-lg'>
             {PHP(subtotal)
               .add(shipping || 0)
+              .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
               .format()}
           </p>
         </div>

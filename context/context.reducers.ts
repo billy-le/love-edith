@@ -63,6 +63,18 @@ export function reducer(state: App.State, action: App.Action): App.State {
         cart,
       };
     }
+    case 'SET_PROMO': {
+      return {
+        ...state,
+        promo: action.payload,
+      };
+    }
+    case 'SET_SHIPPING': {
+      return {
+        ...state,
+        shipping: action.payload,
+      };
+    }
     default:
       return state;
   }

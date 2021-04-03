@@ -16,6 +16,7 @@ import { IKContext } from 'imagekitio-react';
 
 import { ToastContainer } from 'react-toastify';
 import Header from '../components/header';
+import Footer from '../components/footer';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import { MainLayout } from '@layouts/main';
@@ -34,6 +35,7 @@ export default function MyApp({
             <MainLayout>
               <Component {...pageProps} />
             </MainLayout>
+            <Footer />
           </div>
           <ToastContainer limit={5} newestOnTop hideProgressBar autoClose={2000} />
         </IKContext>

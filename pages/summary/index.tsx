@@ -57,7 +57,7 @@ const TABLE_HEADERS = [null, 'item', 'price', 'quantity', 'total'];
 
 export default function OrderSummary() {
   const {
-    state: { cart },
+    state: { cart, promo, shipping },
     dispatch,
   } = useAppContext();
   const { push, query } = useRouter();
@@ -106,8 +106,8 @@ export default function OrderSummary() {
     'payment' in query &&
     'province' in query &&
     'region' in query &&
-    'shipping' in query &&
-    'street' in query
+    'street' in query &&
+    shipping
   ) {
     const {
       barangay,
@@ -121,7 +121,6 @@ export default function OrderSummary() {
       payment,
       province,
       region,
-      shipping,
       street,
     } = query;
 
@@ -129,7 +128,9 @@ export default function OrderSummary() {
       cart.reduce((sum, item) => currency(sum).add(currency(item.price).multiply(item.qty)), currency(0))
     );
 
-    const total = PHP(subtotal).add(typeof shipping === 'string' ? shipping : 0);
+    const total = PHP(subtotal)
+      .subtract(PHP(subtotal).multiply(`0.${promo?.percent_discount ?? 0}`))
+      .add(typeof shipping === 'string' ? shipping : 0);
 
     return (
       <section>
@@ -259,12 +260,22 @@ export default function OrderSummary() {
             <tbody>
               <tr>
                 <td>Subtotal</td>
-                <td className='text-2xl font-bold'>{subtotal.format()}</td>
+                <td className='text-xl font-medium'>{subtotal.format()}</td>
               </tr>
               <tr>
                 <td>Shipping</td>
-                <td className='text-2xl font-bold'>{PHP(typeof shipping === 'string' ? shipping : 0).format()}</td>
+                <td className='text-xl font-medium'>
+                  {shipping === '0' ? 'FREE' : PHP(typeof shipping === 'string' ? shipping : 0).format()}
+                </td>
               </tr>
+              {promo && (
+                <tr>
+                  <td>Discount - {promo.percent_discount}% off</td>
+                  <td className='text-xl font-medium'>
+                    -{PHP(subtotal).multiply(`0.${promo.percent_discount}`).format()}
+                  </td>
+                </tr>
+              )}
               <tr>
                 <td>Total</td>
                 <td className='text-2xl font-bold'>{total.format()}</td>
@@ -282,6 +293,12 @@ export default function OrderSummary() {
         </div>
       </section>
     );
-  } else return null;
+  } else
+    return (
+      <section className='flex-grow flex flex-col items-center justify-center'>
+        <h1 className='text-2xl sm:text-4xl font-bold text-center max-w-xl'>
+          Sorry this order is incomplete, please click on the cart button to checkout
+        </h1>
+      </section>
+    );
 }
-// ?email=arnamonica%40gmail.com&name=Arna+Monica&contact=9162889221&building=22C+Lafayette+Tower+3&street=Eastwood+Ave&barangay=Bagumbayan&city=Quezon&province=Metro+Manila&region=National+Capital+Region&landmarks=Across+from+Watsons&shipping=0&payment=gcash

@@ -1,16 +1,27 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 import { Nav } from './nav';
 import { Icon } from './icon';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '@hooks/useAppContext';
+import { usePromo } from '../hooks/usePromo';
 
 const HEADER_SHADOW = 'shadow-lg';
 
 export default function Header() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
+  const { data } = usePromo();
   const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (data?.promos?.length) {
+      dispatch({
+        type: 'SET_PROMO',
+        payload: data.promos[0],
+      });
+    }
+  }, [data]);
 
   useEffect(() => {
     if (headerRef.current) {
@@ -57,6 +68,11 @@ export default function Header() {
           </div>
         </Link>
       </div>
+      {state.promo && (
+        <div className='h-8 flex items-center justify-center bg-red-100 bg-opacity-80 text-sm text-center sm:text-base'>
+          <p>{state.promo.details}</p>
+        </div>
+      )}
     </header>
   );
 }

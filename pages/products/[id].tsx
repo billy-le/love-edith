@@ -195,27 +195,35 @@ export default function Product() {
             maxHeight: '60vh',
           }}
         >
-          <div className='absolute grid gap-2'>
+          <div className='absolute grid gap-2 w-full h-full'>
             {images.map((image: any, index: number) => {
               const formats: any[] = Object.values(image.formats);
               return (
-                <picture key={index} onClick={handleImageClick(index)}>
-                  {formats.map((format: any, index: number) => (
-                    <source key={index} srcSet={`${format.url} ${format.width}w`} />
-                  ))}
-                  <IKImage className='rounded' src={image.url} />
-                </picture>
+                <div key={index} className='aspect-h-4 aspect-w-3'>
+                  <picture onClick={handleImageClick(index)}>
+                    {formats.map((format: any, index: number) => (
+                      <source key={index} srcSet={`${format.url} ${format.width}w`} />
+                    ))}
+                    <IKImage className='rounded' style={{ height: 'inherit', width: 'inherit' }} src={image.url} />
+                  </picture>
+                </div>
               );
             })}
           </div>
         </div>
-        <div className='col-span-3' style={{ minHeight: '55vh' }}>
-          <picture>
-            {Object.values(images[selectedImageIndex].formats).map((format: any, index: number) => (
-              <source key={index} srcSet={`${format.url} ${format.width}w`} />
-            ))}
-            <IKImage className='rounded' src={images[selectedImageIndex].url} />
-          </picture>
+        <div className='col-span-3'>
+          <div className='aspect-h-4 aspect-w-3'>
+            <picture>
+              {Object.values(images[selectedImageIndex].formats).map((format: any, index: number) => (
+                <source key={index} srcSet={`${format.url} ${format.width}w`} />
+              ))}
+              <IKImage
+                className='rounded'
+                style={{ height: 'inherit', width: 'inherit' }}
+                src={images[selectedImageIndex].url}
+              />
+            </picture>
+          </div>
         </div>
       </div>
 

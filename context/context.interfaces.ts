@@ -2,6 +2,15 @@ export declare namespace App {
   export interface State {
     isCartOpen: boolean;
     cart: Product[];
+    promo: null | {
+      name: string;
+      percent_discount: number;
+      free_shipping: boolean;
+      free_shipping_threshold: number;
+      expire: string;
+      details: string;
+    };
+    shipping: null | '0' | '79' | '150';
   }
 
   export type Product = {
@@ -23,5 +32,10 @@ export declare namespace App {
     | {
         type: 'SET_CART';
         payload: Product[];
+      }
+    | { type: 'SET_PROMO'; payload: State['promo'] }
+    | {
+        type: 'SET_SHIPPING';
+        payload: State['shipping'];
       };
 }
