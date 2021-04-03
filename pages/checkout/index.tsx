@@ -62,6 +62,7 @@ export default function CheckoutPage() {
           type: 'SET_SHIPPING',
           payload: '0',
         });
+        setValue('shipping', '0');
         setIsFreeShipping(true);
       } else {
         dispatch({
