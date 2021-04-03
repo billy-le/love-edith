@@ -83,7 +83,8 @@ export default function Products() {
                     lqip={{ active: true, quality: 20, blur: 6 }}
                     loading='lazy'
                     style={{
-                      height: '-webkit-fill-available',
+                      height: 'inherit',
+                      width: 'inherit',
                     }}
                   />
                 </picture>
