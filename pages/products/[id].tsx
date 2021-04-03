@@ -229,25 +229,6 @@ export default function Product() {
 
             <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
 
-            <fieldset className='mb-0 lg:mb-3 flex lg:block'>
-              <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
-                Size
-              </label>
-              <select
-                id='size'
-                name='size'
-                className='rounded border-2 border-solid border-black w-full  py-1 px-2 uppercase'
-                onChange={handleSizeChange}
-                value={selectedSize}
-              >
-                {sizes.map((size: any) => (
-                  <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
-                    {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
-                  </option>
-                ))}
-              </select>
-            </fieldset>
-
             <fieldset className='flex lg:block mb-0 lg:mb-3'>
               <label htmlFor='color' className='mr-2 lg:mr-0 flex items-center mb-0 lg:mb-1'>
                 Color
@@ -262,6 +243,25 @@ export default function Product() {
                 {colors.map((color: any) => (
                   <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
                     {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
+
+            <fieldset className='mb-0 lg:mb-3 flex lg:block'>
+              <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
+                Size
+              </label>
+              <select
+                id='size'
+                name='size'
+                className='rounded border-2 border-solid border-black w-full  py-1 px-2 uppercase'
+                onChange={handleSizeChange}
+                value={selectedSize}
+              >
+                {sizes.map((size: any) => (
+                  <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
+                    {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
                   </option>
                 ))}
               </select>

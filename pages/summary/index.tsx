@@ -10,7 +10,8 @@ import { toast } from 'react-toastify';
 
 const CREATE_ORDER = gql`
   mutation CreateOrder(
-    $name: String!
+    $first_name: String!
+    $last_name: String!
     $email: String!
     $contact: String!
     $building: String!
@@ -27,7 +28,8 @@ const CREATE_ORDER = gql`
     createOrder(
       input: {
         data: {
-          name: $name
+          first_name: $first_name
+          last_name: $last_name
           email: $email
           contact_number: $contact
           house_building_unit: $building
@@ -99,7 +101,8 @@ export default function OrderSummary() {
     'contact' in query &&
     'email' in query &&
     'landmarks' in query &&
-    'name' in query &&
+    'first_name' in query &&
+    'last_name' in query &&
     'payment' in query &&
     'province' in query &&
     'region' in query &&
@@ -113,7 +116,8 @@ export default function OrderSummary() {
       contact,
       email,
       landmarks,
-      name,
+      first_name,
+      last_name,
       payment,
       province,
       region,
@@ -149,7 +153,9 @@ export default function OrderSummary() {
         <div className='flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between mb-8'>
           <div>
             <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Issued To:</h3>
-            <p className='text-sm'>{name}</p>
+            <p className='text-sm'>
+              {first_name} {last_name}
+            </p>
             <p className='text-sm'>{email}</p>
             <p className='text-sm'>+63 {contact}</p>
           </div>

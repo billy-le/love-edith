@@ -21,7 +21,8 @@ import { useEffect } from 'react';
 const phoneRegExp = /9\d{9}/;
 
 const invoiceSchema = yup.object().shape({
-  name: yup.string().required('A name is required'),
+  first_name: yup.string().required('A first name is required'),
+  last_name: yup.string().required('A last name is required'),
   contact: yup.string().required('A contact number is required').matches(phoneRegExp, 'Mobile number is invalid'),
   email: yup.string().email().required('An email is required'),
   building: yup.string().required('A building identifier is required'),
@@ -57,7 +58,8 @@ export default function CheckoutPage() {
       contact,
       email,
       landmarks,
-      name,
+      first_name,
+      last_name,
       payment,
       province,
       region,
@@ -69,7 +71,8 @@ export default function CheckoutPage() {
       pathname: '/summary',
       query: {
         email,
-        name,
+        first_name,
+        last_name,
         contact,
         building,
         street,
@@ -107,9 +110,14 @@ export default function CheckoutPage() {
   return (
     <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
       <form className='grid grid-cols-1 sm:grid-cols-2 gap-4' style={{ height: 'fit-content' }}>
-        <FormControl className='col-span-1 sm:col-span-2'>
-          <Label htmlFor='name'>Name</Label>
-          <Input ref={register} id='name' name='name' type='text' error={errors.name} />
+        <FormControl className='col-span-1'>
+          <Label htmlFor='first_name'>Name</Label>
+          <Input ref={register} id='first_name' name='first_name' type='text' error={errors.first_name} />
+        </FormControl>
+
+        <FormControl className='col-span-1'>
+          <Label htmlFor='last_name'>Last Name</Label>
+          <Input ref={register} id='last_name' name='last_name' type='text' error={errors.last_name} />
         </FormControl>
 
         <FormControl className='col-span-1 sm:col-span-2'>
@@ -135,7 +143,9 @@ export default function CheckoutPage() {
 
         <h3 className='mt-4 col-span-1 sm:col-span-2'>Shipping Address</h3>
         <FormControl>
-          <Label htmlFor='building'>Unit Number / House / Building</Label>
+          <Label htmlFor='building' className='truncate'>
+            Unit Number / House / Building
+          </Label>
           <Input ref={register} id='building' name='building' type='text' error={errors.building} />
         </FormControl>
         <FormControl>
@@ -241,7 +251,7 @@ export default function CheckoutPage() {
 
         <div className='py-4 border-solid border-b border-black'>
           <p className='mb-2 font-black'>Shipping Method</p>
-          {errors.shipping && <p className='text-red-400'>{errors.shipping.message}</p>}
+          {errors.shipping && <p className='text-red-400 text-xs'>{errors.shipping.message}</p>}
 
           <div className='flex items-center'>
             <input ref={register} className='mr-1' type='radio' name='shipping' id='pick-up' value='0' />
@@ -250,7 +260,7 @@ export default function CheckoutPage() {
             </Label>
           </div>
           <div className='mb-2 text-xs pl-4'>
-            <p>Eastwood Lafayette 3</p>
+            <p>Eastwood - Quezon City</p>
             <p>1pm - 5pm</p>
           </div>
           <div className='mb-2 flex items-center'>
@@ -273,7 +283,7 @@ export default function CheckoutPage() {
 
         <div className='py-4 border-solid border-b border-black'>
           <p className='mb-2 font-black'>Payment Method</p>
-          {errors.payment && <p className='text-red-400'>{errors.payment.message}</p>}
+          {errors.payment && <p className='text-red-400 text-xs'>{errors.payment.message}</p>}
 
           <div className='flex items-center'>
             <input ref={register} className='mr-1' type='radio' name='payment' id='gcash' value='gcash' />
