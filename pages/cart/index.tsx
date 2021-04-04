@@ -80,7 +80,7 @@ export default function ShoppingCartPage() {
                   <p className='md:hidden'>Price: {PHP(item.price).format()}</p>
                 </td>
                 <td className='p-3'>
-                  <div className='hidden md:table-cell'>
+                  <div className='hidden md:block'>
                     <div className='text-lg font-bold'>{item.name}</div>
                     <div>
                       Size: <span className='font-bold text-sm uppercase'>{item.size}</span>

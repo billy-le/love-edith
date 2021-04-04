@@ -199,12 +199,12 @@ export default function Product() {
             {images.map((image: any, index: number) => {
               const formats: any[] = Object.values(image.formats);
               return (
-                <div key={index} className='aspect-h-4 aspect-w-3'>
+                <div key={index} className='aspect-h-4 aspect-w-3 overflow-hidden rounded'>
                   <picture onClick={handleImageClick(index)}>
                     {formats.map((format: any, index: number) => (
                       <source key={index} srcSet={`${format.url} ${format.width}w`} />
                     ))}
-                    <IKImage className='rounded' style={{ height: 'inherit', width: 'inherit' }} src={image.url} />
+                    <IKImage className='rounded' src={image.url} />
                   </picture>
                 </div>
               );
@@ -212,16 +212,12 @@ export default function Product() {
           </div>
         </div>
         <div className='col-span-3'>
-          <div className='aspect-h-4 aspect-w-3'>
+          <div className='aspect-h-4 aspect-w-3 overflow-hidden rounded'>
             <picture>
               {Object.values(images[selectedImageIndex].formats).map((format: any, index: number) => (
                 <source key={index} srcSet={`${format.url} ${format.width}w`} />
               ))}
-              <IKImage
-                className='rounded'
-                style={{ height: 'inherit', width: 'inherit' }}
-                src={images[selectedImageIndex].url}
-              />
+              <IKImage className='rounded' src={images[selectedImageIndex].url} />
             </picture>
           </div>
         </div>
@@ -244,7 +240,7 @@ export default function Product() {
               <select
                 id='color'
                 name='color'
-                className='rounded border-2 border-solid border-black w-full py-1 px-2 capitalize'
+                className='rounded border-2 border-solid border-black w-full py-1 px-2 capitalize min-w-[200px]'
                 onChange={handleColorChange}
                 value={selectedColor}
               >
@@ -263,7 +259,7 @@ export default function Product() {
               <select
                 id='size'
                 name='size'
-                className='rounded border-2 border-solid border-black w-full  py-1 px-2 uppercase'
+                className='rounded border-2 border-solid border-black w-full  py-1 px-2 uppercase min-w-[200px]'
                 onChange={handleSizeChange}
                 value={selectedSize}
               >

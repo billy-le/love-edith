@@ -78,13 +78,12 @@ export default function Products() {
                     />
                   ))}
                   <IKImage
-                    className='transition-transform duration-500 transform scale-100 hover:scale-110'
+                    className='transition-transform duration-500 transform scale-100 hover:scale-110 mx-auto'
                     src={firstImage.url}
                     lqip={{ active: true, quality: 20, blur: 6 }}
                     loading='lazy'
                     style={{
                       height: 'inherit',
-                      width: 'inherit',
                     }}
                   />
                 </picture>

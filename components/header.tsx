@@ -69,8 +69,8 @@ export default function Header() {
         </Link>
       </div>
       {state.promo && (
-        <div className='h-8 flex items-center justify-center bg-red-100 bg-opacity-80 text-sm text-center sm:text-base'>
-          <p>{state.promo.details}</p>
+        <div className='bg-red-100 bg-opacity-80 '>
+          <p className='container mx-auto px-4 py-1 text-center text-xs sm:text-sm'>{state.promo.details}</p>
         </div>
       )}
     </header>

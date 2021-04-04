@@ -90,6 +90,7 @@ export default function CheckoutPage() {
       province,
       region,
       street,
+      shipping,
     } = getValues();
 
     push({
@@ -107,16 +108,24 @@ export default function CheckoutPage() {
         region,
         landmarks,
         payment,
+        shipping,
       },
     });
   }
 
   function handleShipping(e: React.ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
-    dispatch({
-      type: 'SET_SHIPPING',
-      payload: value as typeof state['shipping'],
-    });
+    if (isFreeShipping) {
+      dispatch({
+        type: 'SET_SHIPPING',
+        payload: '0',
+      });
+    } else {
+      dispatch({
+        type: 'SET_SHIPPING',
+        payload: value as typeof state['shipping'],
+      });
+    }
   }
 
   if (state.cart.length === 0) {
@@ -304,44 +313,35 @@ export default function CheckoutPage() {
           <div className='mb-2 flex items-center'>
             <input
               ref={register}
-              className='mr-1 disabled:opacity-50'
+              className='mr-1'
               type='radio'
               name='shipping'
               id='manila'
               value='79'
-              disabled={isFreeShipping}
               onChange={handleShipping}
             />
-            <Label
-              htmlFor='manila'
-              className={isFreeShipping ? 'opacity-50' : undefined}
-              style={{ width: 'max-content' }}
-            >
+            <Label htmlFor='manila' style={{ width: 'max-content' }}>
               Metro Manila - {PHP(79).format()}
             </Label>
           </div>
           <div className='flex items-center'>
             <input
               ref={register}
-              className='mr-1 disabled:opacity-50'
+              className='mr-1'
               type='radio'
               name='shipping'
               id='other'
               value='150'
-              disabled={isFreeShipping}
               onChange={handleShipping}
             />
-            <Label
-              htmlFor='other'
-              className={isFreeShipping ? 'opacity-50' : undefined}
-              style={{ width: 'max-content' }}
-            >
+            <Label htmlFor='other' style={{ width: 'max-content' }}>
               Outside Manila - {PHP(150).format()}
             </Label>
           </div>
 
           <div className='flex justify-end mt-3'>
-            Shipping Cost: {shipping ? (shipping == '0' ? 'FREE' : PHP(shipping).format()) : 'N/A'}
+            Shipping Cost:{' '}
+            {isFreeShipping ? 'FREE' : shipping ? (shipping == '0' ? 'FREE' : PHP(shipping).format()) : 'N/A'}
           </div>
         </div>
 
@@ -375,7 +375,7 @@ export default function CheckoutPage() {
           <p className='font-black text-lg'>Total</p>
           <p className='font-black text-lg'>
             {PHP(subtotal)
-              .add(shipping || 0)
+              .add(isFreeShipping ? 0 : shipping || 0)
               .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
               .format()}
           </p>

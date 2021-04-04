@@ -21,7 +21,7 @@ const CREATE_ORDER = gql`
     $province: String!
     $region: String!
     $landmarks: String!
-    $shipping: Float!
+    $shipping: String!
     $payment: ENUM_ORDER_PAYMENT_METHOD!
     $items: JSON!
     $promos: [ID]
@@ -76,7 +76,6 @@ export default function OrderSummary() {
       variables: {
         ...query,
         items: JSON.stringify(cart),
-        shipping: parseInt(typeof query.shipping === 'string' ? query.shipping : '0', 10),
         promos: promo?.id ? [parseInt((promo as any).id, 10)] : null,
       },
     });
@@ -110,6 +109,7 @@ export default function OrderSummary() {
     'province' in query &&
     'region' in query &&
     'street' in query &&
+    'shipping' in query &&
     shipping
   ) {
     const {
@@ -125,6 +125,7 @@ export default function OrderSummary() {
       province,
       region,
       street,
+      shipping: shippingMethod,
     } = query;
 
     const subtotal = PHP(
@@ -137,7 +138,7 @@ export default function OrderSummary() {
 
     return (
       <section>
-        <div className='flex items-center space-x-4 mb-6'>
+        <div className='flex items-center justify-center space-x-4 mb-6'>
           <h1 className='text-3xl font-bold'>Order Summary</h1>
           <button
             className='flex items-center space-x-2 bg-gray-900 text-white px-2 py-1 rounded'
@@ -154,7 +155,7 @@ export default function OrderSummary() {
           </button>
         </div>
 
-        <div className='flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between mb-8'>
+        <div className='flex justify-center flex-col space-y-4 sm:space-y-0 sm:flex-row sm:space-x-6 mb-8'>
           <div>
             <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Issued To:</h3>
             <p className='text-sm'>
@@ -181,7 +182,7 @@ export default function OrderSummary() {
           <div>
             <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Method:</h3>
             <p className='text-sm'>
-              {shipping === '0' ? 'FREE' : shipping === '79' ? 'Metro Manila' : 'Outside Metro Manila'}
+              {shippingMethod === '0' ? 'FREE' : shipping === '79' ? 'Metro Manila' : 'Outside Metro Manila'}
             </p>
           </div>
 
@@ -226,7 +227,7 @@ export default function OrderSummary() {
                     <p className='md:hidden'>Price: {PHP(item.price).format()}</p>
                   </td>
                   <td className='p-3'>
-                    <div className='hidden md:table-cell'>
+                    <div className='hidden md:block'>
                       <div className='text-lg font-bold'>{item.name}</div>
                       <div>
                         Size: <span className='font-bold text-sm uppercase'>{item.size}</span>
