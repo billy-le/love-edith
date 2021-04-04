@@ -306,7 +306,8 @@ export default function Product() {
                   ? description || NA
                   : activeTab === 'size guide'
                   ? size_chart || NA
-                  : fabric_and_care || NA
+                  : fabric_and_care || NA,
+                { breaks: true }
               ),
             }}
           ></div>
