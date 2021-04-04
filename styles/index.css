@@ -16,3 +16,13 @@ h5,
 h6 {
   font-family: 'Didact Gothic', sans-serif;
 }
+
+.rich-text ul {
+  list-style: disc;
+  list-style-position: inside;
+}
+
+.rich-text ol {
+  list-style: decimal;
+  list-style-position: inside;
+}

@@ -59,6 +59,35 @@ export default function Product() {
     },
   });
 
+  const colors = React.useMemo(() => {
+    const map = new Map<string, number[]>();
+    if (!data?.product?.variants) {
+      return [];
+    }
+
+    data.product.variants.forEach((v: any) => {
+      const color = map.get(v.color.name);
+      if (color) {
+        map.set(v.color.name, color.concat(v.qty));
+      } else {
+        map.set(v.color.name, [v.qty]);
+      }
+    });
+    const entries = Object.fromEntries(map);
+    const colors: { name: string }[] = [];
+
+    for (const color in entries) {
+      if (entries[color].every((qty) => qty === 0)) {
+        break;
+      }
+      colors.push({ name: color });
+    }
+
+    setSelectedColor(colors?.[0]?.name ?? '');
+
+    return colors;
+  }, [data]);
+
   const sizes = React.useMemo(() => {
     const map = new Map<string, number[]>();
     if (!data?.product?.variants) {
@@ -66,11 +95,13 @@ export default function Product() {
     }
 
     data.product.variants.forEach((v: any) => {
-      const size = map.get(v.size.name);
-      if (size) {
-        map.set(v.size.name, size.concat(v.qty));
-      } else {
-        map.set(v.size.name, [v.qty]);
+      if (v.color.name === selectedColor) {
+        const size = map.get(v.size.name);
+        if (size) {
+          map.set(v.size.name, size.concat(v.qty));
+        } else {
+          map.set(v.size.name, [v.qty]);
+        }
       }
     });
     const entries = Object.fromEntries(map);
@@ -79,39 +110,8 @@ export default function Product() {
       sizes.push({ name: size, isSoldOut: entries[size].every((qty) => qty === 0) });
     }
 
-    const firstSizeNotSoldOut = sizes.find((size) => !size.isSoldOut);
-    setSelectedSize(firstSizeNotSoldOut?.name ?? '');
-
     return sizes;
-  }, [data]);
-
-  const colors = React.useMemo(() => {
-    const map = new Map<string, number[]>();
-    if (!data?.product?.variants) {
-      return [];
-    }
-
-    data.product.variants.forEach((v: any) => {
-      if (v.size.name === selectedSize) {
-        const color = map.get(v.color.name);
-        if (color) {
-          map.set(v.color.name, color.concat(v.qty));
-        } else {
-          map.set(v.color.name, [v.qty]);
-        }
-      }
-    });
-    const entries = Object.fromEntries(map);
-    const colors: { name: string; isSoldOut: boolean }[] = [];
-    for (const color in entries) {
-      colors.push({ name: color, isSoldOut: entries[color].every((qty) => qty === 0) });
-    }
-
-    const firstColorNotSoldOut = colors.find((color) => !color.isSoldOut);
-    setSelectedColor(firstColorNotSoldOut?.name ?? '');
-
-    return colors;
-  }, [selectedSize]);
+  }, [selectedColor]);
 
   if (error) {
     return null;
@@ -224,7 +224,7 @@ export default function Product() {
       </div>
 
       <div
-        className='grid grid-cols-1 xl:grid-cols-3 gap-2 col-span-2 bg-gray-100 p-4 rounded shadow-md'
+        className='grid grid-cols-1 xl:grid-cols-3 gap-4 col-span-2 bg-gray-100 p-4 rounded shadow-md'
         style={{ height: 'fit-content' }}
       >
         <form className='col-span-1' onSubmit={handleSubmit}>
@@ -240,9 +240,12 @@ export default function Product() {
               <select
                 id='color'
                 name='color'
-                className='rounded border-2 border-solid border-black w-full py-1 px-2 capitalize min-w-[200px]'
+                className='rounded border-2 border-solid border-black py-1 px-2 capitalize'
                 onChange={handleColorChange}
                 value={selectedColor}
+                style={{
+                  width: '-webkit-fill-available',
+                }}
               >
                 {colors.map((color: any) => (
                   <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
@@ -259,9 +262,12 @@ export default function Product() {
               <select
                 id='size'
                 name='size'
-                className='rounded border-2 border-solid border-black w-full  py-1 px-2 uppercase min-w-[200px]'
+                className='rounded border-2 border-solid border-black py-1 px-2 uppercase'
                 onChange={handleSizeChange}
                 value={selectedSize}
+                style={{
+                  width: '-webkit-fill-available',
+                }}
               >
                 {sizes.map((size: any) => (
                   <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
@@ -293,6 +299,7 @@ export default function Product() {
             ))}
           </div>
           <div
+            className='rich-text'
             dangerouslySetInnerHTML={{
               __html: marked(
                 activeTab === 'description'
@@ -302,7 +309,7 @@ export default function Product() {
                   : fabric_and_care || NA
               ),
             }}
-          />
+          ></div>
         </div>
       </div>
     </div>
