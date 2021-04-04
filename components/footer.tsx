@@ -10,7 +10,9 @@ export default function Footer() {
         <div className='flex justify-end items-end space-x-4'>
           <p className='text-xs'>&copy; {year} - All Rights Reserved</p>
           <Link href='https://www.instagram.com/loveedith.ph'>
-            <FontAwesomeIcon className='cursor-pointer' icon={faInstagram} size='2x' />
+            <a>
+              <FontAwesomeIcon className='cursor-pointer' icon={faInstagram} size='2x' />
+            </a>
           </Link>
         </div>
       </div>
