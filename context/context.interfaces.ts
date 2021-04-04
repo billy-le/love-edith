@@ -3,6 +3,7 @@ export declare namespace App {
     isCartOpen: boolean;
     cart: Product[];
     promo: null | {
+      id: number;
       name: string;
       percent_discount: number;
       free_shipping: boolean;

@@ -24,6 +24,7 @@ const CREATE_ORDER = gql`
     $shipping: Float!
     $payment: ENUM_ORDER_PAYMENT_METHOD!
     $items: JSON!
+    $promos: [ID]
   ) {
     createOrder(
       input: {
@@ -42,6 +43,7 @@ const CREATE_ORDER = gql`
           items: $items
           shipping: $shipping
           payment_method: $payment
+          promos: $promos
         }
       }
     ) {
@@ -75,6 +77,7 @@ export default function OrderSummary() {
         ...query,
         items: JSON.stringify(cart),
         shipping: parseInt(typeof query.shipping === 'string' ? query.shipping : '0', 10),
+        promos: promo?.id ? [parseInt((promo as any).id, 10)] : null,
       },
     });
 

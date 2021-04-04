@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 const QUERY = gql`
   query PromoQuery($currentDate: String!) {
     promos(where: { expire_gt: $currentDate }) {
+      id
       name
       percent_discount
       free_shipping
