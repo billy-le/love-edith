@@ -150,7 +150,7 @@ export default function CheckoutPage() {
     <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
       <form className='grid grid-cols-1 sm:grid-cols-2 gap-4' style={{ height: 'fit-content' }}>
         <FormControl className='col-span-1'>
-          <Label htmlFor='first_name'>Name</Label>
+          <Label htmlFor='first_name'>First Name</Label>
           <Input ref={register} id='first_name' name='first_name' type='text' error={errors.first_name} />
         </FormControl>
 

@@ -49,7 +49,6 @@ export default function Product() {
 
   const [selectedSize, setSelectedSize] = React.useState<string>('');
   const [selectedColor, setSelectedColor] = React.useState<string>('');
-  const [isSizeChartOpen, setIsSizeChartOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<string>('description');
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
@@ -130,10 +129,6 @@ export default function Product() {
   } = data;
 
   const images = product_images.flatMap((productImage: any) => productImage.images);
-
-  function toggleSizeChart() {
-    setIsSizeChartOpen(!isSizeChartOpen);
-  }
 
   function handleSizeChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const { value } = e.target;
