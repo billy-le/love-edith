@@ -21,7 +21,7 @@ const CREATE_ORDER = gql`
     $province: String!
     $region: String!
     $landmarks: String!
-    $shipping: String!
+    $shipping: Float!
     $payment: ENUM_ORDER_PAYMENT_METHOD!
     $items: JSON!
     $promos: [ID]
@@ -77,6 +77,7 @@ export default function OrderSummary() {
         ...query,
         items: JSON.stringify(cart),
         promos: promo?.id ? [parseInt((promo as any).id, 10)] : null,
+        shipping: parseFloat(query.shipping as any),
       },
     });
 
