@@ -8,7 +8,7 @@ import { PHP } from '@helpers/currency';
 
 const PRODUCTS_QUERY = gql`
   query Products {
-    products {
+    products(where: { is_sold_out: false }) {
       id
       name
       slug
