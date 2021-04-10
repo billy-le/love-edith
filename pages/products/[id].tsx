@@ -224,15 +224,15 @@ export default function Product() {
         style={{ height: 'fit-content' }}
       >
         <form className='col-span-1' onSubmit={handleSubmit}>
-          <div className='flex justify-between xl:block mb-4 lg:mb-0'>
-            <div className='space-y-4 w-1/2 xl:w-full'>
-              <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
-              <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
+          <div className='flex justify-between space-x-4 mb-4 xl:space-x-0 xl:space-y-4 xl:block xl:mb-0'>
+            <div className='space-y-2 w-1/2 xl:w-full'>
+              <h2 className='text-2xl text-gray-800'>{name}</h2>
+              <p className='text-xl'>{PHP(price).format()}</p>
             </div>
 
-            <div className='space-y-4 space-x-4 w-1/2 xl:w-full'>
+            <div className='space-y-4 w-1/2 xl:w-full'>
               <fieldset>
-                <label htmlFor='color' className='mr-2 lg:mr-0 flex items-center mb-0 lg:mb-1'>
+                <label htmlFor='color' className='flex items-center mb-0 mr-2 xl:mb-1'>
                   Color
                 </label>
                 <select
@@ -254,7 +254,7 @@ export default function Product() {
               </fieldset>
 
               <fieldset>
-                <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
+                <label htmlFor='size' className='flex items-center mb-0 mr-2 xl:mb-1'>
                   Size
                 </label>
                 <select
