@@ -4,13 +4,15 @@ import Link from 'next/link';
 export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
   return (
     <div className='flex-grow flex bg-cover bg-center' style={{ backgroundImage: `url("${hero_media.url}")` }}>
-      <section className='flex-grow flex flex-col items-center justify-end pb-8 z-10'>
+      <section className='flex-grow flex flex-col items-center justify-end z-10'>
         <Link href='/products'>
-          <button className='rounded-full text-lg sm:text-3xl bg-white py-2 px-6 mb-10 block uppercase'>
+          <button className='rounded-full text-lg sm:text-2xl bg-white py-2 px-6 mb-10 block uppercase'>
             {cta_text}
           </button>
         </Link>
-        <p className='text-white text-3xl sm:text-6xl text-center'>{hero_text}</p>
+        <p className='text-white text-2xl sm:text-4xl text-center mb-20 capitalize' style={{ fontFamily: 'Comorant' }}>
+          {hero_text}
+        </p>
       </section>
     </div>
   );

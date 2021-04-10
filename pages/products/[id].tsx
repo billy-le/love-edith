@@ -41,6 +41,10 @@ const PRODUCT_QUERY = gql`
   }
 `;
 
+marked.setOptions({
+  breaks: true,
+});
+
 export default function Product() {
   const { query } = useRouter();
 
@@ -109,6 +113,12 @@ export default function Product() {
       sizes.push({ name: size, isSoldOut: entries[size].every((qty) => qty === 0) });
     }
 
+    const firstSize = sizes.find((s) => !s.isSoldOut);
+
+    if (firstSize) {
+      setSelectedSize(firstSize.name);
+    }
+
     return sizes;
   }, [selectedColor]);
 
@@ -159,6 +169,7 @@ export default function Product() {
     e.preventDefault();
 
     const variant = variants.find((v: any) => v.size.name === selectedSize && v.color.name === selectedColor);
+    if (!variant) return;
 
     dispatch({
       type: 'INCREMENT_ITEM',
@@ -173,23 +184,13 @@ export default function Product() {
         color: selectedColor as any,
       },
     });
-    toast(
-      `${name} - ${selectedSize.toUpperCase()} - ${selectedColor
-        .slice(0, 1)
-        .toUpperCase()
-        .concat(selectedColor.slice(1))} - has been added to your cart!`
-    );
+    toast(`${name} has been added to your cart!`);
   }
 
   return (
-    <div className='grid sm:grid-cols-4 gap-4'>
-      <div className='grid grid-cols-4 col-span-2 gap-2'>
-        <div
-          className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'
-          style={{
-            maxHeight: '60vh',
-          }}
-        >
+    <div className='grid xl:grid-cols-2 gap-4'>
+      <div className='grid grid-cols-4 col-span-1 gap-2'>
+        <div className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'>
           <div className='absolute grid gap-2 w-full h-full'>
             {images.map((image: any, index: number) => {
               const formats: any[] = Object.values(image.formats);
@@ -219,68 +220,71 @@ export default function Product() {
       </div>
 
       <div
-        className='grid grid-cols-1 xl:grid-cols-3 gap-4 col-span-2 bg-gray-100 p-4 rounded shadow-md'
+        className='grid grid-cols-1 xl:grid-cols-3 gap-4 col-span-1 bg-gray-100 p-4 rounded shadow-md'
         style={{ height: 'fit-content' }}
       >
         <form className='col-span-1' onSubmit={handleSubmit}>
-          <div className='grid gap-2 lg:block justify-between items-center mb-4 lg:mb-0'>
-            <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
+          <div className='flex justify-between xl:block mb-4 lg:mb-0'>
+            <div className='space-y-4 w-1/2 xl:w-full'>
+              <h2 className='text-2xl text-gray-800 mb-0 lg:mb-3'>{name}</h2>
+              <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
+            </div>
 
-            <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
+            <div className='space-y-4 w-1/2 xl:w-full'>
+              <fieldset>
+                <label htmlFor='color' className='mr-2 lg:mr-0 flex items-center mb-0 lg:mb-1'>
+                  Color
+                </label>
+                <select
+                  id='color'
+                  name='color'
+                  className='rounded border-2 border-solid border-black py-1 px-2 capitalize'
+                  onChange={handleColorChange}
+                  value={selectedColor}
+                  style={{
+                    width: '-webkit-fill-available',
+                  }}
+                >
+                  {colors.map((color: any) => (
+                    <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
+                      {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
+                    </option>
+                  ))}
+                </select>
+              </fieldset>
 
-            <fieldset className='flex lg:block mb-0 lg:mb-3'>
-              <label htmlFor='color' className='mr-2 lg:mr-0 flex items-center mb-0 lg:mb-1'>
-                Color
-              </label>
-              <select
-                id='color'
-                name='color'
-                className='rounded border-2 border-solid border-black py-1 px-2 capitalize'
-                onChange={handleColorChange}
-                value={selectedColor}
-                style={{
-                  width: '-webkit-fill-available',
-                }}
-              >
-                {colors.map((color: any) => (
-                  <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
-                    {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
-                  </option>
-                ))}
-              </select>
-            </fieldset>
+              <fieldset>
+                <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
+                  Size
+                </label>
+                <select
+                  id='size'
+                  name='size'
+                  className='rounded border-2 border-solid border-black py-1 px-2 uppercase'
+                  onChange={handleSizeChange}
+                  value={selectedSize}
+                  style={{
+                    width: '-webkit-fill-available',
+                  }}
+                >
+                  {sizes.map((size: any) => (
+                    <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
+                      {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
+                    </option>
+                  ))}
+                </select>
+              </fieldset>
 
-            <fieldset className='mb-0 lg:mb-3 flex lg:block'>
-              <label htmlFor='size' className='mr-2 mb-0 lg:mr-0 lg:mb-1 flex items-center'>
-                Size
-              </label>
-              <select
-                id='size'
-                name='size'
-                className='rounded border-2 border-solid border-black py-1 px-2 uppercase'
-                onChange={handleSizeChange}
-                value={selectedSize}
-                style={{
-                  width: '-webkit-fill-available',
-                }}
-              >
-                {sizes.map((size: any) => (
-                  <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
-                    {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
-                  </option>
-                ))}
-              </select>
-            </fieldset>
-
-            <fieldset className='mb-0'>
-              <button className='rounded py-2 px-3 w-full bg-gray-900 text-white' type='submit'>
-                Add to Cart
-              </button>
-            </fieldset>
+              <fieldset>
+                <button className='rounded py-2 px-3 w-full bg-gray-900 text-white' type='submit'>
+                  Add to Cart
+                </button>
+              </fieldset>
+            </div>
           </div>
         </form>
         <div className='col-span-2'>
-          <div className='grid grid-cols-3 lg:grid-cols-3 gap-2 mb-4'>
+          <div className='hidden xl:grid grid-cols-3 lg:grid-cols-3 gap-2 mb-4'>
             {TABS.map((tab) => (
               <label
                 key={tab}
@@ -294,18 +298,27 @@ export default function Product() {
             ))}
           </div>
           <div
-            className='rich-text'
+            className='hidden xl:block rich-text'
             dangerouslySetInnerHTML={{
               __html: marked(
                 activeTab === 'description'
                   ? description || NA
                   : activeTab === 'size guide'
                   ? size_chart || NA
-                  : fabric_and_care || NA,
-                { breaks: true }
+                  : fabric_and_care || NA
               ),
             }}
-          ></div>
+          />
+          <div className='xl:hidden rich-text'>
+            <h2 className='text-lg'>Description</h2>
+            <div dangerouslySetInnerHTML={{ __html: marked(description || NA) }}></div>
+
+            <h2 className='text-lg'>Size Guide</h2>
+            <div dangerouslySetInnerHTML={{ __html: marked(size_chart || NA) }}></div>
+
+            <h2 className='text-lg'>Fabric & Care</h2>
+            <div dangerouslySetInnerHTML={{ __html: marked(fabric_and_care || NA) }}></div>
+          </div>
         </div>
       </div>
     </div>

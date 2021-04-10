@@ -18,7 +18,9 @@ export function Nav(props: Props) {
           return (
             <li key={link} className={isNotLast ? 'mr-8' : ''}>
               <Link href={link === 'shop' ? '/products' : '/' + link}>
-                <a className='uppercase'>{link}</a>
+                <a className='uppercase font-medium text-lg'>
+                  <h2>{link}</h2>
+                </a>
               </Link>
             </li>
           );

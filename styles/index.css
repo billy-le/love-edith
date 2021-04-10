@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@500&family=Work+Sans:wght@300&display=swap');
 
 html {
   height: 100%;
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Work Sans', sans-serif;
 }
 
 h1,
@@ -14,7 +14,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Didact Gothic', sans-serif;
+  font-family: 'Cormorant', sans-serif;
 }
 
 .rich-text ul {
