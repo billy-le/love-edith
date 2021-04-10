@@ -191,7 +191,7 @@ export default function Product() {
     <div className='grid xl:grid-cols-2 gap-4'>
       <div className='grid grid-cols-4 col-span-1 gap-2'>
         <div className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'>
-          <div className='absolute grid gap-2 w-full h-full'>
+          <div className='absolute grid gap-2 w-full' style={{ height: 'fit-content' }}>
             {images.map((image: any, index: number) => {
               const formats: any[] = Object.values(image.formats);
               return (
@@ -309,15 +309,20 @@ export default function Product() {
               ),
             }}
           />
-          <div className='xl:hidden rich-text'>
-            <h2 className='text-lg'>Description</h2>
-            <div dangerouslySetInnerHTML={{ __html: marked(description || NA) }}></div>
+          <div className='xl:hidden space-y-4 rich-text'>
+            <div>
+              <h2 className='text-lg'>Description</h2>
+              <div dangerouslySetInnerHTML={{ __html: marked(description || NA) }}></div>
+            </div>
 
-            <h2 className='text-lg'>Size Guide</h2>
-            <div dangerouslySetInnerHTML={{ __html: marked(size_chart || NA) }}></div>
-
-            <h2 className='text-lg'>Fabric & Care</h2>
-            <div dangerouslySetInnerHTML={{ __html: marked(fabric_and_care || NA) }}></div>
+            <div>
+              <h2 className='text-lg'>Size Guide</h2>
+              <div dangerouslySetInnerHTML={{ __html: marked(size_chart || NA) }}></div>
+            </div>
+            <div>
+              <h2 className='text-lg'>Fabric & Care</h2>
+              <div dangerouslySetInnerHTML={{ __html: marked(fabric_and_care || NA) }}></div>
+            </div>
           </div>
         </div>
       </div>

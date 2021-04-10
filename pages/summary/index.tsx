@@ -87,7 +87,7 @@ export default function OrderSummary() {
       });
       localStorage.removeItem('shopping_cart');
       dispatch({ type: 'SET_CART', payload: [] });
-    } else if (res.errors?.length) {
+    } else {
       toast(
         `We're sorry. Your order didn't go thru. Please try again or contact hello@love-edith.com for further assistance.`,
         {
@@ -209,12 +209,16 @@ export default function OrderSummary() {
               return (
                 <tr key={index}>
                   <td className='p-3'>
-                    <p className='font-bold md:hidden'>
-                      {item.name} |{' '}
+                    <p className='font-bold md:hidden'>{item.name}</p>
+                    <div className='md:hidden'>
                       <span className='text-sm font-normal'>
                         Size: <span className='font-bold uppercase'>{item.size}</span>
                       </span>
-                    </p>
+                      {' | '}
+                      <span className='text-sm font-normal'>
+                        Color: <span className='font-bold uppercase'>{item.color}</span>
+                      </span>
+                    </div>
                     <picture className='flex justify-center'>
                       {otherImages.map((format: any, index: number) => (
                         <source
@@ -290,7 +294,9 @@ export default function OrderSummary() {
 
           <button
             disabled={loading}
-            className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'
+            className={`uppercase bg-black rounded w-40 text-center py-2 text-white mt-2 ${
+              loading ? 'opacity-50 pointer-events-none' : ''
+            }`}
             onClick={handleOrderSubmit}
           >
             Submit Order

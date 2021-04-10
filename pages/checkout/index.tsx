@@ -276,6 +276,8 @@ export default function CheckoutPage() {
                   <span>{item.name}</span>
                   {` | `}
                   <span className='capitalize'>{item.size}</span>
+                  {` | `}
+                  <span className='uppercase'>{item.color}</span>
                 </div>
               </div>
             </div>

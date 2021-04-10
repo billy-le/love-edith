@@ -65,12 +65,16 @@ export default function ShoppingCartPage() {
             return (
               <tr key={index}>
                 <td className='p-3'>
-                  <p className='font-bold md:hidden'>
-                    {item.name} |{' '}
+                  <p className='font-bold md:hidden'>{item.name}</p>
+                  <div className='md:hidden'>
                     <span className='text-sm font-normal'>
                       Size: <span className='font-bold uppercase'>{item.size}</span>
                     </span>
-                  </p>
+                    {' | '}
+                    <span className='text-sm font-normal'>
+                      Color: <span className='font-bold uppercase'>{item.color}</span>
+                    </span>
+                  </div>
                   <picture className='flex justify-center'>
                     {otherImages.map((format: any, index: number) => (
                       <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
