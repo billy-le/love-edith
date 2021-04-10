@@ -82,9 +82,6 @@ export default function Products() {
                     src={firstImage.url}
                     lqip={{ active: true, quality: 20, blur: 6 }}
                     loading='lazy'
-                    style={{
-                      height: 'inherit',
-                    }}
                   />
                 </picture>
               </Link>
