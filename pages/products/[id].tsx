@@ -191,7 +191,7 @@ export default function Product() {
     <div className='grid xl:grid-cols-2 gap-4'>
       <div className='grid grid-cols-4 col-span-1 gap-2'>
         <div className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'>
-          <div className='absolute grid gap-2 w-full' style={{ height: 'fit-content' }}>
+          <div className='absolute grid gap-2 w-full'>
             {images.map((image: any, index: number) => {
               const formats: any[] = Object.values(image.formats);
               return (
@@ -230,7 +230,7 @@ export default function Product() {
               <p className='text-xl mb-0 lg:mb-3'>{PHP(price).format()}</p>
             </div>
 
-            <div className='space-y-4 w-1/2 xl:w-full'>
+            <div className='space-y-4 space-x-4 w-1/2 xl:w-full'>
               <fieldset>
                 <label htmlFor='color' className='mr-2 lg:mr-0 flex items-center mb-0 lg:mb-1'>
                   Color
