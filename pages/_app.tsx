@@ -7,6 +7,7 @@ import '../styles/index.css';
 
 import React from 'react';
 import type { AppProps } from 'next/app';
+import { DefaultSeo } from 'next-seo';
 
 import { AppProvider } from '@context';
 
@@ -27,19 +28,29 @@ export default function MyApp({
 }: AppProps<{ pageProps: { initialApolloState: ApolloClient<NormalizedCacheObject> } }>) {
   const apolloClient = useApollo(pageProps.initialApolloState);
   return (
-    <AppProvider>
-      <ApolloProvider client={apolloClient}>
-        <IKContext urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL}${process.env.NEXT_PUBLIC_IMAGEKIT_FOLDER}`}>
-          <div className='min-h-screen flex flex-col'>
-            <Header />
-            <MainLayout>
-              <Component {...pageProps} />
-            </MainLayout>
-            <Footer />
-          </div>
-          <ToastContainer limit={5} newestOnTop hideProgressBar autoClose={2000} />
-        </IKContext>
-      </ApolloProvider>
-    </AppProvider>
+    <>
+      <AppProvider>
+        <ApolloProvider client={apolloClient}>
+          <IKContext urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL}${process.env.NEXT_PUBLIC_IMAGEKIT_FOLDER}`}>
+            <div className='min-h-screen flex flex-col'>
+              <DefaultSeo
+                openGraph={{
+                  type: 'website',
+                  locale: 'en_IE',
+                  url: 'https://www.love-edith.com/',
+                  site_name: 'Love, Edith',
+                }}
+              />
+              <Header />
+              <MainLayout>
+                <Component {...pageProps} />
+              </MainLayout>
+              <Footer />
+            </div>
+            <ToastContainer limit={5} newestOnTop hideProgressBar autoClose={2000} />
+          </IKContext>
+        </ApolloProvider>
+      </AppProvider>
+    </>
   );
 }
