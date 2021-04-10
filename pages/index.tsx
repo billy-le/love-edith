@@ -1,7 +1,19 @@
 import React from 'react';
 import Link from 'next/link';
 
+import { useQuery, gql } from '@apollo/client';
+
+const warmUpQuery = gql`
+  query WarmUp {
+    products {
+      id
+    }
+  }
+`;
+
 export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
+  const warmUp = useQuery(warmUpQuery);
+
   return (
     <div className='flex-grow flex bg-cover bg-center' style={{ backgroundImage: `url("${hero_media.url}")` }}>
       <section className='flex-grow flex flex-col items-center justify-end z-10'>

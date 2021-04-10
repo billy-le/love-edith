@@ -89,7 +89,7 @@ export default function Products() {
                 </picture>
               </Link>
             </div>
-            <p className='mt-3 sm:text-xl font-medium text-center' style={{ fontFamily: 'Comorant' }}>
+            <p className='mt-3 sm:text-lg font-medium text-center' style={{ fontFamily: 'Comorant' }}>
               {product.name}
             </p>
             <p className='text-center text-sm'>{PHP(product.price).format()}</p>
