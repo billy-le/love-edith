@@ -4,8 +4,17 @@
   publish = "out"
   command = "next build && next export"
 
+  
+[[redirects]]
+  from = "/products"
+  to = "/products.html"
+  status = 200
+  force = true
+
+
 [[redirects]]
   from = "/products/*"
   to = "/products/[id].html"
   status = 200
   force = true
+
