@@ -16,7 +16,7 @@ export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
 
   return (
     <div className='flex-grow flex bg-cover bg-center' style={{ backgroundImage: `url("${hero_media.url}")` }}>
-      <section className='flex-grow flex flex-col items-center justify-end z-10'>
+      <section className='flex-grow flex flex-col items-center justify-end'>
         <Link href='/products'>
           <button className='rounded-full text-lg sm:text-2xl bg-white py-2 px-6 mb-10 block uppercase'>
             {cta_text}

@@ -19,5 +19,5 @@ export function MainLayout({ children }: React.PropsWithChildren<any>) {
     }
   }, []);
 
-  return <main className='container mx-auto flex flex-col flex-grow p-4'>{children}</main>;
+  return <main className='relative container mx-auto flex flex-col flex-grow p-4'>{children}</main>;
 }

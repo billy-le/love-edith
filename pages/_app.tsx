@@ -8,7 +8,6 @@ import '../styles/index.css';
 import React from 'react';
 import type { AppProps } from 'next/app';
 import { DefaultSeo } from 'next-seo';
-
 import { AppProvider } from '@context';
 
 import { useApollo } from '@hooks/useApollo';
@@ -27,6 +26,7 @@ export default function MyApp({
   pageProps,
 }: AppProps<{ pageProps: { initialApolloState: ApolloClient<NormalizedCacheObject> } }>) {
   const apolloClient = useApollo(pageProps.initialApolloState);
+
   return (
     <>
       <AppProvider>

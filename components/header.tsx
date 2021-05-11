@@ -45,8 +45,8 @@ export default function Header() {
 
   return (
     <header ref={headerRef} className='header sticky top-0 bg-white z-10'>
-      <div className='container flex justify-between items-center mx-auto p-4'>
-        <Nav />
+      <div className='container relative flex justify-center items-center mx-auto p-4'>
+        <Nav className='absolute left-4' />
         <h1>
           <Link href='/'>
             <a>
@@ -54,19 +54,18 @@ export default function Header() {
             </a>
           </Link>
         </h1>
-        <Link href='/cart'>
-          <div className='relative h-6 w-6 cursor-pointer'>
-            <Icon icon={faShoppingCart} size='lg' />
-            {state.cart.length > 0 && (
-              <div
-                className='absolute bg-red-400 shadow rounded-full h-5 w-5 text-xs flex items-center justify-center animate-bounce'
-                style={{ top: -10, right: -10 }}
-              >
-                {state.cart.reduce((sum, item) => sum + item.qty, 0)}
-              </div>
-            )}
-          </div>
-        </Link>
+        <div className='absolute right-4'>
+          <Link href='/cart'>
+            <div className='relative h-6 w-6 cursor-pointer'>
+              <Icon icon={faShoppingCart} size='lg' />
+              {state.cart.length > 0 && (
+                <div className='absolute bg-red-400 shadow rounded-full h-5 w-5 text-xs flex items-center justify-center animate-bounce -top-2.5 right-0 sm:-right-2.5'>
+                  {state.cart.reduce((sum, item) => sum + item.qty, 0)}
+                </div>
+              )}
+            </div>
+          </Link>
+        </div>
       </div>
       {state.promo && (
         <div className='bg-red-100 bg-opacity-80 '>
