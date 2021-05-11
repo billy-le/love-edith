@@ -8,7 +8,7 @@ import { PHP } from '@helpers/currency';
 
 const PRODUCTS_QUERY = gql`
   query Products {
-    products(where: { is_sold_out: false }) {
+    products(sort: "created_at:DESC") {
       id
       name
       slug
@@ -19,6 +19,7 @@ const PRODUCTS_QUERY = gql`
           formats
         }
       }
+      is_sold_out
     }
   }
 `;
@@ -56,7 +57,7 @@ export default function Products() {
         return (
           <div
             key={product.id}
-            className='overflow-hidden '
+            className={`overflow-hidden ${product.is_sold_out ? 'opacity-50' : ''}`}
             style={{
               transform: `translateX(${index}px)`,
             }}
