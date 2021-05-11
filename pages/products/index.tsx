@@ -62,12 +62,7 @@ export default function Products() {
             }}
           >
             <div className='cursor-pointer overflow-hidden rounded aspect-h-4 aspect-w-3'>
-              <Link
-                href={{ pathname: `/products/[id]`, query: { id: product.id } }}
-                as={{
-                  pathname: `/products/${product.id}`,
-                }}
-              >
+              <Link href={{ pathname: `/products/[id]` }} as={`/products/${product.id}`}>
                 <picture>
                   {formats.map((format: any, index) => (
                     <source

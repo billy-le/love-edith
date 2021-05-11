@@ -51,9 +51,9 @@ export default function Product() {
   const { id: paramId } = query;
   const { dispatch } = useAppContext();
 
-  const [selectedSize, setSelectedSize] = React.useState<string>('');
-  const [selectedColor, setSelectedColor] = React.useState<string>('');
-  const [activeTab, setActiveTab] = React.useState<string>('description');
+  const [selectedSize, setSelectedSize] = React.useState('');
+  const [selectedColor, setSelectedColor] = React.useState('');
+  const [activeTab, setActiveTab] = React.useState('description');
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
   const { error, loading, data } = useQuery(PRODUCT_QUERY, {
