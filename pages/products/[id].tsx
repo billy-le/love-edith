@@ -1,12 +1,20 @@
 import React from 'react';
+
+// helpers
 import { gql, useQuery } from '@apollo/client';
-import { IKImage } from 'imagekitio-react';
 import { PHP } from '@helpers/currency';
 import { useAppContext } from '@hooks/useAppContext';
-import marked from 'marked';
-import Spinner from '@components/spinner';
 import { useRouter } from 'next/router';
+import marked from 'marked';
+import { getDiscount } from '@helpers/getDiscount';
+
+// components
+import { IKImage } from 'imagekitio-react';
+import Spinner from '@components/spinner';
 import { toast } from 'react-toastify';
+
+// interfaces
+import { Product } from 'types/models';
 
 const TABS = ['description', 'size guide', 'fabric & care'];
 const NA = 'Not Available';
@@ -37,6 +45,11 @@ const PRODUCT_QUERY = gql`
           formats
         }
       }
+      discounts {
+        id
+        discount_percent
+        expiration_date
+      }
     }
   }
 `;
@@ -45,7 +58,7 @@ marked.setOptions({
   breaks: true,
 });
 
-export default function Product() {
+export default function ProductPage() {
   const { query } = useRouter();
 
   const { id: paramId } = query;
@@ -56,7 +69,7 @@ export default function Product() {
   const [activeTab, setActiveTab] = React.useState('description');
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
-  const { error, loading, data } = useQuery(PRODUCT_QUERY, {
+  const { error, loading, data } = useQuery<{ product: Product }>(PRODUCT_QUERY, {
     variables: {
       id: paramId,
     },
@@ -68,7 +81,7 @@ export default function Product() {
       return [];
     }
 
-    data.product.variants.forEach((v: any) => {
+    data.product.variants.forEach((v) => {
       const color = map.get(v.color.name);
       if (color) {
         map.set(v.color.name, color.concat(v.qty));
@@ -77,13 +90,10 @@ export default function Product() {
       }
     });
     const entries = Object.fromEntries(map);
-    const colors: { name: string }[] = [];
+    const colors: { name: string; isSoldOut: boolean }[] = [];
 
     for (const color in entries) {
-      if (entries[color].every((qty) => qty === 0)) {
-        break;
-      }
-      colors.push({ name: color });
+      colors.push({ name: color, isSoldOut: entries[color].every((qty) => qty === 0) });
     }
 
     setSelectedColor(colors?.[0]?.name ?? '');
@@ -97,7 +107,7 @@ export default function Product() {
       return [];
     }
 
-    data.product.variants.forEach((v: any) => {
+    data.product.variants.forEach((v) => {
       if (v.color.name === selectedColor) {
         const size = map.get(v.size.name);
         if (size) {
@@ -138,7 +148,14 @@ export default function Product() {
     product: { id, name, price, size_chart, fabric_and_care, description, product_images, variants },
   } = data;
 
-  const images = product_images.flatMap((productImage: any) => productImage.images);
+  const discounts = data.product.discounts.filter((discount) => getDiscount(discount));
+  let retailPrice = PHP(price);
+  let discountPercent = discounts.reduce(
+    (totalDiscount, discount) => PHP(totalDiscount).add(discount.discount_percent),
+    PHP(0)
+  );
+
+  const images = product_images.flatMap((productImage) => productImage.images);
 
   function handleSizeChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const { value } = e.target;
@@ -168,36 +185,38 @@ export default function Product() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const variant = variants.find((v: any) => v.size.name === selectedSize && v.color.name === selectedColor);
+    const variant = variants.find((v) => v.size.name === selectedSize && v.color.name === selectedColor);
     if (!variant) return;
 
     dispatch({
       type: 'INCREMENT_ITEM',
       payload: {
-        productId: id,
-        variantId: variant.id,
+        productId: parseInt(id, 10),
+        variantId: parseInt(variant.id, 10),
         image: Object.values(images[selectedImageIndex].formats),
         name,
-        price,
+        price: discountPercent.value
+          ? retailPrice.subtract(retailPrice.multiply(discountPercent)).value
+          : retailPrice.value,
         qty: 1,
-        size: selectedSize as any,
-        color: selectedColor as any,
+        size: selectedSize,
+        color: selectedColor,
       },
     });
     toast(`${name} has been added to your cart!`);
   }
 
   return (
-    <div className='grid xl:grid-cols-2 gap-4'>
+    <div className='grid lg:grid-cols-2 gap-4'>
       <div className='grid grid-cols-4 col-span-1 gap-2'>
         <div className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'>
           <div className='absolute grid gap-2 w-full'>
-            {images.map((image: any, index: number) => {
-              const formats: any[] = Object.values(image.formats);
+            {images.map((image, index) => {
+              const formats = Object.values(image.formats);
               return (
                 <div key={index} className='aspect-h-4 aspect-w-3 overflow-hidden rounded'>
                   <picture onClick={handleImageClick(index)}>
-                    {formats.map((format: any, index: number) => (
+                    {formats.map((format, index: number) => (
                       <source key={index} srcSet={`${format.url} ${format.width}w`} />
                     ))}
                     <IKImage className='rounded' src={image.url} />
@@ -210,7 +229,7 @@ export default function Product() {
         <div className='col-span-3'>
           <div className='aspect-h-4 aspect-w-3 overflow-hidden rounded'>
             <picture>
-              {Object.values(images[selectedImageIndex].formats).map((format: any, index: number) => (
+              {Object.values(images[selectedImageIndex].formats).map((format, index) => (
                 <source key={index} srcSet={`${format.url} ${format.width}w`} />
               ))}
               <IKImage className='rounded' src={images[selectedImageIndex].url} />
@@ -227,7 +246,16 @@ export default function Product() {
           <div className='flex justify-between space-x-4 mb-4 xl:space-x-0 xl:space-y-4 xl:block xl:mb-0'>
             <div className='space-y-2 w-1/2 xl:w-full'>
               <h2 className='text-2xl text-gray-800'>{name}</h2>
-              <p className='text-xl'>{PHP(price).format()}</p>
+              <p className='text-xl'>
+                {discountPercent.value ? (
+                  <>
+                    <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
+                    <span>{retailPrice.subtract(retailPrice.multiply(discountPercent).value).format()}</span>
+                  </>
+                ) : (
+                  retailPrice.format()
+                )}
+              </p>
             </div>
 
             <div className='space-y-4 w-1/2 xl:w-full'>
@@ -245,7 +273,7 @@ export default function Product() {
                     width: '-webkit-fill-available',
                   }}
                 >
-                  {colors.map((color: any) => (
+                  {colors.map((color) => (
                     <option key={color.name} value={color.name} disabled={color.isSoldOut} className='capitalize'>
                       {`${color.name}${color.isSoldOut ? ' - sold out' : ''}`}
                     </option>
@@ -267,7 +295,7 @@ export default function Product() {
                     width: '-webkit-fill-available',
                   }}
                 >
-                  {sizes.map((size: any) => (
+                  {sizes.map((size) => (
                     <option key={size.name} value={size.name} disabled={size.isSoldOut} className='uppercase'>
                       {`${size.name}${size.isSoldOut ? ' - sold out' : ''}`}
                     </option>

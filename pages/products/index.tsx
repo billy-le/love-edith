@@ -1,14 +1,20 @@
 import { useQuery, gql } from '@apollo/client';
 
+// helpers
+import { PHP } from '@helpers/currency';
+import { getDiscount } from '@helpers/getDiscount';
+
 // components
 import Spinner from '@components/spinner';
 import Link from 'next/link';
 import { IKImage } from 'imagekitio-react';
-import { PHP } from '@helpers/currency';
+
+// interfaces
+import { Product, Image, ImageFormat } from 'types/models';
 
 const PRODUCTS_QUERY = gql`
   query Products {
-    products(sort: "created_at:DESC") {
+    products(sort: "published_at:DESC") {
       id
       name
       slug
@@ -20,14 +26,19 @@ const PRODUCTS_QUERY = gql`
         }
       }
       is_sold_out
+      discounts {
+        id
+        expiration_date
+        discount_percent
+      }
     }
   }
 `;
 
 const mediaQueries = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
 
-export default function Products() {
-  const { loading, data, error } = useQuery(PRODUCTS_QUERY);
+export default function ProductsPage() {
+  const { loading, data, error } = useQuery<{ products: Product[] }>(PRODUCTS_QUERY);
 
   if (error) {
     return null;
@@ -37,15 +48,21 @@ export default function Products() {
     return <Spinner />;
   }
 
+  if (!data) {
+    return null;
+  }
+
   return (
     <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
-      {data.products.map((product: any, index: number) => {
+      {data.products.map((product, index) => {
+        const discounts = product.discounts.filter((discount) => getDiscount(discount));
         const productImages = product.product_images?.[0]?.images;
-        let imageFormats: any[] = [];
-        let firstImage: any;
+        let imageFormats: ImageFormat[] = [];
+        let firstImage: Image | null = null;
+
         if (productImages) {
           firstImage = productImages[0];
-          imageFormats = Object.values(firstImage.formats).sort((a: any, b: any) => a.width - b.width);
+          imageFormats = Object.values(firstImage.formats).sort((a, b) => a.width - b.width);
         }
 
         const [, ...formats] = imageFormats;
@@ -53,6 +70,12 @@ export default function Products() {
         if (!firstImage) {
           return null;
         }
+
+        const retailPrice = PHP(product.price);
+        const discountPercent = discounts.reduce(
+          (totalDiscount, discount) => PHP(totalDiscount).add(discount.discount_percent),
+          PHP(0)
+        );
 
         return (
           <div
@@ -65,7 +88,7 @@ export default function Products() {
             <div className='cursor-pointer overflow-hidden rounded aspect-h-4 aspect-w-3'>
               <Link href={{ pathname: `/products/[id]` }} as={`/products/${product.id}`}>
                 <picture>
-                  {formats.map((format: any, index) => (
+                  {formats.map((format, index) => (
                     <source
                       key={format.url}
                       srcSet={`${format.url} ${format.width}w`}
@@ -85,7 +108,16 @@ export default function Products() {
             <p className='mt-3 sm:text-lg font-medium text-center' style={{ fontFamily: 'Comorant' }}>
               {product.name}
             </p>
-            <p className='text-center text-sm'>{PHP(product.price).format()}</p>
+            <p className='text-center text-sm'>
+              {discountPercent.value ? (
+                <>
+                  <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
+                  <span>{retailPrice.subtract(retailPrice.multiply(discountPercent).value).format()}</span>
+                </>
+              ) : (
+                retailPrice.format()
+              )}
+            </p>
           </div>
         );
       })}

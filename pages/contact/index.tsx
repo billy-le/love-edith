@@ -5,7 +5,7 @@ export default function ContactPage() {
     <div className='prose m-auto text-center'>
       <h2>Contact</h2>
 
-      <p>Send us a message and we’ll get back to you ASAP. Promise!</p>
+      <p>Got a question? Send us a message and we’ll get back to you ASAP. We promise!</p>
 
       <div>
         Instagram:{' '}

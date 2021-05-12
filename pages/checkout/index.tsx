@@ -258,7 +258,7 @@ export default function CheckoutPage() {
             <div className='flex items-center h-full'>
               <div className='relative mr-4'>
                 <picture>
-                  {item.image.map((format: any, index: number) => (
+                  {item.image.map((format, index) => (
                     <source key={index} srcSet={`${format.url} ${format.width}w`} />
                   ))}
                   <IKImage className='h-16 rounded' src={item.image[0].url} />

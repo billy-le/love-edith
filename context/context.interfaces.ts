@@ -1,3 +1,5 @@
+import { ImageFormat } from 'types/models';
+
 export declare namespace App {
   export interface State {
     isCartOpen: boolean;
@@ -19,8 +21,8 @@ export declare namespace App {
     qty: number;
     name: string;
     price: number;
-    image: any[];
-    size: 'xs' | 's' | 'm' | 'l' | 'xl';
+    image: ImageFormat[];
+    size: string;
     color: string;
     variantId: number;
   };
