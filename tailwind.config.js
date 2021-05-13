@@ -5,12 +5,7 @@ module.exports = {
   theme: {
     extend: {},
   },
-  variants: {
-    extend: {
-      transform: ['hover'],
-      opacity: ['disabled'],
-    },
-  },
+  variants: {},
   plugins: [
     require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/forms'),
