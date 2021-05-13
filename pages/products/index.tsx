@@ -57,7 +57,7 @@ export default function ProductsPage() {
   return (
     <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
       {products
-        .sort((a, b) => (a.is_sold_out ? 1 : b.is_sold_out ? 1 : -1))
+        .sort((a, b) => (a.is_sold_out ? 1 : -1))
         .map((product, index) => {
           const discounts = product.discounts.filter((discount) => getDiscount(discount));
           const productImages = product.product_images?.[0]?.images;
