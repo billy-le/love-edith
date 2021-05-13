@@ -2,7 +2,7 @@ import React from 'react';
 
 // helpers
 import { gql, useQuery } from '@apollo/client';
-import { PHP } from '@helpers/currency';
+import { PHP, roundUp } from '@helpers/currency';
 import { useAppContext } from '@hooks/useAppContext';
 import { useRouter } from 'next/router';
 import marked from 'marked';
@@ -196,7 +196,7 @@ export default function ProductPage() {
         image: Object.values(images[selectedImageIndex].formats),
         name,
         price: discountPercent.value
-          ? retailPrice.subtract(retailPrice.multiply(discountPercent)).value
+          ? roundUp(retailPrice.subtract(retailPrice.multiply(discountPercent))).value
           : retailPrice.value,
         qty: 1,
         size: selectedSize,
@@ -250,7 +250,7 @@ export default function ProductPage() {
                 {discountPercent.value ? (
                   <>
                     <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
-                    <span>{retailPrice.subtract(retailPrice.multiply(discountPercent).value).format()}</span>
+                    <span>{roundUp(retailPrice.subtract(retailPrice.multiply(discountPercent))).format()}</span>
                   </>
                 ) : (
                   retailPrice.format()

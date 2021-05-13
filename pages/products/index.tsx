@@ -1,7 +1,7 @@
 import { useQuery, gql } from '@apollo/client';
 
 // helpers
-import { PHP } from '@helpers/currency';
+import { PHP, roundUp } from '@helpers/currency';
 import { getDiscount } from '@helpers/getDiscount';
 
 // components
@@ -112,7 +112,7 @@ export default function ProductsPage() {
               {discountPercent.value ? (
                 <>
                   <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
-                  <span>{retailPrice.subtract(retailPrice.multiply(discountPercent).value).format()}</span>
+                  <span>{roundUp(retailPrice.subtract(retailPrice.multiply(discountPercent))).format()}</span>
                 </>
               ) : (
                 retailPrice.format()
