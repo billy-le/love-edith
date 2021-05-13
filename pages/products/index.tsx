@@ -57,7 +57,8 @@ export default function ProductsPage() {
   return (
     <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
       {products
-        .sort((a, b) => (a.is_sold_out ? 1 : -1))
+        .sort((a, _b) => (a.is_sold_out ? 1 : -1))
+        .sort((a, b) => a.published_at.localeCompare(b.published_at))
         .map((product, index) => {
           const discounts = product.discounts.filter((discount) => getDiscount(discount));
           const productImages = product.product_images?.[0]?.images;
@@ -108,14 +109,10 @@ export default function ProductsPage() {
                     />
                   </picture>
                 </Link>
-                {product.is_sold_out && (
-                  <p className='absolute grid place-items-center text-center transform -rotate-45 text-5xl font-black text-white mix-blend-overlay pointer-events-none'>
-                    Sold Out
-                  </p>
-                )}
               </div>
               <p className='mt-3 sm:text-lg font-medium text-center' style={{ fontFamily: 'Comorant' }}>
                 {product.name}
+                {product.is_sold_out ? ' (Sold Out)' : ''}
               </p>
               <p className='text-center text-sm'>
                 {discountPercent.value ? (
