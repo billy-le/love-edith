@@ -44,7 +44,7 @@ export default function FaqPage() {
       <p>**Complete address shall be provided once order is confirmed.</p>
 
       {/* Payment */}
-      <h2>Payment</h2>
+      <h2 className='text-center'>Payment</h2>
       <div>
         <p>Modes of payment are:</p>
         <ul>
@@ -72,7 +72,7 @@ export default function FaqPage() {
       </div>
 
       {/* Refund Policy */}
-      <h2>Refund Policy</h2>
+      <h2 className='text-center'>Refund Policy</h2>
       <p>
         For pieces that are made-to-order and on pre-order,{' '}
         <span className='font-bold'>we do not allow exchanges and returns.</span> This is for safety reasons brought
@@ -89,7 +89,7 @@ export default function FaqPage() {
       <p>Love, Edith reserves the right to refuse returns that do not meet our return policies.</p>
 
       {/* Manufacturing */}
-      <h2>Where are your pieces manufactured?</h2>
+      <h2 className='text-center'>Where are your pieces manufactured?</h2>
       <p>
         All clothings are ethically sourced and manufactured locally in the Philippines by a small group of talented
         women.
