@@ -42,9 +42,7 @@ export default function MyApp({
                 }}
               />
               <Header />
-              <MainLayout>
-                <Component {...pageProps} />
-              </MainLayout>
+              <Component {...pageProps} />
               <Footer />
             </div>
             <ToastContainer limit={5} newestOnTop hideProgressBar autoClose={2000} />

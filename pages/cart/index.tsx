@@ -7,6 +7,7 @@ import { useAppContext } from '@hooks/useAppContext';
 import { App } from '@context/context.interfaces';
 import { IKImage } from 'imagekitio-react';
 import { useMedia } from 'react-use';
+import { MainLayout } from '@layouts/main';
 
 const MEDIA_QUERIES = ['(max-width: 480px)', '(min-width: 481px)', '(min-width: 768px)'];
 const TABLE_HEADERS = [null, 'item', 'price', 'quantity', 'total', null];
@@ -46,7 +47,7 @@ export default function ShoppingCartPage() {
   }
 
   return (
-    <>
+    <MainLayout title='Your Shopping Cart'>
       <h1 className='text-center text-xl pb-5 mb-5'>Shopping Cart</h1>
       <table className='table-fixed border-black border-b-2 border-t-2 border-solid w-full text-center align-top'>
         <thead>
@@ -180,6 +181,6 @@ export default function ShoppingCartPage() {
           </div>
         </section>
       )}
-    </>
+    </MainLayout>
   );
 }
