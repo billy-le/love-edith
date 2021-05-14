@@ -1,6 +1,6 @@
 import { useMutation, gql } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from 'components/icon';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '@hooks/useAppContext';
 import { PHP } from '@helpers/currency';
@@ -153,7 +153,7 @@ export default function OrderSummary() {
                 });
               }}
             >
-              <FontAwesomeIcon icon={faPencilAlt} className='text-white' size='xs' />
+              <Icon icon={faPencilAlt} className='text-white h-3 w-3' size='xs' />
               <span className='text-xs'>Edit</span>
             </button>
           </div>

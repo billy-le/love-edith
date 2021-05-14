@@ -1,5 +1,5 @@
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from 'components/icon';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -11,7 +11,7 @@ export default function Footer() {
           <p className='text-xs'>&copy; {year} - All Rights Reserved</p>
           <Link href='https://www.instagram.com/loveedith.ph'>
             <a>
-              <FontAwesomeIcon className='h-8 w-8 cursor-pointer' icon={faInstagram} size='2x' />
+              <Icon className='h-8 w-8 cursor-pointer' icon={faInstagram} size='2x' />
             </a>
           </Link>
         </div>
