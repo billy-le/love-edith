@@ -30,7 +30,9 @@ const PRODUCTS_QUERY = gql`
       discounts {
         id
         expiration_date
-        discount_percent
+        percent_discount
+        amount
+        is_free_shipping
       }
       published_at
     }
@@ -80,9 +82,14 @@ export default function ProductsPage() {
 
           const retailPrice = PHP(product.price);
           const discountPercent = discounts.reduce(
-            (totalDiscount, discount) => PHP(totalDiscount).add(discount.discount_percent),
+            (totalDiscount, discount) => PHP(totalDiscount).add(PHP(discount.percent_discount).divide(100)),
             PHP(0)
           );
+          const amountOff = discounts.reduce(
+            (totalDiscount, discount) => PHP(totalDiscount).add(discount.amount),
+            PHP(0)
+          );
+          const isFreeShipping = !!discounts.find((discount) => discount.is_free_shipping);
 
           return (
             <div
@@ -114,13 +121,18 @@ export default function ProductsPage() {
               </div>
               <p className='mt-3 sm:text-lg font-medium text-center' style={{ fontFamily: 'Comorant' }}>
                 {product.name}
-                {product.is_sold_out ? ' (Sold Out)' : ''}
               </p>
+              {product.is_sold_out ? <p className='text-center text-xs'>(Sold Out)</p> : null}
+              {isFreeShipping ? <p className='text-center text-sm'>*free shipping</p> : null}
               <p className='text-center text-sm'>
-                {discountPercent.value ? (
+                {amountOff.value || discountPercent.value ? (
                   <>
                     <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
-                    <span>{roundUp(retailPrice.subtract(retailPrice.multiply(discountPercent))).format()}</span>
+                    <span>
+                      {roundUp(
+                        retailPrice.subtract(amountOff.value).subtract(retailPrice.multiply(discountPercent))
+                      ).format()}
+                    </span>
                   </>
                 ) : (
                   retailPrice.format()

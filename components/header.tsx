@@ -15,10 +15,10 @@ export default function Header() {
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (data?.promos?.length) {
+    if (data?.discounts?.length) {
       dispatch({
         type: 'SET_PROMO',
-        payload: data.promos[0],
+        payload: data.discounts[0],
       });
     }
   }, [data]);

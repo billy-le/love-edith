@@ -26,3 +26,7 @@ h6 {
   list-style: decimal;
   list-style-position: inside;
 }
+
+.summary__table__total tr td:first-of-type {
+  padding-right: 1.5rem;
+}

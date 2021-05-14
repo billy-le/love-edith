@@ -25,7 +25,7 @@ const CREATE_ORDER = gql`
     $shipping: Float!
     $payment: ENUM_ORDER_PAYMENT_METHOD!
     $items: JSON!
-    $promos: [ID]
+    $discount: ID
   ) {
     createOrder(
       input: {
@@ -44,7 +44,7 @@ const CREATE_ORDER = gql`
           items: $items
           shipping: $shipping
           payment_method: $payment
-          promos: $promos
+          discount: $discount
         }
       }
     ) {
@@ -60,7 +60,7 @@ const TABLE_HEADERS = [null, 'item', 'price', 'quantity', 'total'];
 
 export default function OrderSummary() {
   const {
-    state: { cart, promo, shipping },
+    state: { cart, promo, shippingCost },
     dispatch,
   } = useAppContext();
   const { push, query } = useRouter();
@@ -77,7 +77,7 @@ export default function OrderSummary() {
       variables: {
         ...query,
         items: JSON.stringify(cart),
-        promos: promo?.id ? [parseInt((promo as any).id, 10)] : null,
+        discount: promo ? parseInt(promo.id, 10) : null,
         shipping: parseFloat(query.shipping as any),
       },
     });
@@ -112,7 +112,7 @@ export default function OrderSummary() {
     'region' in query &&
     'street' in query &&
     'shipping' in query &&
-    shipping
+    shippingCost
   ) {
     const {
       barangay,
@@ -136,10 +136,10 @@ export default function OrderSummary() {
 
     const total = PHP(subtotal)
       .subtract(PHP(subtotal).multiply(`0.${promo?.percent_discount ?? 0}`))
-      .add(typeof shipping === 'string' ? shipping : 0);
+      .add(typeof shippingCost === 'string' ? shippingCost : 0);
 
     return (
-      <MainLayout>
+      <MainLayout title='Order Summary'>
         <section>
           <div className='flex items-center justify-center space-x-4 mb-6'>
             <h1 className='text-3xl font-bold'>Order Summary</h1>
@@ -185,7 +185,7 @@ export default function OrderSummary() {
             <div>
               <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Method:</h3>
               <p className='text-sm'>
-                {shippingMethod === '0' ? 'FREE' : shipping === '79' ? 'Metro Manila' : 'Outside Metro Manila'}
+                {shippingMethod === '0' ? 'FREE' : shippingCost === '79' ? 'Metro Manila' : 'Outside Metro Manila'}
               </p>
             </div>
 
@@ -267,7 +267,7 @@ export default function OrderSummary() {
           </table>
 
           <div className='flex flex-col items-end mt-4'>
-            <table className='w-64 text-right'>
+            <table className='summary__table__total table-fixed text-right'>
               <tbody>
                 <tr>
                   <td>Subtotal</td>
@@ -276,17 +276,31 @@ export default function OrderSummary() {
                 <tr>
                   <td>Shipping</td>
                   <td className='text-xl font-medium'>
-                    {shipping === '0' ? 'FREE' : PHP(typeof shipping === 'string' ? shipping : 0).format()}
+                    {shippingCost === '0' ? 'FREE' : PHP(typeof shippingCost === 'string' ? shippingCost : 0).format()}
                   </td>
                 </tr>
-                {promo && (
-                  <tr>
-                    <td>Discount - {promo.percent_discount}% off</td>
-                    <td className='text-xl font-medium'>
-                      -{PHP(subtotal).multiply(`0.${promo.percent_discount}`).format()}
-                    </td>
-                  </tr>
-                )}
+                {promo?.amount
+                  ? subtotal.value >= promo.amount_threshold && (
+                      <tr>
+                        <td>Discount - {PHP(promo.amount).format()} off</td>
+                        <td className='text-xl font-medium'>-{PHP(subtotal).subtract(promo.amount).format()}</td>
+                      </tr>
+                    )
+                  : null}
+                {promo?.percent_discount
+                  ? subtotal.value >= promo.percent_discount_threshold && (
+                      <tr>
+                        <td>Discount - {promo.percent_discount}% off</td>
+                        <td className='text-xl font-medium'>
+                          -
+                          {PHP(subtotal)
+                            .subtract(promo.amount && promo.amount >= promo.amount_threshold ? promo.amount : 0)
+                            .multiply(`0.${promo.percent_discount}`)
+                            .format()}
+                        </td>
+                      </tr>
+                    )
+                  : null}
                 <tr>
                   <td>Total</td>
                   <td className='text-2xl font-bold'>{total.format()}</td>

@@ -6,7 +6,7 @@ const initialState: App.State = {
   isCartOpen: false,
   cart: [],
   promo: null,
-  shipping: null,
+  shippingCost: null,
 };
 
 export const [appContext, AppProvider] = createCtx(reducer, initialState);

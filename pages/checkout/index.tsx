@@ -46,6 +46,7 @@ export default function CheckoutPage() {
   });
   const [isFreeShipping, setIsFreeShipping] = useState(false);
   const [percentDiscount, setPercentDiscount] = useState(0);
+  const [amountDiscount, setAmountDiscount] = useState(0);
 
   const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0));
 
@@ -56,24 +57,40 @@ export default function CheckoutPage() {
   }, [query]);
 
   useEffect(() => {
-    if (state.promo) {
-      const { free_shipping, free_shipping_threshold } = state.promo;
-      if (free_shipping && subtotal.value >= free_shipping_threshold) {
+    if (state.cart.find((item) => item.hasFreeShipping)) {
+      dispatch({
+        type: 'SET_SHIPPING_COST',
+        payload: '0',
+      });
+      setValue('shipping', '0');
+      setIsFreeShipping(true);
+    } else if (state.promo) {
+      const { is_free_shipping, free_shipping_threshold } = state.promo;
+      if (is_free_shipping && subtotal.value >= free_shipping_threshold) {
         dispatch({
-          type: 'SET_SHIPPING',
+          type: 'SET_SHIPPING_COST',
           payload: '0',
         });
         setValue('shipping', '0');
         setIsFreeShipping(true);
       } else {
         dispatch({
-          type: 'SET_SHIPPING',
+          type: 'SET_SHIPPING_COST',
           payload: null,
         });
       }
-      setPercentDiscount(state.promo.percent_discount);
     }
-  }, [state.promo]);
+
+    if (state.promo) {
+      const { amount, percent_discount, amount_threshold, percent_discount_threshold } = state.promo;
+      if (subtotal.value >= amount_threshold) {
+        setAmountDiscount(amount);
+      }
+      if (subtotal.value >= percent_discount_threshold) {
+        setPercentDiscount(percent_discount);
+      }
+    }
+  }, [state.promo, state.cart]);
 
   const shipping = watch('shipping') as string | null;
 
@@ -118,13 +135,13 @@ export default function CheckoutPage() {
     const { value } = e.target;
     if (isFreeShipping) {
       dispatch({
-        type: 'SET_SHIPPING',
+        type: 'SET_SHIPPING_COST',
         payload: '0',
       });
     } else {
       dispatch({
-        type: 'SET_SHIPPING',
-        payload: value as typeof state['shipping'],
+        type: 'SET_SHIPPING_COST',
+        payload: value as typeof state['shippingCost'],
       });
     }
   }
@@ -370,6 +387,13 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {amountDiscount > 0 && (
+            <div className='mt-4 flex justify-between'>
+              <p className='font-black text-lg'>Discount - {PHP(amountDiscount).format()} off</p>
+              <p className='font-black text-lg'>-{PHP(amountDiscount).format()}</p>
+            </div>
+          )}
+
           {percentDiscount > 0 && (
             <div className='mt-4 flex justify-between'>
               <p className='font-black text-lg'>Discount - {percentDiscount}% off</p>
@@ -382,6 +406,7 @@ export default function CheckoutPage() {
             <p className='font-black text-lg'>
               {PHP(subtotal)
                 .add(isFreeShipping ? 0 : shipping || 0)
+                .subtract(PHP(amountDiscount))
                 .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
                 .format()}
             </p>

@@ -7,3 +7,4 @@ export * from './size';
 export * from './variant';
 export * from './category';
 export * from './discount';
+export * from './set';

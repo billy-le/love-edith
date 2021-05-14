@@ -6,14 +6,33 @@ import { useQuery, gql } from '@apollo/client';
 
 const warmUpQuery = gql`
   query WarmUp {
-    products {
+    products(sort: "published_at:DESC", where: { is_discontinued: false }) {
       id
+      name
+      slug
+      price
+      product_images {
+        images {
+          url
+          formats
+        }
+      }
+      is_sold_out
+      discounts {
+        id
+        expiration_date
+        percent_discount
+        amount
+        is_free_shipping
+      }
+      published_at
     }
   }
 `;
 
 export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
-  const warmUp = useQuery(warmUpQuery);
+  // @ts-ignore
+  const _cache = useQuery(warmUpQuery);
 
   return (
     <MainLayout>

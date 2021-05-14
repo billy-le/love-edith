@@ -57,6 +57,7 @@ export function reducer(state: App.State, action: App.Action): App.State {
     }
     case 'SET_CART': {
       const cart = action.payload;
+
       storeCart(cart);
       return {
         ...state,
@@ -69,10 +70,10 @@ export function reducer(state: App.State, action: App.Action): App.State {
         promo: action.payload,
       };
     }
-    case 'SET_SHIPPING': {
+    case 'SET_SHIPPING_COST': {
       return {
         ...state,
-        shipping: action.payload,
+        shippingCost: action.payload,
       };
     }
     default:

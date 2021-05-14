@@ -48,8 +48,10 @@ const PRODUCT_QUERY = gql`
       }
       discounts {
         id
-        discount_percent
+        percent_discount
+        amount
         expiration_date
+        is_free_shipping
       }
     }
   }
@@ -150,12 +152,17 @@ export default function ProductPage() {
   } = data;
 
   const discounts = data.product.discounts.filter((discount) => getDiscount(discount));
-  let retailPrice = PHP(price);
-  let discountPercent = discounts.reduce(
-    (totalDiscount, discount) => PHP(totalDiscount).add(discount.discount_percent),
+  const retailPrice = PHP(price);
+  const discountPercent = discounts.reduce(
+    (totalDiscount, discount) => PHP(totalDiscount).add(PHP(discount.percent_discount).divide(100)),
     PHP(0)
   );
-
+  const amountOff = discounts.reduce((totalDiscount, discount) => PHP(totalDiscount).add(discount.amount), PHP(0));
+  const adjustedPrice =
+    amountOff.value || discountPercent.value
+      ? roundUp(retailPrice.subtract(amountOff).subtract(retailPrice.multiply(discountPercent)))
+      : retailPrice;
+  const hasFreeShipping = !!discounts.find((discount) => discount.is_free_shipping);
   const images = product_images.flatMap((productImage) => productImage.images);
 
   function handleSizeChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -196,12 +203,11 @@ export default function ProductPage() {
         variantId: parseInt(variant.id, 10),
         image: Object.values(images[selectedImageIndex].formats),
         name,
-        price: discountPercent.value
-          ? roundUp(retailPrice.subtract(retailPrice.multiply(discountPercent))).value
-          : retailPrice.value,
+        price: adjustedPrice.value,
         qty: 1,
         size: selectedSize,
         color: selectedColor,
+        hasFreeShipping,
       },
     });
     toast(`${name} has been added to your cart!`);
@@ -249,10 +255,10 @@ export default function ProductPage() {
               <div className='space-y-2 w-1/2 xl:w-full'>
                 <h2 className='text-2xl text-gray-800'>{name}</h2>
                 <p className='text-xl'>
-                  {discountPercent.value ? (
+                  {amountOff.value || discountPercent.value ? (
                     <>
                       <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
-                      <span>{roundUp(retailPrice.subtract(retailPrice.multiply(discountPercent))).format()}</span>
+                      <span>{adjustedPrice.format()}</span>
                     </>
                   ) : (
                     retailPrice.format()

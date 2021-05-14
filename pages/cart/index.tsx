@@ -40,6 +40,13 @@ export default function ShoppingCartPage() {
 
   function handleCheckout() {
     const items = cart.filter((product) => product.qty);
+    const hasFreeShipping = !!cart.find((item) => item.hasFreeShipping);
+    if (hasFreeShipping) {
+      dispatch({
+        type: 'SET_SHIPPING_COST',
+        payload: '0',
+      });
+    }
     dispatch({
       type: 'SET_CART',
       payload: items,
@@ -101,11 +108,11 @@ export default function ShoppingCartPage() {
                       disabled={!item.qty}
                       onClick={handleDecrementQuantity(item)}
                     >
-                      <Icon className='h-8 w-8' icon={faMinus} size='sm' />
+                      <Icon className='h-4 w-4' icon={faMinus} size='sm' />
                     </button>
                     <span className='mx-2 text-xl'>{item.qty}</span>
                     <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
-                      <Icon className='h-8 w-8' icon={faPlus} size='sm' />
+                      <Icon className='h-4 w-4' icon={faPlus} size='sm' />
                     </button>
                   </div>
                   <div className='md:hidden mt-4'>
@@ -114,7 +121,7 @@ export default function ShoppingCartPage() {
                   </div>
                   <div className='md:hidden mt-4 flex justify-end'>
                     <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
-                      <Icon className='h-8 w-8' icon={faTrash} />
+                      <Icon className='h-4 w-4' icon={faTrash} />
                     </button>
                   </div>
                 </td>
@@ -126,18 +133,18 @@ export default function ShoppingCartPage() {
                       disabled={!item.qty}
                       onClick={handleDecrementQuantity(item)}
                     >
-                      <Icon className='h-8 w-8' icon={faMinus} size='sm' />
+                      <Icon className='h-4 w-4' icon={faMinus} size='sm' />
                     </button>
                     <span className='mx-2 w-10'>{item.qty}</span>
                     <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
-                      <Icon className='h-8 w-8' icon={faPlus} size='sm' />
+                      <Icon className='h-4 w-4' icon={faPlus} size='sm' />
                     </button>
                   </div>
                 </td>
                 <td className='p-3 hidden md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
                 <td className='p-3 hidden md:table-cell'>
                   <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
-                    <Icon className='h-8 w-8' icon={faTrash} />
+                    <Icon className='h-4 w-4' icon={faTrash} />
                   </button>
                 </td>
               </tr>
@@ -158,7 +165,7 @@ export default function ShoppingCartPage() {
           <div className='flex flex-col items-end'>
             <Link href='/products'>
               <a>
-                Continue Shopping <Icon className='h-8 w-8' icon={faAngleRight} />
+                Continue Shopping <Icon className='h-4 w-4 inline-block' icon={faAngleRight} />
               </a>
             </Link>
             <p>

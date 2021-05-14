@@ -1,19 +1,11 @@
-import { ImageFormat } from 'types/models';
+import { ImageFormat, Discount } from 'types/models';
 
 export declare namespace App {
   export interface State {
     isCartOpen: boolean;
     cart: Product[];
-    promo: null | {
-      id: number;
-      name: string;
-      percent_discount: number;
-      free_shipping: boolean;
-      free_shipping_threshold: number;
-      expire: string;
-      details: string;
-    };
-    shipping: null | '0' | '79' | '150';
+    promo: null | Discount;
+    shippingCost: null | '0' | '79' | '150';
   }
 
   export type Product = {
@@ -25,6 +17,7 @@ export declare namespace App {
     size: string;
     color: string;
     variantId: number;
+    hasFreeShipping: boolean;
   };
 
   export type Action =
@@ -38,7 +31,7 @@ export declare namespace App {
       }
     | { type: 'SET_PROMO'; payload: State['promo'] }
     | {
-        type: 'SET_SHIPPING';
-        payload: State['shipping'];
+        type: 'SET_SHIPPING_COST';
+        payload: State['shippingCost'];
       };
 }
