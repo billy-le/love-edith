@@ -56,14 +56,14 @@ export default function Header() {
         </h1>
         <div className='absolute right-4'>
           <Link href='/cart'>
-            <div className='relative h-6 w-6 cursor-pointer'>
+            <a className='relative h-8 w-8 cursor-pointer'>
               <Icon icon={faShoppingCart} size='lg' />
               {state.cart.length > 0 && (
-                <div className='absolute bg-red-400 shadow rounded-full h-5 w-5 text-xs flex items-center justify-center animate-bounce -top-2.5 right-0 sm:-right-2.5'>
+                <div className='absolute bg-red-400 shadow rounded-full h-5 w-5 text-xs flex items-center justify-center animate-bounce -top-3 right-0 sm:-right-2.5'>
                   {state.cart.reduce((sum, item) => sum + item.qty, 0)}
                 </div>
               )}
-            </div>
+            </a>
           </Link>
         </div>
       </div>

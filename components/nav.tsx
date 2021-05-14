@@ -20,7 +20,7 @@ export function Nav(props: Props) {
   }
   return (
     <nav className={className} style={style}>
-      <Icon className='inline-block sm:hidden' icon={faBars} onClick={handleMenuToggle} size='2x' />
+      <Icon className='inline-block h-8 w-8 sm:hidden' icon={faBars} onClick={handleMenuToggle} size='2x' />
       <ul
         className={`${
           isOpen ? 'absolute' : 'hidden'

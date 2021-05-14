@@ -101,11 +101,11 @@ export default function ShoppingCartPage() {
                       disabled={!item.qty}
                       onClick={handleDecrementQuantity(item)}
                     >
-                      <Icon icon={faMinus} size='sm' />
+                      <Icon className='h-8 w-8' icon={faMinus} size='sm' />
                     </button>
                     <span className='mx-2 text-xl'>{item.qty}</span>
                     <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
-                      <Icon icon={faPlus} size='sm' />
+                      <Icon className='h-8 w-8' icon={faPlus} size='sm' />
                     </button>
                   </div>
                   <div className='md:hidden mt-4'>
@@ -114,7 +114,7 @@ export default function ShoppingCartPage() {
                   </div>
                   <div className='md:hidden mt-4 flex justify-end'>
                     <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
-                      <Icon icon={faTrash} />
+                      <Icon className='h-8 w-8' icon={faTrash} />
                     </button>
                   </div>
                 </td>
@@ -126,18 +126,18 @@ export default function ShoppingCartPage() {
                       disabled={!item.qty}
                       onClick={handleDecrementQuantity(item)}
                     >
-                      <Icon icon={faMinus} size='sm' />
+                      <Icon className='h-8 w-8' icon={faMinus} size='sm' />
                     </button>
                     <span className='mx-2 w-10'>{item.qty}</span>
                     <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
-                      <Icon icon={faPlus} size='sm' />
+                      <Icon className='h-8 w-8' icon={faPlus} size='sm' />
                     </button>
                   </div>
                 </td>
                 <td className='p-3 hidden md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
                 <td className='p-3 hidden md:table-cell'>
                   <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
-                    <Icon icon={faTrash} />
+                    <Icon className='h-8 w-8' icon={faTrash} />
                   </button>
                 </td>
               </tr>
@@ -158,7 +158,7 @@ export default function ShoppingCartPage() {
           <div className='flex flex-col items-end'>
             <Link href='/products'>
               <a>
-                Continue Shopping <Icon icon={faAngleRight} />
+                Continue Shopping <Icon className='h-8 w-8' icon={faAngleRight} />
               </a>
             </Link>
             <p>

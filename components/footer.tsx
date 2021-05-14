@@ -11,7 +11,7 @@ export default function Footer() {
           <p className='text-xs'>&copy; {year} - All Rights Reserved</p>
           <Link href='https://www.instagram.com/loveedith.ph'>
             <a>
-              <FontAwesomeIcon className='cursor-pointer' icon={faInstagram} size='2x' />
+              <FontAwesomeIcon className='h-8 w-8 cursor-pointer' icon={faInstagram} size='2x' />
             </a>
           </Link>
         </div>
