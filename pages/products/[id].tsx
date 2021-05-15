@@ -158,10 +158,11 @@ export default function ProductPage() {
     PHP(0)
   );
   const amountOff = discounts.reduce((totalDiscount, discount) => PHP(totalDiscount).add(discount.amount), PHP(0));
-  const adjustedPrice =
-    amountOff.value || discountPercent.value
-      ? roundUp(retailPrice.subtract(amountOff).subtract(retailPrice.multiply(discountPercent)))
-      : retailPrice;
+  let adjustedPrice = amountOff.value ? roundUp(retailPrice.subtract(amountOff)) : retailPrice;
+  adjustedPrice = discountPercent.value
+    ? roundUp(adjustedPrice.subtract(adjustedPrice.multiply(discountPercent)))
+    : retailPrice;
+
   const hasFreeShipping = !!discounts.find((discount) => discount.is_free_shipping);
   const images = product_images.flatMap((productImage) => productImage.images);
 

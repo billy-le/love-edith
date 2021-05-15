@@ -26,6 +26,7 @@ const CREATE_ORDER = gql`
     $payment: ENUM_ORDER_PAYMENT_METHOD!
     $items: JSON!
     $discount: ID
+    $shipping_method: String!
   ) {
     createOrder(
       input: {
@@ -43,6 +44,7 @@ const CREATE_ORDER = gql`
           landmarks: $landmarks
           items: $items
           shipping: $shipping
+          shipping_method: $shipping_method
           payment_method: $payment
           discount: $discount
         }
@@ -78,16 +80,16 @@ export default function OrderSummary() {
         ...query,
         items: JSON.stringify(cart),
         discount: promo ? parseInt(promo.id, 10) : null,
-        shipping: parseFloat(query.shipping as any),
+        shipping: parseInt(shippingCost || '0', 10),
       },
     });
 
     if (res.data?.createOrder?.order?.order_number) {
-      push({
-        pathname: '/thank-you',
-      });
-      localStorage.removeItem('shopping_cart');
-      dispatch({ type: 'SET_CART', payload: [] });
+      // push({
+      //   pathname: '/thank-you',
+      // });
+      // localStorage.removeItem('shopping_cart');
+      // dispatch({ type: 'SET_CART', payload: [] });
     } else {
       toast(
         `We're sorry. Your order didn't go thru. Please try again or contact hello@love-edith.com for further assistance.`,
@@ -112,6 +114,7 @@ export default function OrderSummary() {
     'region' in query &&
     'street' in query &&
     'shipping' in query &&
+    'shipping_method' in query &&
     shippingCost
   ) {
     const {
@@ -127,7 +130,7 @@ export default function OrderSummary() {
       province,
       region,
       street,
-      shipping: shippingMethod,
+      shipping_method: shippingMethod,
     } = query;
 
     const subtotal = PHP(
@@ -184,9 +187,7 @@ export default function OrderSummary() {
 
             <div>
               <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Method:</h3>
-              <p className='text-sm'>
-                {shippingMethod === '0' ? 'FREE' : shippingCost === '79' ? 'Metro Manila' : 'Outside Metro Manila'}
-              </p>
+              <p className='text-sm'>{shippingMethod}</p>
             </div>
 
             <div>
@@ -283,7 +284,7 @@ export default function OrderSummary() {
                   ? subtotal.value >= promo.amount_threshold && (
                       <tr>
                         <td>Discount - {PHP(promo.amount).format()} off</td>
-                        <td className='text-xl font-medium'>-{PHP(subtotal).subtract(promo.amount).format()}</td>
+                        <td className='text-xl font-medium'>-{PHP(promo.amount).format()}</td>
                       </tr>
                     )
                   : null}

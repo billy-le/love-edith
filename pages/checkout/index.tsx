@@ -95,7 +95,7 @@ export default function CheckoutPage() {
   const shipping = watch('shipping') as string | null;
 
   async function onSubmit() {
-    const {
+    let {
       barangay,
       building,
       city,
@@ -111,6 +111,13 @@ export default function CheckoutPage() {
       shipping,
     } = getValues();
 
+    const shippingMethod =
+      shipping == '0'
+        ? 'Pick-up at HQ / Book Your Own Courier'
+        : shipping === '79'
+        ? 'Metro Manila'
+        : 'Outside Metro Manila';
+    shipping = isFreeShipping ? '0' : shipping;
     push({
       pathname: '/summary',
       query: {
@@ -127,6 +134,7 @@ export default function CheckoutPage() {
         landmarks,
         payment,
         shipping,
+        shipping_method: shippingMethod,
       },
     });
   }

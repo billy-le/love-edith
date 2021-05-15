@@ -91,6 +91,11 @@ export default function ProductsPage() {
           );
           const isFreeShipping = !!discounts.find((discount) => discount.is_free_shipping);
 
+          let adjustedPrice = amountOff.value ? retailPrice.subtract(amountOff.value) : retailPrice;
+          adjustedPrice = discountPercent.value
+            ? adjustedPrice.subtract(adjustedPrice.multiply(discountPercent))
+            : retailPrice;
+
           return (
             <div
               key={product.id}
@@ -128,11 +133,7 @@ export default function ProductsPage() {
                 {amountOff.value || discountPercent.value ? (
                   <>
                     <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
-                    <span>
-                      {roundUp(
-                        retailPrice.subtract(amountOff.value).subtract(retailPrice.multiply(discountPercent))
-                      ).format()}
-                    </span>
+                    <span>{roundUp(adjustedPrice).format()}</span>
                   </>
                 ) : (
                   retailPrice.format()
