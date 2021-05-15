@@ -64,7 +64,7 @@ export default function CheckoutPage() {
       PHP(subtotal)
         .subtract(PHP(amountDiscount))
         .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`)),
-    [amountDiscount, percentDiscount]
+    [subtotal, amountDiscount, percentDiscount]
   );
 
   useEffect(() => {

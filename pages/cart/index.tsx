@@ -40,7 +40,7 @@ export default function ShoppingCartPage() {
 
   function handleCheckout() {
     const items = cart.filter((product) => product.qty);
-    const hasFreeShipping = !!cart.find((item) => item.hasFreeShipping);
+    const hasFreeShipping = Boolean(cart.find((item) => item.hasFreeShipping));
     if (hasFreeShipping) {
       dispatch({
         type: 'SET_SHIPPING_COST',
