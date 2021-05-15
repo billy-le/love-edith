@@ -35,11 +35,16 @@ export function MainLayout({ title, children }: React.PropsWithChildren<{ title?
         <title>{title}</title>
         <link rel='shortcut icon' type='image/jpg' href='/assets/favicon.ico' key='favicon' />
         <script async src='https://www.googletagmanager.com/gtag/js?id=G-WCYJV54XJ4'></script>
-        <script>
-          {/* @ts-ignore */}
-          window.dataLayer = window.dataLayer || []; function gtag(){window.dataLayer.push(arguments)}
-          gtag('js', new Date()); gtag('config', 'G-WCYJV54XJ4');
-        </script>
+        <script
+          async
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            
+              gtag('config', G-WCYJV54XJ4);`,
+          }}
+        ></script>
       </Head>
       {children}
     </main>
