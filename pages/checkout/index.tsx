@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 // libs
 import { PHP } from '@helpers/currency';
@@ -48,18 +48,25 @@ export default function CheckoutPage() {
   const [percentDiscount, setPercentDiscount] = useState(0);
   const [amountDiscount, setAmountDiscount] = useState(0);
 
-  const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0));
-
-  const total = PHP(subtotal)
-    .subtract(PHP(amountDiscount))
-    .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
-    .add(PHP(state.shippingCost || 0));
-
   useEffect(() => {
     if (Object.keys(query).length) {
       reset(query);
     }
   }, [query]);
+
+  const subtotal = useMemo(
+    () => state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)),
+    [state.cart]
+  );
+
+  const total = useMemo(
+    () =>
+      PHP(subtotal)
+        .subtract(PHP(amountDiscount))
+        .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
+        .add(PHP(state.shippingCost || 0)),
+    [amountDiscount, percentDiscount, state.shippingCost]
+  );
 
   useEffect(() => {
     if (state.cart.find((item) => item.hasFreeShipping)) {
@@ -84,6 +91,8 @@ export default function CheckoutPage() {
           payload: null,
         });
       }
+    } else {
+      setIsFreeShipping(false);
     }
   }, [state.promo, state.cart, amountDiscount, percentDiscount]);
 
@@ -92,10 +101,17 @@ export default function CheckoutPage() {
       const { amount, percent_discount, amount_threshold, percent_discount_threshold } = state.promo;
       if (subtotal.value >= amount_threshold) {
         setAmountDiscount(amount);
+      } else {
+        setAmountDiscount(0);
       }
       if (subtotal.value >= percent_discount_threshold) {
         setPercentDiscount(percent_discount);
+      } else {
+        setPercentDiscount(0);
       }
+    } else {
+      setAmountDiscount(0);
+      setPercentDiscount(0);
     }
   }, [state.promo, state.cart]);
 
