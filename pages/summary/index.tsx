@@ -274,12 +274,7 @@ export default function OrderSummary() {
                   <td>Subtotal</td>
                   <td className='text-xl font-medium'>{subtotal.format()}</td>
                 </tr>
-                <tr>
-                  <td>Shipping</td>
-                  <td className='text-xl font-medium'>
-                    {shippingCost === '0' ? 'FREE' : PHP(typeof shippingCost === 'string' ? shippingCost : 0).format()}
-                  </td>
-                </tr>
+
                 {promo?.amount
                   ? subtotal.value >= promo.amount_threshold && (
                       <tr>
@@ -302,6 +297,12 @@ export default function OrderSummary() {
                       </tr>
                     )
                   : null}
+                <tr>
+                  <td>Shipping</td>
+                  <td className='text-xl font-medium'>
+                    {shippingCost === '0' ? 'FREE' : PHP(typeof shippingCost === 'string' ? shippingCost : 0).format()}
+                  </td>
+                </tr>
                 <tr>
                   <td>Total</td>
                   <td className='text-2xl font-bold'>{total.format()}</td>

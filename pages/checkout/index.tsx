@@ -50,6 +50,11 @@ export default function CheckoutPage() {
 
   const subtotal = state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0));
 
+  const total = PHP(subtotal)
+    .subtract(PHP(amountDiscount))
+    .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
+    .add(PHP(state.shippingCost || 0));
+
   useEffect(() => {
     if (Object.keys(query).length) {
       reset(query);
@@ -66,7 +71,7 @@ export default function CheckoutPage() {
       setIsFreeShipping(true);
     } else if (state.promo) {
       const { is_free_shipping, free_shipping_threshold } = state.promo;
-      if (is_free_shipping && subtotal.value >= free_shipping_threshold) {
+      if (is_free_shipping && total.value >= free_shipping_threshold) {
         dispatch({
           type: 'SET_SHIPPING_COST',
           payload: '0',
@@ -80,7 +85,9 @@ export default function CheckoutPage() {
         });
       }
     }
+  }, [state.promo, state.cart, amountDiscount, percentDiscount]);
 
+  useEffect(() => {
     if (state.promo) {
       const { amount, percent_discount, amount_threshold, percent_discount_threshold } = state.promo;
       if (subtotal.value >= amount_threshold) {
@@ -316,7 +323,7 @@ export default function CheckoutPage() {
 
           <div className='flex justify-between py-4 border-t border-solid border-b border-black'>
             <p className='font-black'>Subtotal</p>
-            <p>{state.cart.reduce((sum, item) => PHP(sum).add(PHP(item.price).multiply(item.qty)), PHP(0)).format()}</p>
+            <p>{subtotal.format()}</p>
           </div>
 
           <div className='py-4 border-solid border-b border-black'>
@@ -411,13 +418,7 @@ export default function CheckoutPage() {
 
           <div className='mt-4 flex justify-between'>
             <p className='font-black text-lg'>Total</p>
-            <p className='font-black text-lg'>
-              {PHP(subtotal)
-                .add(isFreeShipping ? 0 : shipping || 0)
-                .subtract(PHP(amountDiscount))
-                .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
-                .format()}
-            </p>
+            <p className='font-black text-lg'>{total.format()}</p>
           </div>
 
           <div className='mt-4 flex justify-end'>
