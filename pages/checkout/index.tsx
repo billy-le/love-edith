@@ -134,12 +134,13 @@ export default function CheckoutPage() {
       shipping,
     } = getValues();
 
-    const shippingMethod =
-      shipping == '0'
-        ? 'Pick-up at HQ / Book Your Own Courier'
-        : shipping === '79'
-        ? 'Metro Manila'
-        : 'Outside Metro Manila';
+    const shippingMethod = isFreeShipping
+      ? 'FREE'
+      : shipping == '0'
+      ? 'Pick-up at HQ / Book Your Own Courier'
+      : shipping === '79'
+      ? 'Metro Manila'
+      : 'Outside Metro Manila';
     shipping = isFreeShipping ? '0' : shipping;
     push({
       pathname: '/summary',
