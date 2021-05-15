@@ -37,7 +37,7 @@ export function MainLayout({ title, children }: React.PropsWithChildren<{ title?
         <script async src='https://www.googletagmanager.com/gtag/js?id=G-WCYJV54XJ4'></script>
         <script>
           {/* @ts-ignore */}
-          window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments)}
+          window.dataLayer = window.dataLayer || []; function gtag(){window.dataLayer.push(arguments)}
           gtag('js', new Date()); gtag('config', 'G-WCYJV54XJ4');
         </script>
       </Head>
