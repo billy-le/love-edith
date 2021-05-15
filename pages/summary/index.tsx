@@ -172,7 +172,7 @@ export default function OrderSummary() {
             </div>
 
             <div>
-              <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Details:</h3>
+              <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Address:</h3>
               <p className='text-sm'>
                 {building} {street}
               </p>
