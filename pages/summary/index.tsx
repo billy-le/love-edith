@@ -85,11 +85,11 @@ export default function OrderSummary() {
     });
 
     if (res.data?.createOrder?.order?.order_number) {
-      // push({
-      //   pathname: '/thank-you',
-      // });
-      // localStorage.removeItem('shopping_cart');
-      // dispatch({ type: 'SET_CART', payload: [] });
+      push({
+        pathname: '/thank-you',
+      });
+      localStorage.removeItem('shopping_cart');
+      dispatch({ type: 'SET_CART', payload: [] });
     } else {
       toast(
         `We're sorry. Your order didn't go thru. Please try again or contact hello@love-edith.com for further assistance.`,
