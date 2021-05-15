@@ -63,9 +63,8 @@ export default function CheckoutPage() {
     () =>
       PHP(subtotal)
         .subtract(PHP(amountDiscount))
-        .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`))
-        .add(PHP(state.shippingCost || 0)),
-    [amountDiscount, percentDiscount, state.shippingCost]
+        .subtract(PHP(subtotal).multiply(`0.${percentDiscount}`)),
+    [amountDiscount, percentDiscount]
   );
 
   useEffect(() => {
@@ -434,7 +433,7 @@ export default function CheckoutPage() {
 
           <div className='mt-4 flex justify-between'>
             <p className='font-black text-lg'>Total</p>
-            <p className='font-black text-lg'>{total.format()}</p>
+            <p className='font-black text-lg'>{total.add(PHP(state.shippingCost || 0)).format()}</p>
           </div>
 
           <div className='mt-4 flex justify-end'>
