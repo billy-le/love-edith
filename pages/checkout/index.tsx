@@ -94,7 +94,7 @@ export default function CheckoutPage() {
     } else {
       setIsFreeShipping(false);
     }
-  }, [state.promo, state.cart, amountDiscount, percentDiscount]);
+  }, [state.promo, state.cart, total]);
 
   useEffect(() => {
     if (state.promo) {
