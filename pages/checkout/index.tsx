@@ -89,6 +89,7 @@ export default function CheckoutPage() {
           type: 'SET_SHIPPING_COST',
           payload: null,
         });
+        setIsFreeShipping(false);
       }
     } else {
       setIsFreeShipping(false);
