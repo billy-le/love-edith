@@ -30,3 +30,19 @@ h6 {
 .summary__table__total tr td:first-of-type {
   padding-right: 1.5rem;
 }
+
+*::-webkit-scrollbar {
+  width: 8px; /* width of the entire scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-gray-100 shadow-inner rounded;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply bg-black bg-opacity-20 shadow-md rounded;
+}
+
+* {
+  scrollbar-width: thin; /* "auto" or "thin" */
+}

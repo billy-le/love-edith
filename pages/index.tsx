@@ -35,7 +35,7 @@ export default function IndexPage({ cta_text, hero_media, hero_text }: any) {
   const _cache = useQuery(warmUpQuery);
 
   return (
-    <MainLayout>
+    <MainLayout title='Home'>
       <div className='flex-grow flex bg-cover bg-center' style={{ backgroundImage: `url("${hero_media.url}")` }}>
         <section className='flex-grow flex flex-col items-center justify-end'>
           <Link href='/products'>

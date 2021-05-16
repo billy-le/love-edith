@@ -19,7 +19,6 @@ import Header from '../components/header';
 import Footer from '../components/footer';
 
 import 'react-toastify/dist/ReactToastify.min.css';
-import { MainLayout } from '@layouts/main';
 
 export default function MyApp({
   Component,

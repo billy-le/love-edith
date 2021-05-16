@@ -217,7 +217,7 @@ export default function ProductPage() {
   return (
     <MainLayout title={name}>
       <div className='grid lg:grid-cols-2 gap-4'>
-        <div className='grid grid-cols-4 col-span-1 gap-2'>
+        <div className='grid grid-cols-4 col-span-1 gap-2' style={{ height: 'fit-content' }}>
           <div className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'>
             <div className='absolute grid gap-2 w-full'>
               {images.map((image, index) => {
@@ -275,7 +275,7 @@ export default function ProductPage() {
                   <select
                     id='color'
                     name='color'
-                    className='rounded border-2 border-solid border-black py-1 px-2 capitalize'
+                    className='rounded border-2 border-solid border-black py-1 px-2 capitalize w-full'
                     onChange={handleColorChange}
                     value={selectedColor}
                     style={{
@@ -297,7 +297,7 @@ export default function ProductPage() {
                   <select
                     id='size'
                     name='size'
-                    className='rounded border-2 border-solid border-black py-1 px-2 uppercase'
+                    className='rounded border-2 border-solid border-black py-1 px-2 uppercase w-full'
                     onChange={handleSizeChange}
                     value={selectedSize}
                     style={{

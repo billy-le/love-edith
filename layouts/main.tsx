@@ -32,7 +32,10 @@ export function MainLayout({ title, children }: React.PropsWithChildren<{ title?
   return (
     <main className='relative container mx-auto flex flex-col flex-grow p-4'>
       <Head>
-        <title>{title}</title>
+        <title>
+          {title}
+          {title === 'Love, Edith' ? '' : ' - Love, Edith'}
+        </title>
         <link rel='shortcut icon' type='image/jpg' href='/assets/favicon.ico' key='favicon' />
       </Head>
       {children}
@@ -41,5 +44,5 @@ export function MainLayout({ title, children }: React.PropsWithChildren<{ title?
 }
 
 MainLayout.defaultProps = {
-  title: 'love, edith',
+  title: 'Love, Edith',
 };

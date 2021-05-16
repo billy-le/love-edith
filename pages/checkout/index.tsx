@@ -180,7 +180,7 @@ export default function CheckoutPage() {
 
   if (state.cart.length === 0) {
     return (
-      <MainLayout title='No cart to checkout!'>
+      <MainLayout title='Checkout'>
         <div className='flex-grow pt-40 justify-center'>
           <div className='max-w-2xl mx-auto'>
             <h2 className='text-3xl sm:text-5xl font-black mb-8'>
@@ -314,7 +314,7 @@ export default function CheckoutPage() {
                     {item.image.map((format, index) => (
                       <source key={index} srcSet={`${format.url} ${format.width}w`} />
                     ))}
-                    <IKImage className='h-16 rounded' src={item.image[0].url} />
+                    <IKImage className='h-16 rounded flex-shrink-0' src={item.image[0].url} />
                   </picture>
                   <div
                     className='h-4 w-4 rounded-full bg-gray-900 text-white absolute flex items-center justify-center text-xs shadow cursor-default'
