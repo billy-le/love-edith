@@ -3,7 +3,49 @@ import { MainLayout } from '@layouts/main';
 export default function FaqPage() {
   return (
     <MainLayout title='FAQ'>
-      <div className='text-black text-sm prose mx-auto'>
+      <div className='mx-auto text-sm prose text-black'>
+        {/* Preorder Policy */}
+        <h2 className='text-center'>Pre-Order Policy</h2>
+
+        <div>
+          <p>Please allow 10-15 business days for your pre-order to be fulfilled.</p>
+
+          <p>
+            This does not include shipping days which take 1-3 business days for Metro Manila and 3-7 days for
+            provincial.
+          </p>
+
+          <hr style={{ margin: '1.5rem 0' }} />
+
+          <p className='text-base text-center'>
+            Our latest cut-off date is{' '}
+            <span className='font-bold border-b border-black border-solid'>June 19, 2021</span>
+          </p>
+
+          <p className='text-center'>Pre-order cut-off is every two (2) weeks.</p>
+
+          <h3>Important Notes:</h3>
+          <ol>
+            <li>
+              If you order before the latest cut-off date, you will be included in the corresponding batch and you will
+              receive your order in 10-15 business days (not including weekends and holidays) + shipping lead time (1-3
+              business days for MM; 3-7 for provincial).
+            </li>
+            <li>
+              If you order after the latest cut-off date, you will be included in the next cut-off date and batch.
+            </li>
+            <li>
+              Slots are very limited for every cut-off. Only complete and paid orders will be included in the batch.
+              Unpaid orders in your cart will not secure your slot. Please see our Payment Policy.
+            </li>
+            <li>
+              Announcements will be made when slots are full for the current batch. Once full, pre-orders will be
+              automatically included in the next batch.
+            </li>
+            <li>Checking out items means you have read and agreed to our terms and conditions.</li>
+          </ol>
+        </div>
+
         {/* Shipping */}
         <h2 className='text-center'>Shipping</h2>
         <h3>Metro Manila</h3>
@@ -67,17 +109,8 @@ export default function FaqPage() {
         </p>
         <p>We advise you to settle payment in real time.</p>
 
-        {/* Preorder Lead Time */}
-        <h2 className='text-center'>Pre-Order Lead Time</h2>
-        <div>
-          <p>Please allow 15-21 working days for your pre-order to be fulfilled.</p>
-          <p>
-            This does not include shipping days which takes 1-3 working days for Metro Manila and 3-7 for provincial.
-          </p>
-        </div>
-
         {/* Refund Policy */}
-        <h2 className='text-center'>Refund Policy</h2>
+        <h2 className='text-center'>Return Policy</h2>
         <p>
           For pieces that are made-to-order and on pre-order,{' '}
           <span className='font-bold'>we do not allow exchanges and returns.</span> This is for safety reasons brought
