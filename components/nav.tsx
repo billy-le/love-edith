@@ -4,7 +4,7 @@ import { CSSProperties } from 'react';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Icon } from 'components/icon';
 
-const links = ['shop', 'faq', 'contact'];
+const links = ['shop', 'faq', 'contact', 'about'];
 
 interface Props {
   className?: string;
@@ -20,7 +20,7 @@ export function Nav(props: Props) {
   }
   return (
     <nav className={className} style={style}>
-      <Icon className='inline-block h-8 w-8 sm:hidden' icon={faBars} onClick={handleMenuToggle} size='2x' />
+      <Icon className='inline-block w-8 h-8 sm:hidden' icon={faBars} onClick={handleMenuToggle} size='2x' />
       <ul
         className={`${
           isOpen ? 'absolute' : 'hidden'
@@ -30,7 +30,7 @@ export function Nav(props: Props) {
           return (
             <li key={link} className={` bg-white p-4 sm:bg-transparent sm:p-0`}>
               <Link href={link === 'shop' ? '/products' : '/' + link}>
-                <a className='uppercase font-medium text-lg' onClick={() => setIsOpen(false)}>
+                <a className='text-lg font-medium uppercase' onClick={() => setIsOpen(false)}>
                   <h2>{link}</h2>
                 </a>
               </Link>

@@ -181,9 +181,9 @@ export default function CheckoutPage() {
   if (state.cart.length === 0) {
     return (
       <MainLayout title='Checkout'>
-        <div className='flex-grow pt-40 justify-center'>
+        <div className='justify-center flex-grow pt-40'>
           <div className='max-w-2xl mx-auto'>
-            <h2 className='text-3xl sm:text-5xl font-black mb-8'>
+            <h2 className='mb-8 text-3xl font-black sm:text-5xl'>
               Oops! There doesn't seem like there is anything to checkout!
             </h2>
             <p className='text-xl sm:text-4xl'>
@@ -200,8 +200,8 @@ export default function CheckoutPage() {
 
   return (
     <MainLayout title='Checkout'>
-      <section className='container mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6'>
-        <form className='grid grid-cols-1 sm:grid-cols-2 gap-4' style={{ height: 'fit-content' }}>
+      <section className='container grid grid-cols-1 gap-6 mx-auto sm:grid-cols-2'>
+        <form className='grid grid-cols-1 gap-4 sm:grid-cols-2' style={{ height: 'fit-content' }}>
           <FormControl className='col-span-1'>
             <Label htmlFor='first_name'>First Name</Label>
             <Input ref={register} id='first_name' name='first_name' type='text' error={errors.first_name} />
@@ -233,7 +233,7 @@ export default function CheckoutPage() {
             <Input ref={register} id='email' name='email' type='email' inputMode='email' error={errors.email} />
           </FormControl>
 
-          <h3 className='mt-4 col-span-1 sm:col-span-2'>Shipping Address</h3>
+          <h3 className='col-span-1 mt-4 sm:col-span-2'>Shipping Address</h3>
           <FormControl>
             <Label htmlFor='building' className='truncate'>
               Unit Number / House / Building
@@ -302,10 +302,10 @@ export default function CheckoutPage() {
 
           <FormControl className='col-span-1 sm:col-span-2'></FormControl>
 
-          <FormControl className='col-span-1 sm:col-span-2 flex justify-end'></FormControl>
+          <FormControl className='flex justify-end col-span-1 sm:col-span-2'></FormControl>
         </form>
 
-        <div className='flex flex-col bg-gray-100 shadow-md rounded p-4'>
+        <div className='flex flex-col p-4 bg-gray-100 rounded shadow-md'>
           {state.cart.map((item, index) => (
             <div className='flex items-center justify-between mb-4' key={index}>
               <div className='flex items-center h-full'>
@@ -314,10 +314,10 @@ export default function CheckoutPage() {
                     {item.image.map((format, index) => (
                       <source key={index} srcSet={`${format.url} ${format.width}w`} />
                     ))}
-                    <IKImage className='h-16 rounded flex-shrink-0' src={item.image[0].url} />
+                    <IKImage className='flex-shrink-0 h-16 rounded' src={item.image[0].url} />
                   </picture>
                   <div
-                    className='h-4 w-4 rounded-full bg-gray-900 text-white absolute flex items-center justify-center text-xs shadow cursor-default'
+                    className='absolute flex items-center justify-center w-4 h-4 text-xs text-white bg-gray-900 rounded-full shadow cursor-default'
                     style={{ right: -8, top: -8 }}
                   >
                     <span className='pr-px'>{item.qty}</span>
@@ -331,6 +331,12 @@ export default function CheckoutPage() {
                     <span className='capitalize'>{item.size}</span>
                     {` | `}
                     <span className='uppercase'>{item.color}</span>
+                    {item.isPreorder && (
+                      <>
+                        {` | `}
+                        <span>Pre-Order</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -338,14 +344,14 @@ export default function CheckoutPage() {
             </div>
           ))}
 
-          <div className='flex justify-between py-4 border-t border-solid border-b border-black'>
+          <div className='flex justify-between py-4 border-t border-b border-black border-solid'>
             <p className='font-black'>Subtotal</p>
             <p>{subtotal.format()}</p>
           </div>
 
-          <div className='py-4 border-solid border-b border-black'>
+          <div className='py-4 border-b border-black border-solid'>
             <p className='mb-2 font-black'>Shipping Method</p>
-            {errors.shipping && <p className='text-red-400 text-xs'>{errors.shipping.message}</p>}
+            {errors.shipping && <p className='text-xs text-red-400'>{errors.shipping.message}</p>}
 
             <div className='flex items-center'>
               <input
@@ -361,11 +367,11 @@ export default function CheckoutPage() {
                 Pick-up at HQ / Book Your Own Courier
               </Label>
             </div>
-            <div className='mb-2 text-xs pl-4'>
+            <div className='pl-4 mb-2 text-xs'>
               <p>Eastwood - Quezon City</p>
               <p>1pm - 5pm</p>
             </div>
-            <div className='mb-2 flex items-center'>
+            <div className='flex items-center mb-2'>
               <input
                 ref={register}
                 className='mr-1'
@@ -400,9 +406,9 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className='py-4 border-solid border-b border-black'>
+          <div className='py-4 border-b border-black border-solid'>
             <p className='mb-2 font-black'>Payment Method</p>
-            {errors.payment && <p className='text-red-400 text-xs'>{errors.payment.message}</p>}
+            {errors.payment && <p className='text-xs text-red-400'>{errors.payment.message}</p>}
 
             <div className='flex items-center'>
               <input ref={register} className='mr-1' type='radio' name='payment' id='gcash' value='gcash' />
@@ -420,27 +426,27 @@ export default function CheckoutPage() {
           </div>
 
           {amountDiscount > 0 && (
-            <div className='mt-4 flex justify-between'>
-              <p className='font-black text-lg'>Discount - {PHP(amountDiscount).format()} off</p>
-              <p className='font-black text-lg'>-{PHP(amountDiscount).format()}</p>
+            <div className='flex justify-between mt-4'>
+              <p className='text-lg font-black'>Discount - {PHP(amountDiscount).format()} off</p>
+              <p className='text-lg font-black'>-{PHP(amountDiscount).format()}</p>
             </div>
           )}
 
           {percentDiscount > 0 && (
-            <div className='mt-4 flex justify-between'>
-              <p className='font-black text-lg'>Discount - {percentDiscount}% off</p>
-              <p className='font-black text-lg'>-{PHP(subtotal).multiply(`0.${percentDiscount}`).format()}</p>
+            <div className='flex justify-between mt-4'>
+              <p className='text-lg font-black'>Discount - {percentDiscount}% off</p>
+              <p className='text-lg font-black'>-{PHP(subtotal).multiply(`0.${percentDiscount}`).format()}</p>
             </div>
           )}
 
-          <div className='mt-4 flex justify-between'>
-            <p className='font-black text-lg'>Total</p>
-            <p className='font-black text-lg'>{total.add(PHP(state.shippingCost || 0)).format()}</p>
+          <div className='flex justify-between mt-4'>
+            <p className='text-lg font-black'>Total</p>
+            <p className='text-lg font-black'>{total.add(PHP(state.shippingCost || 0)).format()}</p>
           </div>
 
-          <div className='mt-4 flex justify-end'>
+          <div className='flex justify-end mt-4'>
             <input
-              className='w-full sm:w-64 text-white bg-black py-2 uppercase text-sm rounded'
+              className='w-full py-2 text-sm text-white uppercase bg-black rounded sm:w-64'
               type='button'
               value='Continue'
               onClick={handleSubmit(onSubmit)}

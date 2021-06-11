@@ -27,6 +27,7 @@ const PRODUCTS_QUERY = gql`
         }
       }
       is_sold_out
+      is_preorder
       discounts {
         id
         expiration_date
@@ -62,7 +63,7 @@ export default function ProductsPage() {
 
   return (
     <MainLayout title='Products'>
-      <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>
         {products.map((product, index) => {
           const discounts = product.discounts.filter((discount) => getDiscount(discount));
           const productImages = product.product_images?.[0]?.images;
@@ -104,7 +105,7 @@ export default function ProductsPage() {
                 transform: `translateX(${index}px)`,
               }}
             >
-              <div className='relative cursor-pointer overflow-hidden rounded aspect-h-4 aspect-w-3'>
+              <div className='relative overflow-hidden rounded cursor-pointer aspect-h-4 aspect-w-3'>
                 <Link href={{ pathname: `/products/[id]` }} as={`/products/${product.id}`}>
                   <picture>
                     {formats.map((format, index) => (
@@ -116,7 +117,7 @@ export default function ProductsPage() {
                       />
                     ))}
                     <IKImage
-                      className='transition-transform duration-500 transform scale-100 hover:scale-110 mx-auto'
+                      className='mx-auto transition-transform duration-500 transform scale-100 hover:scale-110'
                       src={firstImage.url}
                       lqip={{ active: true, quality: 20, blur: 6 }}
                       loading='lazy'
@@ -124,15 +125,16 @@ export default function ProductsPage() {
                   </picture>
                 </Link>
               </div>
-              <p className='mt-3 sm:text-lg font-medium text-center' style={{ fontFamily: 'Comorant' }}>
+              <p className='mt-3 font-medium text-center sm:text-lg' style={{ fontFamily: 'Comorant' }}>
                 {product.name}
               </p>
-              {product.is_sold_out ? <p className='text-center text-xs'>(Sold Out)</p> : null}
-              {isFreeShipping ? <p className='text-center text-sm'>*free shipping</p> : null}
-              <p className='text-center text-sm'>
+              {product.is_sold_out && <p className='text-xs text-center'>(Sold Out)</p>}
+              {isFreeShipping && <p className='text-sm text-center uppercase'>Free Shipping</p>}
+              {product.is_preorder && <p className='text-sm text-center'>Pre-Order</p>}
+              <p className='text-sm text-center'>
                 {amountOff.value || discountPercent.value ? (
                   <>
-                    <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
+                    <span className='text-gray-400 line-through'>{retailPrice.format()}</span>{' '}
                     <span>{roundUp(adjustedPrice).format()}</span>
                   </>
                 ) : (

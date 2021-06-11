@@ -10,6 +10,7 @@ export interface Product {
   name: string;
   is_featured: boolean;
   is_sold_out: boolean;
+  is_preorder: boolean;
   is_discontinued: boolean;
   price: number;
   slug: string;

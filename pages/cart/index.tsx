@@ -55,10 +55,10 @@ export default function ShoppingCartPage() {
 
   return (
     <MainLayout title='Your Shopping Cart'>
-      <h1 className='text-center text-xl pb-5 mb-5'>Shopping Cart</h1>
-      <table className='table-fixed border-black border-b-2 border-t-2 border-solid w-full text-center align-top'>
+      <h1 className='pb-5 mb-5 text-xl text-center'>Shopping Cart</h1>
+      <table className='w-full text-center align-top border-t-2 border-b-2 border-black border-solid table-fixed'>
         <thead>
-          <tr className='border-black border-b-2 border-solid'>
+          <tr className='border-b-2 border-black border-solid'>
             {TABLE_HEADERS.map((th, index) => (
               <th key={index} className={`py-2 uppercase ${index > 1 ? 'hidden md:table-cell' : ''}`}>
                 {th}
@@ -87,7 +87,7 @@ export default function ShoppingCartPage() {
                     {otherImages.map((format: any, index: number) => (
                       <source key={format.url} srcSet={`${format.url} ${format.width}w`} media={MEDIA_QUERIES[index]} />
                     ))}
-                    <IKImage className='rounded h-40' src={thumbnail.url} loading='lazy' />
+                    <IKImage className='h-40 rounded' src={thumbnail.url} loading='lazy' />
                   </picture>
                   <p className='md:hidden'>Price: {PHP(item.price).format()}</p>
                 </td>
@@ -95,11 +95,12 @@ export default function ShoppingCartPage() {
                   <div className='hidden md:block'>
                     <div className='text-lg font-bold'>{item.name}</div>
                     <div>
-                      Size: <span className='font-bold text-sm uppercase'>{item.size}</span>
+                      Size: <span className='text-sm font-bold uppercase'>{item.size}</span>
                     </div>
                     <div>
-                      Color: <span className='font-bold text-sm uppercase'>{item.color}</span>
+                      Color: <span className='text-sm font-bold uppercase'>{item.color}</span>
                     </div>
+                    {item.isPreorder && <p className='text-gray-700'>Pre-order</p>}
                   </div>
                   <div className='md:hidden tw-flex'>
                     <div className='mb-2'>QTY:</div>
@@ -108,43 +109,43 @@ export default function ShoppingCartPage() {
                       disabled={!item.qty}
                       onClick={handleDecrementQuantity(item)}
                     >
-                      <Icon className='h-4 w-4' icon={faMinus} size='sm' />
+                      <Icon className='w-4 h-4' icon={faMinus} size='sm' />
                     </button>
                     <span className='mx-2 text-xl'>{item.qty}</span>
-                    <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
-                      <Icon className='h-4 w-4' icon={faPlus} size='sm' />
+                    <button className='px-2 py-1 shadow' onClick={handleIncrementQuantity(item)}>
+                      <Icon className='w-4 h-4' icon={faPlus} size='sm' />
                     </button>
                   </div>
-                  <div className='md:hidden mt-4'>
+                  <div className='mt-4 md:hidden'>
                     <div>Total:</div>
                     <div>{PHP(item.price).multiply(item.qty).format()}</div>
                   </div>
-                  <div className='md:hidden mt-4 flex justify-end'>
+                  <div className='flex justify-end mt-4 md:hidden'>
                     <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
-                      <Icon className='h-4 w-4' icon={faTrash} />
+                      <Icon className='w-4 h-4' icon={faTrash} />
                     </button>
                   </div>
                 </td>
-                <td className='p-3 hidden md:table-cell'>{PHP(item.price).format()}</td>
-                <td className='p-3 hidden md:table-cell'>
+                <td className='hidden p-3 md:table-cell'>{PHP(item.price).format()}</td>
+                <td className='hidden p-3 md:table-cell'>
                   <div className='flex items-center justify-center'>
                     <button
                       className={'py-1 px-2 shadow disabled:opacity-50'}
                       disabled={!item.qty}
                       onClick={handleDecrementQuantity(item)}
                     >
-                      <Icon className='h-4 w-4' icon={faMinus} size='sm' />
+                      <Icon className='w-4 h-4' icon={faMinus} size='sm' />
                     </button>
-                    <span className='mx-2 w-10'>{item.qty}</span>
-                    <button className='py-1 px-2 shadow' onClick={handleIncrementQuantity(item)}>
-                      <Icon className='h-4 w-4' icon={faPlus} size='sm' />
+                    <span className='w-10 mx-2'>{item.qty}</span>
+                    <button className='px-2 py-1 shadow' onClick={handleIncrementQuantity(item)}>
+                      <Icon className='w-4 h-4' icon={faPlus} size='sm' />
                     </button>
                   </div>
                 </td>
-                <td className='p-3 hidden md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
-                <td className='p-3 hidden md:table-cell'>
+                <td className='hidden p-3 md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
+                <td className='hidden p-3 md:table-cell'>
                   <button className={`py-1 px-3 shadow`} onClick={handleDelete(item)}>
-                    <Icon className='h-4 w-4' icon={faTrash} />
+                    <Icon className='w-4 h-4' icon={faTrash} />
                   </button>
                 </td>
               </tr>
@@ -165,7 +166,7 @@ export default function ShoppingCartPage() {
           <div className='flex flex-col items-end'>
             <Link href='/products'>
               <a>
-                Continue Shopping <Icon className='h-4 w-4 inline-block' icon={faAngleRight} />
+                Continue Shopping <Icon className='inline-block w-4 h-4' icon={faAngleRight} />
               </a>
             </Link>
             <p>
@@ -179,7 +180,7 @@ export default function ShoppingCartPage() {
             <p className='text-xs'>*shipping calculated on next page</p>
             <Link href='/checkout'>
               <button
-                className='uppercase bg-black rounded w-40 text-center py-2 text-white mt-2'
+                className='w-40 py-2 mt-2 text-center text-white uppercase bg-black rounded'
                 onClick={handleCheckout}
               >
                 checkout

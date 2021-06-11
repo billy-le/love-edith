@@ -144,10 +144,10 @@ export default function OrderSummary() {
     return (
       <MainLayout title='Order Summary'>
         <section>
-          <div className='flex items-center justify-center space-x-4 mb-6'>
+          <div className='flex items-center justify-center mb-6 space-x-4'>
             <h1 className='text-3xl font-bold'>Order Summary</h1>
             <button
-              className='flex items-center space-x-2 bg-gray-900 text-white px-2 py-1 rounded'
+              className='flex items-center px-2 py-1 space-x-2 text-white bg-gray-900 rounded'
               style={{ height: 'fit-content' }}
               onClick={() => {
                 push({
@@ -156,14 +156,14 @@ export default function OrderSummary() {
                 });
               }}
             >
-              <Icon icon={faPencilAlt} className='text-white h-3 w-3' size='xs' />
+              <Icon icon={faPencilAlt} className='w-3 h-3 text-white' size='xs' />
               <span className='text-xs'>Edit</span>
             </button>
           </div>
 
-          <div className='flex justify-center flex-col space-y-4 sm:space-y-0 sm:flex-row sm:space-x-6 mb-8'>
+          <div className='flex flex-col justify-center mb-8 space-y-4 sm:space-y-0 sm:flex-row sm:space-x-6'>
             <div>
-              <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Issued To:</h3>
+              <h3 className='mb-2 text-lg font-semibold text-gray-800 underline'>Issued To:</h3>
               <p className='text-sm'>
                 {first_name} {last_name}
               </p>
@@ -172,7 +172,7 @@ export default function OrderSummary() {
             </div>
 
             <div>
-              <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Address:</h3>
+              <h3 className='mb-2 text-lg font-semibold text-gray-800 underline'>Shipping Address:</h3>
               <p className='text-sm'>
                 {building} {street}
               </p>
@@ -186,19 +186,19 @@ export default function OrderSummary() {
             </div>
 
             <div>
-              <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Shipping Method:</h3>
+              <h3 className='mb-2 text-lg font-semibold text-gray-800 underline'>Shipping Method:</h3>
               <p className='text-sm'>{shippingMethod}</p>
             </div>
 
             <div>
-              <h3 className='text-lg underline font-semibold text-gray-800 mb-2'>Payment Method:</h3>
-              <p className='text-sm uppercase mb-4'>{payment}</p>
+              <h3 className='mb-2 text-lg font-semibold text-gray-800 underline'>Payment Method:</h3>
+              <p className='mb-4 text-sm uppercase'>{payment}</p>
             </div>
           </div>
 
-          <table className='table-fixed border-black border-b-2 border-t-2 border-solid w-full text-center align-top'>
+          <table className='w-full text-center align-top border-t-2 border-b-2 border-black border-solid table-fixed'>
             <thead>
-              <tr className='border-black border-b-2 border-solid'>
+              <tr className='border-b-2 border-black border-solid'>
                 {TABLE_HEADERS.map((th, index) => (
                   <th key={index} className={`py-2 uppercase ${index > 1 ? 'hidden md:table-cell' : ''}`}>
                     {th}
@@ -221,6 +221,11 @@ export default function OrderSummary() {
                         <span className='text-sm font-normal'>
                           Color: <span className='font-bold uppercase'>{item.color}</span>
                         </span>
+                        {item.isPreorder && (
+                          <div>
+                            <span className='text-sm font-normal'>Pre-Order</span>
+                          </div>
+                        )}
                       </div>
                       <picture className='flex justify-center'>
                         {otherImages.map((format: any, index: number) => (
@@ -230,7 +235,7 @@ export default function OrderSummary() {
                             media={MEDIA_QUERIES[index]}
                           />
                         ))}
-                        <IKImage className='rounded h-20' src={thumbnail.url} loading='lazy' />
+                        <IKImage className='h-20 rounded' src={thumbnail.url} loading='lazy' />
                       </picture>
                       <p className='md:hidden'>Price: {PHP(item.price).format()}</p>
                     </td>
@@ -238,29 +243,34 @@ export default function OrderSummary() {
                       <div className='hidden md:block'>
                         <div className='text-lg font-bold'>{item.name}</div>
                         <div>
-                          Size: <span className='font-bold text-sm uppercase'>{item.size}</span>
+                          Size: <span className='text-sm font-bold uppercase'>{item.size}</span>
                         </div>
                         <div>
-                          Color: <span className='font-bold text-sm uppercase'>{item.color}</span>
+                          Color: <span className='text-sm font-bold uppercase'>{item.color}</span>
                         </div>
+                        {item.isPreorder && (
+                          <div>
+                            <span className='text-sm font-normal'>Pre-Order</span>
+                          </div>
+                        )}
                       </div>
                       <div className='md:hidden tw-flex'>
                         <div className='mb-2'>QTY:</div>
 
                         <span className='mx-2 text-xl'>{item.qty}</span>
                       </div>
-                      <div className='md:hidden mt-4'>
+                      <div className='mt-4 md:hidden'>
                         <div>Total:</div>
                         <div>{PHP(item.price).multiply(item.qty).format()}</div>
                       </div>
                     </td>
-                    <td className='p-3 hidden md:table-cell'>{PHP(item.price).format()}</td>
-                    <td className='p-3 hidden md:table-cell'>
+                    <td className='hidden p-3 md:table-cell'>{PHP(item.price).format()}</td>
+                    <td className='hidden p-3 md:table-cell'>
                       <div className='flex items-center justify-center'>
-                        <span className='mx-2 w-10'>{item.qty}</span>
+                        <span className='w-10 mx-2'>{item.qty}</span>
                       </div>
                     </td>
-                    <td className='p-3 hidden md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
+                    <td className='hidden p-3 md:table-cell'>{PHP(item.price).multiply(item.qty).format()}</td>
                   </tr>
                 );
               })}
@@ -268,7 +278,7 @@ export default function OrderSummary() {
           </table>
 
           <div className='flex flex-col items-end mt-4'>
-            <table className='summary__table__total table-fixed text-right'>
+            <table className='text-right table-fixed summary__table__total'>
               <tbody>
                 <tr>
                   <td>Subtotal</td>
@@ -326,8 +336,8 @@ export default function OrderSummary() {
   } else
     return (
       <MainLayout title='Order Summary'>
-        <section className='flex-grow flex flex-col items-center justify-center'>
-          <h1 className='text-2xl sm:text-4xl font-bold text-center max-w-xl'>
+        <section className='flex flex-col items-center justify-center flex-grow'>
+          <h1 className='max-w-xl text-2xl font-bold text-center sm:text-4xl'>
             Sorry this order is incomplete, please click on the cart button to checkout
           </h1>
         </section>

@@ -53,6 +53,7 @@ const PRODUCT_QUERY = gql`
         expiration_date
         is_free_shipping
       }
+      is_preorder
     }
   }
 `;
@@ -148,7 +149,7 @@ export default function ProductPage() {
   }
 
   const {
-    product: { id, name, price, size_chart, fabric_and_care, description, product_images, variants },
+    product: { id, name, price, size_chart, fabric_and_care, description, product_images, variants, is_preorder },
   } = data;
 
   const discounts = data.product.discounts.filter((discount) => getDiscount(discount));
@@ -209,6 +210,7 @@ export default function ProductPage() {
         size: selectedSize,
         color: selectedColor,
         hasFreeShipping,
+        isPreorder: is_preorder,
       },
     });
     toast(`${name} has been added to your cart!`);
@@ -216,14 +218,14 @@ export default function ProductPage() {
 
   return (
     <MainLayout title={name}>
-      <div className='grid lg:grid-cols-2 gap-4'>
+      <div className='grid gap-4 lg:grid-cols-2'>
         <div className='grid grid-cols-4 col-span-1 gap-2' style={{ height: 'fit-content' }}>
-          <div className='relative col-span-1 flex flex-col flex-nowrap overflow-y-auto'>
-            <div className='absolute grid gap-2 w-full'>
+          <div className='relative flex flex-col col-span-1 overflow-y-auto flex-nowrap'>
+            <div className='absolute grid w-full gap-2'>
               {images.map((image, index) => {
                 const formats = Object.values(image.formats);
                 return (
-                  <div key={index} className='aspect-h-4 aspect-w-3 overflow-hidden rounded'>
+                  <div key={index} className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
                     <picture onClick={handleImageClick(index)}>
                       {formats.map((format, index: number) => (
                         <source key={index} srcSet={`${format.url} ${format.width}w`} />
@@ -236,7 +238,7 @@ export default function ProductPage() {
             </div>
           </div>
           <div className='col-span-3'>
-            <div className='aspect-h-4 aspect-w-3 overflow-hidden rounded'>
+            <div className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
               <picture>
                 {Object.values(images[selectedImageIndex].formats).map((format, index) => (
                   <source key={index} srcSet={`${format.url} ${format.width}w`} />
@@ -248,17 +250,18 @@ export default function ProductPage() {
         </div>
 
         <div
-          className='grid grid-cols-1 xl:grid-cols-3 gap-4 col-span-1 bg-gray-100 p-4 rounded shadow-md'
+          className='grid grid-cols-1 col-span-1 gap-4 p-4 bg-gray-100 rounded shadow-md xl:grid-cols-3'
           style={{ height: 'fit-content' }}
         >
           <form className='col-span-1' onSubmit={handleSubmit}>
-            <div className='flex justify-between space-x-4 mb-4 xl:space-x-0 xl:space-y-4 xl:block xl:mb-0'>
-              <div className='space-y-2 w-1/2 xl:w-full'>
+            <div className='flex justify-between mb-4 space-x-4 xl:space-x-0 xl:space-y-4 xl:block xl:mb-0'>
+              <div className='w-1/2 space-y-2 xl:w-full'>
                 <h2 className='text-2xl text-gray-800'>{name}</h2>
+                {is_preorder && <p className='text-gray-700'>Pre-Order</p>}
                 <p className='text-xl'>
                   {amountOff.value || discountPercent.value ? (
                     <>
-                      <span className='line-through text-gray-400'>{retailPrice.format()}</span>{' '}
+                      <span className='text-gray-400 line-through'>{retailPrice.format()}</span>{' '}
                       <span>{adjustedPrice.format()}</span>
                     </>
                   ) : (
@@ -267,7 +270,7 @@ export default function ProductPage() {
                 </p>
               </div>
 
-              <div className='space-y-4 w-1/2 xl:w-full'>
+              <div className='w-1/2 space-y-4 xl:w-full'>
                 <fieldset>
                   <label htmlFor='color' className='flex items-center mb-0 mr-2 xl:mb-1'>
                     Color
@@ -275,7 +278,7 @@ export default function ProductPage() {
                   <select
                     id='color'
                     name='color'
-                    className='rounded border-2 border-solid border-black py-1 px-2 capitalize w-full'
+                    className='w-full px-2 py-1 capitalize border-2 border-black border-solid rounded'
                     onChange={handleColorChange}
                     value={selectedColor}
                     style={{
@@ -297,7 +300,7 @@ export default function ProductPage() {
                   <select
                     id='size'
                     name='size'
-                    className='rounded border-2 border-solid border-black py-1 px-2 uppercase w-full'
+                    className='w-full px-2 py-1 uppercase border-2 border-black border-solid rounded'
                     onChange={handleSizeChange}
                     value={selectedSize}
                     style={{
@@ -313,7 +316,7 @@ export default function ProductPage() {
                 </fieldset>
 
                 <fieldset>
-                  <button className='rounded py-2 px-3 w-full bg-gray-900 text-white' type='submit'>
+                  <button className='w-full px-3 py-2 text-white bg-gray-900 rounded' type='submit'>
                     Add to Cart
                   </button>
                 </fieldset>
@@ -321,7 +324,7 @@ export default function ProductPage() {
             </div>
           </form>
           <div className='col-span-2'>
-            <div className='hidden xl:grid grid-cols-3 lg:grid-cols-3 gap-2 mb-4'>
+            <div className='hidden grid-cols-3 gap-2 mb-4 xl:grid lg:grid-cols-3'>
               {TABS.map((tab) => (
                 <label
                   key={tab}
@@ -346,7 +349,7 @@ export default function ProductPage() {
                 ),
               }}
             />
-            <div className='xl:hidden space-y-4 rich-text'>
+            <div className='space-y-4 xl:hidden rich-text'>
               <div>
                 <h2 className='text-lg'>Description</h2>
                 <div dangerouslySetInnerHTML={{ __html: marked(description || NA) }}></div>

@@ -18,6 +18,7 @@ export declare namespace App {
     color: string;
     variantId: number;
     hasFreeShipping: boolean;
+    isPreorder: boolean;
   };
 
   export type Action =
