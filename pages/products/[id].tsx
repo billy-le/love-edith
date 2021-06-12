@@ -12,10 +12,12 @@ import { getDiscount } from '@helpers/getDiscount';
 import { IKImage } from 'imagekitio-react';
 import Spinner from '@components/spinner';
 import { toast } from 'react-toastify';
+import { Icon } from '@components/icon';
 
 // interfaces
 import { Product } from 'types/models';
 import { MainLayout } from '@layouts/main';
+import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 const TABS = ['description', 'size guide', 'fabric & care'];
 const NA = 'Not Available';
@@ -71,7 +73,9 @@ export default function ProductPage() {
   const [selectedSize, setSelectedSize] = React.useState('');
   const [selectedColor, setSelectedColor] = React.useState('');
   const [activeTab, setActiveTab] = React.useState('description');
+
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
+  const totalImages = React.useRef(0);
 
   const { error, loading, data } = useQuery<{ product: Product }>(PRODUCT_QUERY, {
     variables: {
@@ -216,35 +220,73 @@ export default function ProductPage() {
     toast(`${name} has been added to your cart!`);
   }
 
+  function handleNextImage() {
+    const nextImageIndex = selectedImageIndex + 1;
+    if (nextImageIndex > images.length - 1) {
+      setSelectedImageIndex(0);
+    } else {
+      setSelectedImageIndex(nextImageIndex);
+    }
+  }
+
+  function handlePreviousImage() {
+    const previousImageIndex = selectedImageIndex - 1;
+    if (previousImageIndex < 0) {
+      setSelectedImageIndex(images.length - 1);
+    } else {
+      setSelectedImageIndex(previousImageIndex);
+    }
+  }
+
   return (
     <MainLayout title={name}>
       <div className='grid gap-4 lg:grid-cols-2'>
         <div className='grid grid-cols-4 col-span-1 gap-2' style={{ height: 'fit-content' }}>
           <div className='relative flex flex-col col-span-1 overflow-y-auto flex-nowrap'>
-            <div className='absolute grid w-full gap-2'>
-              {images.map((image, index) => {
-                const formats = Object.values(image.formats);
-                return (
-                  <div key={index} className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
-                    <picture onClick={handleImageClick(index)}>
-                      {formats.map((format, index: number) => (
-                        <source key={index} srcSet={`${format.url} ${format.width}w`} />
-                      ))}
-                      <IKImage className='rounded' src={image.url} />
-                    </picture>
-                  </div>
-                );
-              })}
+            <div className='relative h-full'>
+              <div className='absolute grid w-full gap-2'>
+                {images.map((image, index) => {
+                  const formats = Object.values(image.formats);
+                  return (
+                    <div key={index} className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
+                      <picture onClick={handleImageClick(index)}>
+                        {formats.map((format, index: number) => (
+                          <source key={index} srcSet={`${format.url} ${format.width}w`} />
+                        ))}
+                        <IKImage className='rounded' src={image.url} />
+                      </picture>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
           <div className='col-span-3'>
-            <div className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
-              <picture>
-                {Object.values(images[selectedImageIndex].formats).map((format, index) => (
-                  <source key={index} srcSet={`${format.url} ${format.width}w`} />
-                ))}
-                <IKImage className='rounded' src={images[selectedImageIndex].url} />
-              </picture>
+            <div className='relative'>
+              {images.length > 0 && (
+                <button
+                  className='absolute left-0 z-10 p-2 transform -translate-y-1/2 top-1/2'
+                  onClick={handlePreviousImage}
+                >
+                  <Icon icon={faAngleLeft} size='lg' />
+                </button>
+              )}
+              <div className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
+                <picture>
+                  {Object.values(images[selectedImageIndex].formats).map((format, index) => (
+                    <source key={index} srcSet={`${format.url} ${format.width}w`} />
+                  ))}
+                  <IKImage className='rounded' src={images[selectedImageIndex].url} />
+                </picture>
+              </div>
+              {images.length > 0 && (
+                <button
+                  className='absolute right-0 z-10 p-2 transform -translate-y-1/2 top-1/2'
+                  onClick={handleNextImage}
+                >
+                  <Icon icon={faAngleRight} size='lg' />
+                </button>
+              )}
             </div>
           </div>
         </div>
