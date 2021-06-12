@@ -265,10 +265,11 @@ export default function ProductPage() {
             <div className='relative'>
               {images.length > 0 && (
                 <button
-                  className='absolute left-0 z-10 p-2 transform -translate-y-1/2 top-1/2'
+                  className='absolute bottom-2 z-10 grid w-6 h-6 transform bg-gray-900 rounded-full place-items-center  pr-0.5 shadow-lg left-2'
+                  aria-label='previous image'
                   onClick={handlePreviousImage}
                 >
-                  <Icon icon={faAngleLeft} size='lg' />
+                  <Icon icon={faAngleLeft} size='lg' className='w-full text-white' />
                 </button>
               )}
               <div className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
@@ -281,10 +282,11 @@ export default function ProductPage() {
               </div>
               {images.length > 0 && (
                 <button
-                  className='absolute right-0 z-10 p-2 transform -translate-y-1/2 top-1/2'
+                  className='absolute bottom-2 z-10 grid w-6 h-6 transform bg-gray-900 rounded-full place-items-center   pl-0.5 shadow-lg right-2'
                   onClick={handleNextImage}
+                  aria-label='next image'
                 >
-                  <Icon icon={faAngleRight} size='lg' />
+                  <Icon icon={faAngleRight} size='lg' className='w-full text-white' />
                 </button>
               )}
             </div>
