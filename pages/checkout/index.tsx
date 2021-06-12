@@ -28,6 +28,8 @@ const invoiceSchema = yup.object().shape({
   last_name: yup.string().required('A last name is required'),
   contact: yup.string().required('A contact number is required').matches(phoneRegExp, 'Mobile number is invalid'),
   email: yup.string().email().required('An email is required'),
+  'social_media': yup.string(),
+  'social_media_account': yup.string(),
   building: yup.string().required('A building identifier is required'),
   street: yup.string().required('A street is required'),
   barangay: yup.string().required('A barangay is required'),
@@ -132,6 +134,8 @@ export default function CheckoutPage() {
       region,
       street,
       shipping,
+      social_media,
+      social_media_account
     } = getValues();
 
     const shippingMethod = isFreeShipping
@@ -159,6 +163,8 @@ export default function CheckoutPage() {
         payment,
         shipping,
         shipping_method: shippingMethod,
+        social_media,
+        social_media_account
       },
     });
   }
@@ -231,6 +237,18 @@ export default function CheckoutPage() {
           <FormControl className='col-span-1 sm:col-span-2'>
             <Label htmlFor='email'>Email</Label>
             <Input ref={register} id='email' name='email' type='email' inputMode='email' error={errors.email} />
+          </FormControl>
+
+          <FormControl className='col-span-1 sm:col-span-2'>
+            <Label htmlFor='social_media_account'>Social Media</Label>
+            <div className="flex">
+              <select ref={register} id="social_media" name='social_media' defaultValue="instagram" className="rounded-l-sm border-r-0 border-black py-1 pl-2">
+                <option value="instagram">Instagram</option>
+                <option value="facebook">Facebook</option>
+              </select>
+              <input ref={register}  id="social_media_account" name="social_media_account" className="rounded-r-sm border-black w-full py-1 px-2 placeholder-gray-400" type="text" placeholder="i.e. @loveedith.ph"/>
+            </div>
+           
           </FormControl>
 
           <h3 className='col-span-1 mt-4 sm:col-span-2'>Shipping Address</h3>

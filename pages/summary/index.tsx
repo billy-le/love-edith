@@ -27,6 +27,8 @@ const CREATE_ORDER = gql`
     $items: JSON!
     $discount: ID
     $shipping_method: String!
+    $social_media: ENUM_ORDER_SOCIAL_MEDIA
+    $social_media_account: String
   ) {
     createOrder(
       input: {
@@ -47,6 +49,8 @@ const CREATE_ORDER = gql`
           shipping_method: $shipping_method
           payment_method: $payment
           discount: $discount
+          social_media: $social_media
+          social_media_account: $social_media_account
         }
       }
     ) {
@@ -75,12 +79,15 @@ export default function OrderSummary() {
       });
       return;
     }
+    
     const res = await createOrder({
       variables: {
         ...query,
         items: JSON.stringify(cart),
         discount: promo ? parseInt(promo.id, 10) : null,
         shipping: parseInt(shippingCost || '0', 10),
+        social_media_account: query.social_media_account ?? null,
+        social_media: query.social_media ?? null
       },
     });
 
@@ -131,6 +138,8 @@ export default function OrderSummary() {
       region,
       street,
       shipping_method: shippingMethod,
+      social_media,
+      social_media_account
     } = query;
 
     const subtotal = PHP(
@@ -169,6 +178,7 @@ export default function OrderSummary() {
               </p>
               <p className='text-sm'>{email}</p>
               <p className='text-sm'>+63 {contact}</p>
+              {social_media && social_media_account && <p className="text-sm">{social_media_account}@{social_media}</p>}
             </div>
 
             <div>

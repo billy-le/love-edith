@@ -3,8 +3,8 @@ import { MainLayout } from '@layouts/main';
 export default function FaqPage() {
   return (
     <MainLayout title='FAQ'>
-      <div className='mx-auto prose-sm prose text-black'>
-        <h1 className='text-center'>About Us</h1>
+      <div className='mx-auto prose-sm prose text-black text-center'>
+        <h1>About Us</h1>
 
         <p>Love, Edith was borne out of pure love to spread love.</p>
 
