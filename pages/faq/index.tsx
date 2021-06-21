@@ -19,7 +19,7 @@ export default function FaqPage() {
 
           <p className='text-base text-center'>
             Our latest cut-off date is{' '}
-            <span className='font-bold border-b border-black border-solid'>June 19, 2021</span>
+            <span className='font-bold border-b border-black border-solid'>June 26, 2021</span>
           </p>
 
           <p className='text-center'>Pre-order cut-off is every two (2) weeks.</p>
