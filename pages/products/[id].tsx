@@ -269,7 +269,7 @@ export default function ProductPage() {
                   aria-label='previous image'
                   onClick={handlePreviousImage}
                 >
-                  <Icon icon={faAngleLeft} size='lg' className='w-full text-white' />
+                  <Icon icon={faAngleLeft} size='lg' className='text-white' />
                 </button>
               )}
               <div className='overflow-hidden rounded aspect-h-4 aspect-w-3'>
